@@ -1,5 +1,7 @@
 # Dvara AgentWorks Core
 
-This repository is the production-capable open-source core of Dvara AgentWorks. The intended license is Apache-2.0, subject to the project's final licensing publication.
+Build, test, and run reliable AI agents.
 
-Detailed Dvara AgentWorks architecture, ADRs, design records, audits, and implementation specifications are maintained in the private `dvarahq/dvara-agentworks-ee` repository. This public repository is not an architecture source of truth; moving the documentation does not change which Dvara AgentWorks capabilities are OSS.
+Dvara AgentWorks is an agent engineering and operations platform designed around durable execution, framework-neutral contracts, and verifiable releases.
+
+The open-source Core is being prepared for publication under the Apache License 2.0.
