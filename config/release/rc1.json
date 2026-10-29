@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "release": {
+    "version": "1.0.0-rc1",
+    "tag": "v1.0.0-rc1",
+    "canonicalRepository": "dvarahq/dvara-agentworks",
+    "canonicalSource": "https://github.com/dvarahq/dvara-agentworks"
+  },
+  "freeze": {
+    "state": "CANDIDATE",
+    "baseline": "The immutable public release tag supplies the final frozen commit.",
+    "allowedAfterFreeze": [
+      "BLOCKER",
+      "HIGH",
+      "APPROVED_RELEASE_CRITICAL_MEDIUM"
+    ],
+    "requireFullGateRerunAfterChange": true
+  },
+  "requiredPriorReleaseBlockers": [1, 2, 14, 26, 59, 60, 61, 62, 63, 64, 65, 66, 82],
+  "requiredArtifactKinds": ["maven", "cli", "oci", "helm"],
+  "requiredPasses": ["protected-ci", "independent-clean"],
+  "requiredGates": [
+    "repository-policy",
+    "traceability",
+    "documentation",
+    "compatibility",
+    "supply-chain",
+    "security",
+    "full-regression",
+    "walking-skeleton",
+    "clean-install",
+    "supported-upgrade",
+    "rollback",
+    "backup-restore",
+    "disaster-recovery",
+    "load",
+    "soak"
+  ],
+  "minimumSoakHours": 24,
+  "minimumStabilizationHours": 168,
+  "evidence": {
+    "template": "config/release/rc1-evidence-template.json",
+    "runbook": "docs/operations/rc1.md",
+    "goNoGoReport": "docs/implementation/ISSUE-67-RC1-QUALIFICATION.md"
+  }
+}

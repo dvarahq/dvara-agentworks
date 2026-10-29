@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "description": "Every category of durable work that can resume on a runtime cohort. Cohort retirement is safe only when each implemented category is ledgered, fenced by the database, and counted by the quiescence predicate. A migration table that carries cohort_id must be listed here as a work ledger or as non-work evidence.",
+  "categories": {
+    "RUN": {
+      "status": "implemented",
+      "ledger_table": "agent_run",
+      "fence": "agentworks_fence_run",
+      "blocker": "NON_TERMINAL_RUN",
+      "fence_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/controlplane/lifecycle/RunAdmissionFencePostgresTest.java#retiredSuspendedAndRevokedCohortsFenceResumableWrites",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/controlplane/lifecycle/RunAdmissionFencePostgresTest.java#theFenceRejectsStaleRoutesAndRootsIntoNonRoutableCohortsEvenThroughDirectSql",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/RunLeaseFencingPostgresTest.java#suspensionFencesClaimsResumesAndNewEffectsButAllowsSafeBoundaryWrites",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/RunLeaseFencingPostgresTest.java#revocationStopsTheWorkerAtItsNextWriteAndLeavesInFlightEffectsExplicitlyInDoubt"
+      ],
+      "retirement_race_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/controlplane/lifecycle/RunAdmissionFencePostgresTest.java#retirementAndContinuationRacesNeverRetireResumableWork",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/controlplane/lifecycle/RunAdmissionFencePostgresTest.java#lateWorkInvalidatesAQuiescenceObservationBeforeRetirement",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/controlplane/lifecycle/RunAdmissionFencePostgresTest.java#retirementReportsTypedBlockersUntilTheFinalDurableWorkCompletes"
+      ]
+    },
+    "CLAIM": {
+      "status": "implemented",
+      "ledger_table": "cohort_work_item",
+      "fence": "agentworks_fence_work_item",
+      "blocker": "ACTIVE_CLAIM",
+      "fence_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#theWorkItemLedgerIsFencedLikeRunsInEveryCohortState",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/RunLeaseFencingPostgresTest.java#suspensionFencesClaimsResumesAndNewEffectsButAllowsSafeBoundaryWrites"
+      ],
+      "retirement_race_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#retirementRacingEachWorkCategoryNeverRetiresResumableWork",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#claimsOperationsAndCheckpointsAreTypedQuiescenceBlockersUntilResolved"
+      ]
+    },
+    "OPERATION": {
+      "status": "implemented",
+      "ledger_table": "cohort_work_item",
+      "fence": "agentworks_fence_work_item",
+      "blocker": "PENDING_OPERATION",
+      "fence_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#theWorkItemLedgerIsFencedLikeRunsInEveryCohortState",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/RunLeaseFencingPostgresTest.java#revocationStopsTheWorkerAtItsNextWriteAndLeavesInFlightEffectsExplicitlyInDoubt",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/SessionInboxDurableOperationPostgresTest.java#operationCompletionCreatesOneInboxMessageAndResumesTheOriginalPinnedRun"
+      ],
+      "retirement_race_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#retirementRacingEachWorkCategoryNeverRetiresResumableWork",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#anInDoubtOperationRacingRetirementIsEitherResolvedFirstOrBlocksIt"
+      ]
+    },
+    "CHECKPOINT": {
+      "status": "implemented",
+      "ledger_table": "cohort_work_item",
+      "fence": "agentworks_fence_work_item",
+      "blocker": "RESTORABLE_CHECKPOINT",
+      "fence_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#theWorkItemLedgerIsFencedLikeRunsInEveryCohortState",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#lateWorkItemsInvalidateAQuiescenceObservation"
+      ],
+      "retirement_race_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#retirementRacingEachWorkCategoryNeverRetiresResumableWork",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#claimsOperationsAndCheckpointsAreTypedQuiescenceBlockersUntilResolved"
+      ]
+    },
+    "WAKEUP": {
+      "status": "implemented",
+      "ledger_table": "cohort_work_item",
+      "fence": "agentworks_fence_work_item",
+      "blocker": "PENDING_WAKEUP",
+      "fence_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/ChildRunScheduledWakeupPostgresTest.java#databaseTimeWakeupSurvivesReconstructionAndDeliversOneInboxEvent"
+      ],
+      "retirement_race_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#retirementRacingEachWorkCategoryNeverRetiresResumableWork"
+      ]
+    },
+    "INBOX": {
+      "status": "implemented",
+      "ledger_table": "cohort_work_item",
+      "fence": "agentworks_fence_work_item",
+      "blocker": "PENDING_INBOX",
+      "fence_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/SessionInboxDurableOperationPostgresTest.java#concurrentInboxDeliveryHasStableOrderingAndFencedSafeBoundaryConsumption"
+      ],
+      "retirement_race_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#retirementRacingEachWorkCategoryNeverRetiresResumableWork"
+      ]
+    },
+    "INTERACTION": {
+      "status": "implemented",
+      "ledger_table": "cohort_work_item",
+      "fence": "agentworks_fence_work_item",
+      "blocker": "PENDING_INTERACTION",
+      "fence_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/controlplane/lifecycle/HumanInteractionAuthorityPostgresTest.java#responderDeadlineAndOutcomeRacesHaveExactlyOneDurableWinner",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/controlplane/lifecycle/HumanInteractionAuthorityPostgresTest.java#interactionFenceAndRetirementRaceNeverResurrectThePinnedCohort"
+      ],
+      "retirement_race_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/controlplane/lifecycle/HumanInteractionAuthorityPostgresTest.java#interactionFenceAndRetirementRaceNeverResurrectThePinnedCohort"
+      ]
+    },
+    "SANDBOX": {
+      "status": "implemented",
+      "ledger_table": "cohort_work_item",
+      "fence": "agentworks_fence_work_item",
+      "blocker": "RETAINED_SANDBOX",
+      "fence_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#theWorkItemLedgerIsFencedLikeRunsInEveryCohortState",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#lateSandboxWorkInvalidatesAQuiescenceObservation",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/JdbcSandboxLifecycleAuthorityPostgresTest.java#failedCleanupRetriesAndDatabaseFencesImmutableOrUnadmittedOwnership",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/SandboxCoordinatorPostgresTest.java#uncertainCleanupIsRecordedAndRetriedWithoutFalseTerminalization"
+      ],
+      "retirement_race_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#retirementRacingEachWorkCategoryNeverRetiresResumableWork",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#retainedSandboxesAreTypedQuiescenceBlockersUntilCleanup",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/JdbcSandboxLifecycleAuthorityPostgresTest.java#reservationActivationAndCleanupAreAtomicWithTheCohortLedger",
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/SandboxCoordinatorPostgresTest.java#restartTerminalizesMissingActiveAndTimedOutProvisioningResources"
+      ]
+    },
+    "SCHEDULE": {
+      "status": "planned",
+      "owner_issue": 57,
+      "note": "A deployment schedule firing is an independent root resolved through current routing at firing time; it is not durable work owned by an existing cohort."
+    },
+    "CHILD_WORK": {
+      "status": "implemented",
+      "ledger_table": "cohort_work_item",
+      "fence": "agentworks_fence_work_item",
+      "blocker": "PENDING_CHILD_WORK",
+      "fence_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/ChildRunScheduledWakeupPostgresTest.java#childPinsItsOwnApprovedRouteBlocksWithoutAWorkerAndResumesExactlyOnce"
+      ],
+      "retirement_race_tests": [
+        "agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/CohortWorkItemFencePostgresTest.java#retirementRacingEachWorkCategoryNeverRetiresResumableWork"
+      ]
+    },
+    "MIGRATION": {
+      "status": "planned",
+      "owner_issue": 87,
+      "planned_ledger": "cohort_work_item",
+      "note": "ADR-030 defers paused-run migration to OSS 1.1. The ledger's category constraint excludes MIGRATION, so this term of the quiescence predicate is always empty in 1.0."
+    }
+  },
+  "non_work_tables": {
+    "cohort_transition": "append-only cohort state history",
+    "routing_target": "immutable route evidence",
+    "lifecycle_decision": "immutable decision evidence",
+    "agent_run_event": "append-only run history; its cohort_id is correlation evidence",
+    "agent_run_checkpoint": "immutable checkpoint evidence; a restorable checkpoint is ledgered as a CHECKPOINT work item",
+    "agent_run_effect": "effect ledger evidence; a pending effect is ledgered as an OPERATION work item",
+    "session_inbox": "ordered inbox domain state and pinned delivery evidence; each non-terminal message is ledgered as an INBOX work item",
+    "durable_operation": "durable provider-operation domain state and callback evidence; each non-terminal row is ledgered as an OPERATION work item",
+    "child_run": "immutable causal child identity and exact parent/target pins; each non-terminal relationship is ledgered as CHILD_WORK on the parent cohort",
+    "scheduled_wakeup": "database-time existing-run wakeup state; each scheduled row is ledgered as WAKEUP on the original cohort",
+    "human_interaction": "interaction domain state and correlation evidence; each open row is ledgered as an INTERACTION work item",
+    "sandbox_resource": "sandbox lifecycle and cleanup evidence; each non-terminal row is ledgered as a SANDBOX work item",
+    "artifact_object": "immutable artifact ownership and provenance evidence; artifact pinning and lifecycle blockers remain owned by issue #84"
+  }
+}

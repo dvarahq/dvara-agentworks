@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Agent')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('agents')}"></header>
+<main id="main" class="container py-4">
+    <nav aria-label="Breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/console/agents">Agents</a></li>
+        <li class="breadcrumb-item active" aria-current="page" th:text="${agent.name()}">agent</li></ol></nav>
+    <h1 class="h3" th:text="${agent.name()}">agent</h1>
+    <p th:if="${agent.description() != null}" th:text="${agent.description()}">description</p>
+    <dl class="row small">
+        <dt class="col-sm-2">Definition id</dt><dd class="col-sm-10"><code th:text="${agent.id()}">id</code></dd>
+        <dt class="col-sm-2">Created</dt><dd class="col-sm-10" th:text="${agent.createdAt()}">time</dd>
+    </dl>
+
+    <h2 class="h5 mt-4">Versions</h2>
+    <table class="table table-sm align-middle">
+        <caption>Immutable versions, in publication order</caption>
+        <thead><tr><th scope="col">Version</th><th scope="col">Digest</th><th scope="col">Published</th>
+            <th scope="col" th:if="${console.can('RELEASE_WRITE')}">Build a release</th></tr></thead>
+        <tbody>
+        <tr th:each="version : ${versions.items()}">
+            <td th:text="${version.version()}">1.0.0</td>
+            <td><code class="small" th:text="${version.digest()}">sha256:</code></td>
+            <td th:text="${version.createdAt()}">time</td>
+            <td th:if="${console.can('RELEASE_WRITE')}">
+                <form method="post" th:attr="action=@{/console/agent-versions/{id}/releases(id=${version.id()})},hx-post=@{/console/agent-versions/{id}/releases(id=${version.id()})},hx-target=${'#release-result-' + version.sequence()}"
+                      hx-disabled-elt="find button" class="d-flex gap-1">
+                    <label th:for="${'release-name-' + version.sequence()}" class="visually-hidden">Release name</label>
+                    <input th:id="${'release-name-' + version.sequence()}" name="name" class="form-control form-control-sm"
+                           required maxlength="200" th:value="${agent.name() + '-' + version.version()}">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Build</button>
+                </form>
+                <div th:id="${'release-result-' + version.sequence()}" aria-live="polite"></div>
+            </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(versions.items())}"><td colspan="4">No versions yet.</td></tr>
+        </tbody>
+    </table>
+    <a class="btn btn-sm btn-outline-secondary" th:if="${versions.nextCursor() != null}"
+       th:href="@{/console/agents/{id}(id=${agent.id()},cursor=${versions.nextCursor()})}">Next page</a>
+
+    <section class="mt-4" th:if="${console.can('AGENT_WRITE')}" aria-labelledby="publish-version">
+        <h2 id="publish-version" class="h5">Publish a version</h2>
+        <p class="small text-body-secondary">An AgentSpec document in YAML or JSON. A published version is immutable;
+            publishing identical content under the same version label changes nothing.</p>
+        <form method="post" th:attr="action=@{/console/agents/{id}/versions(id=${agent.id()})},hx-post=@{/console/agents/{id}/versions(id=${agent.id()})}" hx-target="#publish-result"
+              hx-disabled-elt="find button">
+            <label for="spec-document" class="form-label">AgentSpec</label>
+            <textarea id="spec-document" name="document" class="form-control font-monospace" rows="14" required
+                      spellcheck="false" th:text="${specTemplate}"></textarea>
+            <button type="submit" class="btn btn-primary mt-2">Publish</button>
+        </form>
+        <div id="publish-result" aria-live="polite"></div>
+    </section>
+</main>
+</body>
+</html>

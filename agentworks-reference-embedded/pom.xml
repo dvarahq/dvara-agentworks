@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+<parent><groupId>com.dvarahq</groupId><artifactId>agentworks-parent</artifactId><version>1.0.0-rc1</version><relativePath>..</relativePath></parent>
+<groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-reference-embedded</artifactId><name>Dvara AgentWorks Embedded Reference</name>
+<description>Minimal native Spring extension reference application</description>
+<dependencies>
+<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-api</artifactId></dependency>
+<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-spring-boot-starter</artifactId></dependency>
+<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter</artifactId></dependency>
+<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
+</dependencies>
+</project>

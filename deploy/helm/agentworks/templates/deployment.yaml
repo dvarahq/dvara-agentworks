@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "agentworks.fullname" . }}
+  labels:
+    {{- include "agentworks.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: {maxUnavailable: 0, maxSurge: 1}
+  selector:
+    matchLabels:
+      {{- include "agentworks.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "agentworks.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}{{ toYaml . | nindent 8 }}{{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "agentworks.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.sandbox.enabled }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile: {type: RuntimeDefault}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: agentworks
+          image: "{{ .Values.image.repository }}@{{ .Values.image.digest }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}
+          ports:
+            - {name: http, containerPort: 8080, protocol: TCP}
+          env:
+            - {name: SERVER_ADDRESS, value: "0.0.0.0"}
+            - {name: SERVER_FORWARD_HEADERS_STRATEGY, value: native}
+            - {name: SPRING_CONFIG_IMPORT, value: "configtree:/run/secrets/agentworks/"}
+            - {name: AGENTWORKS_SECURITY_BOOTSTRAP_ENABLED, value: {{ .Values.bootstrap.enabled | quote }}}
+            - {name: AGENTWORKS_SECURITY_BOOTSTRAP_TOKEN_FILE, value: /var/lib/agentworks/bootstrap-token}
+            {{- if .Values.runtime.buildId }}
+            - {name: AGENTWORKS_RUNTIME_BUILD_ID, value: {{ .Values.runtime.buildId | quote }}}
+            {{- end }}
+            {{- if .Values.sandbox.enabled }}
+            - {name: AGENTWORKS_SANDBOX_KUBERNETES_ENABLED, value: "true"}
+            - {name: AGENTWORKS_SANDBOX_COORDINATOR_PROVIDER, value: kubernetes}
+            - {name: AGENTWORKS_SANDBOX_KUBERNETES_NAMESPACE, value: {{ .Values.sandbox.namespace | quote }}}
+            - {name: AGENTWORKS_SANDBOX_KUBERNETES_SERVICE_ACCOUNT, value: {{ .Values.sandbox.serviceAccount | quote }}}
+            - {name: AGENTWORKS_SANDBOX_KUBERNETES_IMAGE, value: {{ required "sandbox.image is required when sandbox.enabled=true" .Values.sandbox.image | quote }}}
+            - {name: AGENTWORKS_SANDBOX_KUBERNETES_CPU, value: {{ .Values.sandbox.cpu | quote }}}
+            - {name: AGENTWORKS_SANDBOX_KUBERNETES_MEMORY, value: {{ .Values.sandbox.memory | quote }}}
+            - {name: AGENTWORKS_SANDBOX_KUBERNETES_MAX_RUNTIME, value: {{ .Values.sandbox.maxRuntime | quote }}}
+            - {name: AGENTWORKS_SANDBOX_KUBERNETES_ALLOWED_WORKSPACES, value: {{ .Values.sandbox.allowedWorkspaces | quote }}}
+            {{- end }}
+          startupProbe:
+            httpGet: {path: /actuator/health/startup, port: http}
+            {{- toYaml .Values.probes.startup | nindent 12 }}
+          readinessProbe:
+            httpGet: {path: /actuator/health/readiness, port: http}
+            {{- toYaml .Values.probes.readiness | nindent 12 }}
+          livenessProbe:
+            httpGet: {path: /actuator/health/liveness, port: http}
+            {{- toYaml .Values.probes.liveness | nindent 12 }}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - {name: tmp, mountPath: /tmp}
+            - {name: bootstrap, mountPath: /var/lib/agentworks}
+            - {name: database, mountPath: /run/secrets/agentworks, readOnly: true}
+      volumes:
+        - name: tmp
+          emptyDir: {sizeLimit: 256Mi}
+        - name: bootstrap
+          emptyDir: {sizeLimit: {{ .Values.bootstrap.tokenVolumeSizeLimit }}}
+        - name: database
+          secret:
+            secretName: {{ .Values.database.existingSecret }}
+            items:
+              - {key: {{ .Values.database.keys.migrationUrl }}, path: spring.datasource.url}
+              - {key: {{ .Values.database.keys.migrationUsername }}, path: spring.datasource.username}
+              - {key: {{ .Values.database.keys.migrationPassword }}, path: spring.datasource.password}
+              - {key: {{ .Values.database.keys.controlPlaneUrl }}, path: agentworks.planes.control-plane.url}
+              - {key: {{ .Values.database.keys.controlPlaneUsername }}, path: agentworks.planes.control-plane.username}
+              - {key: {{ .Values.database.keys.controlPlanePassword }}, path: agentworks.planes.control-plane.password}
+              - {key: {{ .Values.database.keys.runPlaneUrl }}, path: agentworks.planes.run-plane.url}
+              - {key: {{ .Values.database.keys.runPlaneUsername }}, path: agentworks.planes.run-plane.username}
+              - {key: {{ .Values.database.keys.runPlanePassword }}, path: agentworks.planes.run-plane.password}
+      {{- with .Values.nodeSelector }}
+      nodeSelector: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations: {{ toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity: {{ toYaml . | nindent 8 }}
+      {{- end }}

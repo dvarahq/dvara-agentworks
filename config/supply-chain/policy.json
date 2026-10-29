@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "canonicalRepository": "dvarahq/dvara-agentworks",
+  "canonicalSource": "https://github.com/dvarahq/dvara-agentworks",
+  "releaseTagPattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$",
+  "protectedEnvironment": "oss-release",
+  "sourceDateEpochMinimum": 315532802,
+  "licenses": {
+    "project": "Apache-2.0",
+    "allowed": [
+      "0BSD", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "BSD-4-Clause",
+      "CC0-1.0", "EPL-1.0", "EPL-2.0", "GPL-2.0-with-classpath-exception",
+      "ISC", "LGPL-2.1-only", "MIT", "MIT-0", "MPL-2.0"
+    ],
+    "aliases": {
+      "BSD licence": "BSD-3-Clause",
+      "Bouncy Castle Licence": "MIT",
+      "EPL 1.0": "EPL-1.0"
+    }
+  },
+  "privateDependencyPrefixes": [
+    "com.dvarahq.agentworks.enterprise:"
+  ],
+  "secretExceptions": [
+    {
+      "path": "scripts/postgresql/docker-pitr-drill.sh",
+      "matchSha256": "1b44b5ea7bd8c9ebd1b86b29175573eeeb079905183c5790b9fe5b04ddab6c85",
+      "expires": "2027-01-15",
+      "reason": "Fixed throwaway password inside an isolated local Docker PITR fixture; never used outside its unique ephemeral network.",
+      "reviewedBy": "issue-65-release-approver"
+    }
+  ],
+  "vulnerabilities": {
+    "blockingSeverities": ["CRITICAL", "HIGH"],
+    "minimumCvss": 7.0,
+    "exceptionFile": "config/supply-chain/vulnerability-exceptions.json"
+  },
+  "releaseArtifacts": ["maven", "cli", "oci", "helm"],
+  "requiredEvidence": ["sbom", "sha256", "signature", "provenance", "license", "notice", "source-offer"]
+}

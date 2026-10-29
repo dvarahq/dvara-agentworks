@@ -1,0 +1,73 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+base_url="${AGENTWORKS_URL:-http://localhost:8080}"
+token="${AGENTWORKS_TOKEN:-}"
+
+usage() {
+  local status="${1:-2}"
+  cat >&2 <<'EOF'
+Usage:
+  agentworks-eval datasets [ID]
+  agentworks-eval create-dataset FILE.json
+  agentworks-eval purge-expired
+  agentworks-eval evaluators [ID]
+  agentworks-eval create-evaluator FILE.json
+  agentworks-eval run FILE.json
+  agentworks-eval run-status RUN_ID
+  agentworks-eval report RUN_ID
+  agentworks-eval cancel RUN_ID
+  agentworks-eval resume RUN_ID
+  agentworks-eval baselines
+  agentworks-eval create-baseline FILE.json
+  agentworks-eval compare BASELINE_ID CANDIDATE_RUN_ID
+EOF
+  exit "$status"
+}
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" || "${1:-}" == "help" ]]; then
+  usage 0
+fi
+if [[ ! "$token" =~ ^awt_[A-Za-z0-9_-]+$ ]]; then
+  echo "AGENTWORKS_TOKEN must contain an AgentWorks API token." >&2
+  exit 2
+fi
+
+base_url="${base_url%/}"
+uuid='^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+request() {
+  curl --fail-with-body --silent --show-error \
+    --config <(printf 'header = "Authorization: Bearer %s"\n' "$token") "$@"
+}
+json_post() {
+  local path="$1" file="$2"
+  [[ -f "$file" ]] || usage
+  request --request POST --header "Content-Type: application/json" --data-binary "@$file" "$base_url$path"
+}
+
+command="${1:-}"
+shift || true
+case "$command" in
+  datasets)
+    if [[ $# -eq 0 ]]; then request "$base_url/api/v1/evaluation-datasets"
+    elif [[ $# -eq 1 && "$1" =~ $uuid ]]; then request "$base_url/api/v1/evaluation-datasets/$1"
+    else usage; fi ;;
+  create-dataset) [[ $# -eq 1 ]] || usage; json_post "/api/v1/evaluation-datasets" "$1" ;;
+  purge-expired) [[ $# -eq 0 ]] || usage; request --request POST "$base_url/api/v1/evaluation-datasets/purge-expired" ;;
+  evaluators)
+    if [[ $# -eq 0 ]]; then request "$base_url/api/v1/evaluators"
+    elif [[ $# -eq 1 && "$1" =~ $uuid ]]; then request "$base_url/api/v1/evaluators/$1"
+    else usage; fi ;;
+  create-evaluator) [[ $# -eq 1 ]] || usage; json_post "/api/v1/evaluators" "$1" ;;
+  run) [[ $# -eq 1 ]] || usage; json_post "/api/v1/evaluation-runs" "$1" ;;
+  run-status) [[ $# -eq 1 && "$1" =~ $uuid ]] || usage; request "$base_url/api/v1/evaluation-runs/$1" ;;
+  report) [[ $# -eq 1 && "$1" =~ $uuid ]] || usage; request "$base_url/api/v1/evaluation-runs/$1/report" ;;
+  cancel) [[ $# -eq 1 && "$1" =~ $uuid ]] || usage; request --request POST "$base_url/api/v1/evaluation-runs/$1/cancel" ;;
+  resume) [[ $# -eq 1 && "$1" =~ $uuid ]] || usage; request --request POST "$base_url/api/v1/evaluation-runs/$1/resume" ;;
+  baselines) [[ $# -eq 0 ]] || usage; request "$base_url/api/v1/evaluation-baselines" ;;
+  create-baseline) [[ $# -eq 1 ]] || usage; json_post "/api/v1/evaluation-baselines" "$1" ;;
+  compare)
+    [[ $# -eq 2 && "$1" =~ $uuid && "$2" =~ $uuid ]] || usage
+    request "$base_url/api/v1/evaluation-baselines/$1/comparison?candidateRunId=$2" ;;
+  *) usage ;;
+esac

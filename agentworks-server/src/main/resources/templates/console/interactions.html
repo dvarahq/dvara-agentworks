@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Interactions')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('interactions')}"></header>
+<main id="main" class="container py-4">
+    <h1 class="h3">Human interactions</h1>
+    <form method="get" action="/console/interactions" class="row g-2 align-items-end mb-3">
+        <input type="hidden" name="run" th:if="${runFilter != null}" th:value="${runFilter}">
+        <div class="col-md-3">
+            <label for="interaction-status" class="form-label">Status</label>
+            <select id="interaction-status" name="status" class="form-select">
+                <option value="">Any</option>
+                <option th:each="state : ${ {'OPEN','RESPONDED','EXPIRED','CANCELLED','REVOKED'} }"
+                        th:value="${state}" th:text="${state}" th:selected="${state == statusFilter}">OPEN</option>
+            </select>
+        </div>
+        <div class="col-md-2"><button type="submit" class="btn btn-outline-secondary w-100">Filter</button></div>
+    </form>
+    <p th:if="${runFilter != null}" class="small">Interactions for run
+        <a th:href="@{/console/runs/{id}(id=${runFilter})}"><code th:text="${runFilter}">run</code></a>
+        · <a href="/console/interactions">all interactions</a></p>
+    <table class="table table-sm align-middle">
+        <caption>Interactions, newest first</caption>
+        <thead><tr><th scope="col">Interaction</th><th scope="col">Kind</th><th scope="col">Status</th>
+            <th scope="col">Run</th><th scope="col">Deadline</th></tr></thead>
+        <tbody>
+        <tr th:each="item : ${interactions.items()}">
+            <td><a th:href="@{/console/interactions/{id}(id=${item.id()})}"><span th:text="${item.prompt().title()}">Title</span></a>
+                <br><code class="small" th:text="${item.id()}">id</code></td>
+            <td th:text="${item.kind()}">APPROVAL</td>
+            <td th:text="${item.status()}">OPEN</td>
+            <td><a th:href="@{/console/runs/{id}(id=${item.runId()})}"><code class="small" th:text="${item.runId()}">run</code></a></td>
+            <td th:text="${item.deadline()}">time</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(interactions.items())}"><td colspan="5">No interactions.</td></tr>
+        </tbody>
+    </table>
+    <a class="btn btn-sm btn-outline-secondary" th:if="${interactions.nextCursor() != null}"
+       th:href="@{/console/interactions(status=${statusFilter},run=${runFilter},cursor=${interactions.nextCursor()})}">Next page</a>
+</main>
+</body>
+</html>

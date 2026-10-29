@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Runs')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('runs')}"></header>
+<main id="main" class="container py-4">
+    <h1 class="h3">Runs</h1>
+    <form method="get" action="/console/runs" class="row g-2 align-items-end mb-3">
+        <input type="hidden" name="deployment" th:if="${deploymentFilter != null}" th:value="${deploymentFilter}">
+        <div class="col-md-3">
+            <label for="lifecycle-filter" class="form-label">Lifecycle</label>
+            <select id="lifecycle-filter" name="lifecycle" class="form-select">
+                <option value="">Any</option>
+                <option th:each="state : ${ {'CREATED','QUEUED','ACTIVE','BLOCKED','PAUSED','SUCCEEDED','FAILED','CANCELLED'} }"
+                        th:value="${state}" th:text="${state}" th:selected="${state == lifecycleFilter}">STATE</option>
+            </select>
+        </div>
+        <div class="col-md-2"><button type="submit" class="btn btn-outline-secondary w-100">Filter</button></div>
+    </form>
+    <p th:if="${deploymentFilter != null}" class="small">Runs of deployment <code th:text="${deploymentFilter}">id</code>
+        · <a href="/console/runs">all runs</a></p>
+    <table class="table table-sm align-middle">
+        <caption>Runs, newest first</caption>
+        <thead><tr><th scope="col">Run</th><th scope="col">Lifecycle</th><th scope="col">Terminal code</th>
+            <th scope="col">Deployment</th><th scope="col">Created</th></tr></thead>
+        <tbody>
+        <tr th:each="run : ${runs.items()}">
+            <td><a th:href="@{/console/runs/{id}(id=${run.id()})}"><code th:text="${run.id()}">id</code></a></td>
+            <td th:text="${run.lifecycle()}">QUEUED</td>
+            <td th:text="${run.terminalCode()}">code</td>
+            <td><a th:href="@{/console/deployments/{id}(id=${run.deploymentId()})}"><code class="small"
+                   th:text="${run.deploymentId()}">dep</code></a></td>
+            <td th:text="${run.createdAt()}">time</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(runs.items())}"><td colspan="5">No runs.</td></tr>
+        </tbody>
+    </table>
+    <a class="btn btn-sm btn-outline-secondary" th:if="${runs.nextCursor() != null}"
+       th:href="@{/console/runs(deployment=${deploymentFilter},lifecycle=${lifecycleFilter},cursor=${runs.nextCursor()})}">Next page</a>
+</main>
+</body>
+</html>

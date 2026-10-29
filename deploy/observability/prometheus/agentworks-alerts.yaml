@@ -1,0 +1,41 @@
+groups:
+  - name: agentworks
+    rules:
+      - alert: AgentWorksApiErrorRateHigh
+        expr: sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m])) / clamp_min(sum(rate(http_server_requests_seconds_count[5m])), 1) > 0.05
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "AgentWorks API 5xx rate exceeds 5%"}
+      - alert: AgentWorksApiLatencyHigh
+        expr: histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket[5m]))) > 2
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "AgentWorks API p95 latency exceeds two seconds"}
+      - alert: AgentWorksWorkerSaturated
+        expr: sum(rate(agentworks_run_worker_polls_total{outcome="retry_later"}[5m])) > sum(agentworks_run_worker_threads)
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "Run workers are repeatedly deferring work"}
+      - alert: AgentWorksLeaseLoss
+        expr: increase(agentworks_run_lease_losses_total[10m]) > 0
+        labels: {severity: warning}
+        annotations: {summary: "A run worker lost a lease"}
+      - alert: AgentWorksRecoveryLag
+        expr: histogram_quantile(0.95, sum by (le) (rate(agentworks_run_recovery_delay_seconds_bucket[15m]))) > 60
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "Run recovery p95 delay exceeds one minute"}
+      - alert: AgentWorksOutboxLag
+        expr: max(agentworks_recovery_outbox_oldest_age_seconds) > 60
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "Recovery outbox oldest event exceeds one minute"}
+      - alert: AgentWorksResourceLeak
+        expr: max(agentworks_resource_cleanup_unresolved_at_startup) > 0 or max(agentworks_compiled_cache_retirement_lag) > 300000
+        for: 10m
+        labels: {severity: critical}
+        annotations: {summary: "AgentWorks has unresolved resource cleanup evidence"}
+      - alert: AgentWorksTelemetryCardinalityRefused
+        expr: increase(agentworks_observability_cardinality_denied_series[10m]) > 0
+        labels: {severity: warning}
+        annotations: {summary: "Telemetry series violated the cardinality policy"}

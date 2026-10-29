@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "release": {
+    "version": "1.0.0-rc1",
+    "tag": "v1.0.0-rc1",
+    "canonicalSource": "https://github.com/dvarahq/dvara-agentworks"
+  },
+  "requiredPrerequisiteIssues": [67, 83],
+  "allowedVerdicts": ["PASS", "PASS_WITH_NON_BLOCKING_FOLLOW_UPS", "FAIL"],
+  "reportSigning": {
+    "certificateIdentity": "https://github.com/dvarahq/dvara-agentworks/.github/workflows/release.yml@refs/tags/v1.0.0-rc1",
+    "certificateOidcIssuer": "https://token.actions.githubusercontent.com"
+  },
+  "requiredAudits": [
+    "traceability", "architecture", "core-independence", "security",
+    "competitive-independence", "dependency-license-provenance", "deferred-feature-absence"
+  ],
+  "forbiddenCoreDependencies": [
+    "org.apache.kafka", "org.springframework.kafka", "redis.clients", "io.lettuce",
+    "org.redisson", "io.qdrant", "io.milvus", "com.pinecone", "io.weaviate",
+    "com.dvarahq.agentworks.enterprise"
+  ],
+  "deferredProductionPackages": ["com.dvarahq.agentworks.nonpublic"],
+  "invariants": [
+    {"id":"ARCH-001","name":"approved modular-monolith dependency direction","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ModuleDependencyBoundaryTest.java#reactorDependenciesMatchTheApprovedModularMonolithDirection"],"negative":["src/test/python/test_ga_audit.py#test_forbidden_core_dependency_is_rejected"]},
+    {"id":"ARCH-002","name":"domain is framework and provider neutral","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureBoundaryTest.java#domainIsFrameworkAndProviderNeutral"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureRuleNonVacuityTest.java#domainRuleDetectsSpringAiDependency"]},
+    {"id":"ARCH-003","name":"agent executors are stateless","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureBoundaryTest.java#agentExecutorsAreStateless"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureRuleNonVacuityTest.java#executorRuleDetectsMutableAndFinalContainerState"]},
+    {"id":"ARCH-004","name":"run plane has no control-plane mutation authority","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureBoundaryTest.java#runPlaneHasNoControlPlaneMutationAuthority"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureRuleNonVacuityTest.java#runPlaneRuleDetectsControlPlaneMutationDependency"]},
+    {"id":"ARCH-005","name":"run plane has no lifecycle write repository access","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureBoundaryTest.java#runPlaneHasNoLifecycleWriteAccess"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureRuleNonVacuityTest.java#runPlaneLifecycleRuleDetectsWriteCapableRepositoryDependency"]},
+    {"id":"ARCH-006","name":"Core has no Enterprise dependency","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureBoundaryTest.java#coreHasNoEnterpriseDependency"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureRuleNonVacuityTest.java#coreRuleDetectsConfiguredForbiddenDependency"]},
+    {"id":"ARCH-007","name":"compiled agents contain credential references only","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureBoundaryTest.java#compiledAgentStructuresContainCredentialReferencesOnly"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureRuleNonVacuityTest.java#credentialRuleAllowsReferenceAndDetectsRawApiKey"]},
+    {"id":"ARCH-008","name":"gateway SPI is provider, framework, transport, and adapter neutral","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureBoundaryTest.java#gatewaySpiIsProviderAndFrameworkNeutral"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureRuleNonVacuityTest.java#gatewaySpiRuleDetectsFrameworkAndTransportDependencies"]},
+    {"id":"ARCH-009","name":"gateway adapters use no provider SDK","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureBoundaryTest.java#gatewayAdaptersUseNoProviderSdk"],"negative":["src/test/python/test_ga_audit.py#test_forbidden_core_dependency_is_rejected"]},
+    {"id":"ARCH-010","name":"DvaraHQ adapter remains optional and one-way","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureBoundaryTest.java#coreDoesNotDependOnTheDvaraHqAdapter"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureRuleNonVacuityTest.java#dvaraHqRuleDetectsACoreDependencyOnTheOptionalAdapter"]},
+    {"id":"ARCH-011","name":"only wiring selects concrete gateway adapters","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureBoundaryTest.java#onlyWiringSelectsConcreteGatewayAdapters"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureRuleNonVacuityTest.java#adapterSelectionRuleDetectsRunPlaneUseOfAConcreteAdapter"]},
+    {"id":"ARCH-012","name":"gateway types contain credential references only","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureBoundaryTest.java#gatewayTypesContainNoRawSecretFields"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureRuleNonVacuityTest.java#gatewaySecretRuleAllowsReferencesAndDetectsRawKeys"]},
+    {"id":"ARCH-013","name":"ChatMemory is not authoritative state","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/SpringAiAuthorityBoundaryTest.java#authoritativeDomainAndRunPlaneCannotDependOnSpringAiMemoryOrReactor"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/SpringAiAuthorityBoundaryTest.java#chatMemoryAuthorityRulesDetectDeliberateViolation"]},
+    {"id":"ARCH-014","name":"executors do not use ChatMemory","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/SpringAiAuthorityBoundaryTest.java#executorsUseNoChatMemoryAndTheRunPlaneNoSpringAi"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/SpringAiAuthorityBoundaryTest.java#chatMemoryAuthorityRulesDetectDeliberateViolation"]},
+    {"id":"ARCH-015","name":"run plane is Spring AI free","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/SpringAiAuthorityBoundaryTest.java#executorsUseNoChatMemoryAndTheRunPlaneNoSpringAi"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/SpringAiAuthorityBoundaryTest.java#chatMemoryAuthorityRulesDetectDeliberateViolation"]},
+    {"id":"ARCH-016","name":"memory records are not run authority","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/SpringAiAuthorityBoundaryTest.java#executorsUseNoChatMemoryAndTheRunPlaneNoSpringAi"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/SpringAiAuthorityBoundaryTest.java#chatMemoryAuthorityRulesDetectDeliberateViolation"]},
+    {"id":"ARCH-017","name":"persisted desired state and outbox are authoritative","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/controlplane/lifecycle/PromotionLifecyclePostgresTest.java#promotionAtomicallyRecordsDecisionRevisionCohortRouteDesiredStateAndOutbox"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/controlplane/lifecycle/PromotionLifecyclePostgresTest.java#lifecycleHistoryIsAppendOnlyForApplicationRolesAndDirectSql"]},
+    {"id":"ARCH-018","name":"runs retain exact immutable release and routing pins","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/DurableRunLifecyclePostgresTest.java#noEngineOrDirectPathChangesAnAdmittedRunsPins"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/controlplane/lifecycle/RunAdmissionFencePostgresTest.java#newRootsSelectTheCurrentRevisionWhileExistingRunsKeepTheirPins"]},
+    {"id":"ARCH-019","name":"tenant scope is structural from persistence through API","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/runplane/execution/ChildRunScheduledWakeupPostgresTest.java#postgresRlsHidesChildRelationshipsFromAnotherTenant"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/identity/web/AuthorizationMatrixTest.java#everyRoleAndCredentialTypeIsAllowedExactlyWhatTheMatrixGrants"]},
+    {"id":"ARCH-020","name":"PostgreSQL is production coordination authority","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/controlplane/lifecycle/RunAdmissionFencePostgresTest.java#concurrentAdmissionsAndPromotionShareOneAtomicCutoff"],"negative":["agentworks-server/src/test/java/com/dvarahq/agentworks/architecture/ArchitectureRuleNonVacuityTest.java#runPlaneLifecycleRuleDetectsWriteCapableRepositoryDependency"]},
+    {"id":"ARCH-021","name":"Kafka, Redis, vector databases, and telemetry are optional","positive":["agentworks-server/src/test/java/com/dvarahq/agentworks/observability/RequiredDependenciesHealthIndicatorTest.java#optionalDependenciesNeverAffectReadiness"],"negative":["src/test/python/test_ga_audit.py#test_forbidden_core_dependency_is_rejected"]},
+    {"id":"ARCH-022","name":"non-public production packages are absent","positive":["src/test/python/test_ga_audit.py#test_repository_policy_is_internally_consistent"],"negative":["src/test/python/test_ga_audit.py#test_deferred_production_package_is_rejected"]}
+  ]
+}

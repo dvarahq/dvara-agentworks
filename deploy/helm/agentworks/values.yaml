@@ -1,0 +1,79 @@
+replicaCount: 2
+
+image:
+  repository: ghcr.io/dvarahq/dvara-agentworks
+  digest: "sha256:replace-with-release-digest"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+podAnnotations: {}
+podLabels: {}
+
+service:
+  type: ClusterIP
+  port: 8080
+
+database:
+  existingSecret: agentworks-database
+  keys:
+    migrationUrl: migration-url
+    migrationUsername: migration-username
+    migrationPassword: migration-password
+    controlPlaneUrl: control-plane-url
+    controlPlaneUsername: control-plane-username
+    controlPlanePassword: control-plane-password
+    runPlaneUrl: run-plane-url
+    runPlaneUsername: run-plane-username
+    runPlanePassword: run-plane-password
+
+bootstrap:
+  enabled: true
+  tokenVolumeSizeLimit: 16Mi
+
+runtime:
+  buildId: ""
+
+resources:
+  requests: {cpu: 250m, memory: 512Mi}
+  limits: {cpu: "2", memory: 2Gi}
+
+probes:
+  startup: {failureThreshold: 60, periodSeconds: 2, timeoutSeconds: 2}
+  readiness: {failureThreshold: 3, periodSeconds: 5, timeoutSeconds: 2}
+  liveness: {failureThreshold: 3, periodSeconds: 10, timeoutSeconds: 2}
+
+terminationGracePeriodSeconds: 60
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+networkPolicy:
+  enabled: true
+  # The baseline permits DNS plus HTTPS and PostgreSQL only. Narrow destination CIDRs in production.
+  egressCidrs: ["0.0.0.0/0"]
+  httpsPort: 443
+  databasePort: 5432
+
+sandbox:
+  enabled: false
+  namespace: agentworks-sandboxes
+  createNamespace: true
+  serviceAccount: agentworks-sandbox
+  image: ""
+  cpu: "0.5"
+  memory: 256Mi
+  maxRuntime: 15m
+  allowedWorkspaces: ""
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Operations')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('operations')}"></header>
+<main id="main" class="container py-4">
+    <h1 class="h3">Durable operations</h1>
+    <form method="get" class="row g-2 mb-3">
+        <input type="hidden" name="session" th:if="${sessionFilter != null}" th:value="${sessionFilter}">
+        <div class="col-md-3"><label for="status" class="form-label">Status</label><select id="status" name="status" class="form-select">
+            <option value="">Any</option><option th:each="state : ${ {'STARTING','RUNNING','SUCCEEDED','FAILED','CANCELLED'} }"
+            th:value="${state}" th:text="${state}" th:selected="${state == statusFilter}">RUNNING</option></select></div>
+        <div class="col-md-2 align-self-end"><button class="btn btn-outline-secondary w-100">Filter</button></div>
+    </form>
+    <table class="table table-sm align-middle"><caption>Operations, newest first</caption>
+        <thead><tr><th>Operation</th><th>Type</th><th>Status</th><th>Run</th><th>Updated</th></tr></thead>
+        <tbody><tr th:each="item : ${operations.items()}">
+            <td><a th:href="@{/console/operations/{id}(id=${item.id()})}"><code th:text="${item.id()}">id</code></a></td>
+            <td th:text="${item.provider() + ' / ' + item.operationType()}">type</td><td th:text="${item.status()}">RUNNING</td>
+            <td><a th:href="@{/console/runs/{id}(id=${item.runId()})}"><code th:text="${item.runId()}">run</code></a></td>
+            <td th:text="${item.updatedAt()}">time</td>
+        </tr><tr th:if="${#lists.isEmpty(operations.items())}"><td colspan="5">No operations.</td></tr></tbody>
+    </table>
+    <a class="btn btn-sm btn-outline-secondary" th:if="${operations.nextCursor() != null}"
+       th:href="@{/console/operations(session=${sessionFilter},status=${statusFilter},cursor=${operations.nextCursor()})}">Next page</a>
+</main>
+</body>
+</html>

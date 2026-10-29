@@ -1,0 +1,63 @@
+name: dvara-agentworks
+
+services:
+  postgres:
+    image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: agentworks
+      POSTGRES_USER: agentworks
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - source: postgres_password
+        target: postgres_password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U agentworks -d agentworks"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    security_opt: [no-new-privileges:true]
+
+  agentworks:
+    image: ${AGENTWORKS_IMAGE:-dvara-agentworks:dev}
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      args:
+        VERSION: ${AGENTWORKS_VERSION:-1.0.0-rc1}
+        REVISION: ${AGENTWORKS_REVISION:-dev}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${AGENTWORKS_PORT:-8080}:8080"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=256m,uid=65532,gid=65532,mode=1770
+    volumes:
+      - agentworks-state:/var/lib/agentworks
+    secrets:
+      - source: postgres_password
+        target: spring.datasource.password
+    environment:
+      SPRING_CONFIG_IMPORT: configtree:/run/secrets/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/agentworks
+      SPRING_DATASOURCE_USERNAME: agentworks
+      AGENTWORKS_SECURITY_BOOTSTRAP_TOKEN_FILE: /var/lib/agentworks/bootstrap-token
+      AGENTWORKS_RUNTIME_BUILD_ID: ${AGENTWORKS_REVISION:-compose-dev}
+      SERVER_ADDRESS: 0.0.0.0
+      SERVER_FORWARD_HEADERS_STRATEGY: native
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    stop_grace_period: 60s
+
+secrets:
+  postgres_password:
+    file: ${POSTGRES_PASSWORD_FILE:-./secrets/postgres-password}
+
+volumes:
+  postgres-data:
+  agentworks-state:

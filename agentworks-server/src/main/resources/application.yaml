@@ -1,0 +1,75 @@
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  application:
+    name: dvara-agentworks
+  flyway:
+    locations: classpath:db/migration/common,classpath:db/vendor/{vendor}
+
+logging:
+  structured:
+    format:
+      console: ecs
+
+agentworks:
+  tenancy:
+    bootstrap-default: true
+  observability:
+    max-tag-values: 64
+    required-dependencies:
+      - database
+    support-bundle:
+      max-bytes: 262144
+      max-events: 100
+
+management:
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+        agentworks.run.recovery.delay: true
+        agentworks.run.worker.poll.duration: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      group:
+        liveness:
+          include: livenessState
+        readiness:
+          include: readinessState,agentWorksRequiredDependencies
+        startup:
+          include: agentWorksRequiredDependencies
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: false
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  tracing:
+    sampling:
+      probability: 0.1
+    export:
+      otlp:
+        enabled: false
+  opentelemetry:
+    resource-attributes:
+      service.namespace: dvara-agentworks
+    tracing:
+      limits:
+        max-attribute-value-length: 256
+        max-attributes: 64
+
+server:
+  shutdown: graceful

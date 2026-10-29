@@ -1,0 +1,64 @@
+# Golden vector: the master specification section 13 example, authored in YAML.
+apiVersion: dvarahq.com/v1alpha1
+kind: Agent
+metadata:
+  name: software-engineer
+  namespace: default
+  version: 1.0.0
+
+spec:
+  executor:
+    type: spring-ai
+
+  models:
+    reasoning:
+      gateway: direct
+      model: coding-premium
+    compaction:
+      gateway: direct
+      model: economical-small
+    evaluation:
+      gateway: direct
+      model: judge-model
+
+  instructions:
+    system: |
+      You are a senior software engineer.
+      Inspect repository state before proposing changes.
+
+  execution:
+    initialIntent: ANALYZE
+    autonomyProfile: SUPERVISED
+
+  context:
+    maxTokens: 100000
+    loadingPolicy: ON_DEMAND
+    cacheAware: true
+    compaction:
+      enabled: true
+      threshold: 0.80
+      strategy: hierarchical
+
+  capabilityPacks:
+    - software-development
+
+  skills:
+    - spring-boot
+    - java
+
+  sandbox:
+    provider: docker
+    provisioning: demand
+    image: eclipse-temurin@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    cpu: 4
+    memory: 8Gi
+
+  memory:
+    conversation: { enabled: true }
+    working: { enabled: true }
+
+  limits:
+    maxSteps: 100
+    maxToolCalls: 60
+    maxRuntime: 30m
+    maxCostUsd: 10.00

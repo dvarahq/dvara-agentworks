@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:dvaraos:schema:agent:v1alpha1",
+  "title": "Dvara AgentWorks AgentSpec dvarahq.com/v1alpha1",
+  "description": "Authored, gateway- and framework-neutral agent specification. Environment, promotion, release, deployment, placement, and exposure are separate artifacts and are rejected here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "spec"],
+  "properties": {
+    "apiVersion": {"const": "dvarahq.com/v1alpha1"},
+    "kind": {"const": "Agent"},
+    "metadata": {"$ref": "#/$defs/metadata"},
+    "spec": {"$ref": "#/$defs/spec"}
+  },
+  "$defs": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 63,
+      "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+    },
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[a-z0-9]([a-z0-9._-]*[a-z0-9])?$"
+    },
+    "identifierList": {
+      "type": "array",
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/identifier"}
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version"],
+      "properties": {
+        "name": {"$ref": "#/$defs/name"},
+        "namespace": {"$ref": "#/$defs/name"},
+        "version": {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+        },
+        "description": {"type": "string", "maxLength": 1024}
+      }
+    },
+    "spec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["executor"],
+      "properties": {
+        "executor": {"$ref": "#/$defs/executor"},
+        "models": {"$ref": "#/$defs/models"},
+        "instructions": {"$ref": "#/$defs/instructions"},
+        "execution": {"$ref": "#/$defs/execution"},
+        "context": {"$ref": "#/$defs/context"},
+        "capabilityPacks": {"$ref": "#/$defs/identifierList"},
+        "skills": {"$ref": "#/$defs/identifierList"},
+        "sandbox": {"$ref": "#/$defs/sandbox"},
+        "memory": {"$ref": "#/$defs/memory"},
+        "limits": {"$ref": "#/$defs/limits"}
+      }
+    },
+    "executor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": {"$ref": "#/$defs/identifier"},
+        "requiredCapabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "EVENT_STREAMING", "CANCELLATION", "PAUSE_RESUME", "CHECKPOINT_EXPORT", "CHECKPOINT_RESTORE",
+              "HUMAN_INTERACTION", "TOOL_MEDIATION", "MODEL_MEDIATION", "ARTIFACT_TRANSFER", "USAGE_REPORTING"
+            ]
+          }
+        },
+        "external": {"$ref": "#/$defs/externalExecutor"}
+      }
+    },
+    "externalExecutor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["executorId", "executorVersion", "framework", "runtime", "artifactDigest",
+        "dependencyLockDigest", "protocolVersion", "schemaVersion", "assurance", "accessMode",
+        "capabilities", "checkpointRecoveryProven"],
+      "properties": {
+        "executorId": {"$ref": "#/$defs/identifier"},
+        "executorVersion": {"type": "string", "minLength": 1, "maxLength": 128},
+        "framework": {"type": "string", "minLength": 1, "maxLength": 128},
+        "runtime": {"type": "string", "minLength": 1, "maxLength": 128},
+        "artifactDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "dependencyLockDigest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "protocolVersion": {"type": "string", "minLength": 1, "maxLength": 128},
+        "schemaVersion": {"type": "string", "minLength": 1, "maxLength": 128},
+        "assurance": {"enum": ["BLACK_BOX", "INSTRUMENTED", "DURABLE"]},
+        "accessMode": {"enum": ["DVARAOS_MEDIATED", "FRAMEWORK_DIRECT"]},
+        "capabilities": {"type": "array", "uniqueItems": true, "items": {"enum": [
+          "EVENT_STREAMING", "CANCELLATION", "TOOL_MEDIATION", "ARTIFACT_TRANSFER", "USAGE_REPORTING",
+          "CHECKPOINT_EXPORT", "CHECKPOINT_RESTORE"
+        ]}},
+        "checkpointRecoveryProven": {"type": "boolean"}
+      }
+    },
+    "modelBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gateway", "model"],
+      "properties": {
+        "gateway": {"$ref": "#/$defs/identifier"},
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@-]*$"
+        },
+        "resilience": {"$ref": "#/$defs/modelResilience"}
+      }
+    },
+    "modelFallback": {
+      "type": "object", "additionalProperties": false, "required": ["gateway", "model"],
+      "properties": {
+        "gateway": {"$ref": "#/$defs/identifier"},
+        "model": {"type": "string", "minLength": 1, "maxLength": 256,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@-]*$"}
+      }
+    },
+    "modelResilience": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "maxAttempts": {"type": "integer", "minimum": 1, "maximum": 4},
+        "initialBackoffMillis": {"type": "integer", "minimum": 0, "maximum": 30000},
+        "maxBackoffMillis": {"type": "integer", "minimum": 0, "maximum": 30000},
+        "jitter": {"type": "number", "minimum": 0, "maximum": 1},
+        "maxConcurrent": {"type": "integer", "minimum": 1, "maximum": 10000},
+        "bulkheadWaitMillis": {"type": "integer", "minimum": 0, "maximum": 30000},
+        "breakerFailureThreshold": {"type": "integer", "minimum": 1, "maximum": 10000},
+        "breakerOpenMillis": {"type": "integer", "minimum": 1, "maximum": 600000},
+        "requestTimeoutMillis": {"type": "integer", "minimum": 1, "maximum": 3600000},
+        "streamIdleTimeoutMillis": {"type": "integer", "minimum": 1, "maximum": 600000},
+        "fallbacks": {"type": "array", "maxItems": 3, "items": {"$ref": "#/$defs/modelFallback"}}
+      }
+    },
+    "models": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "reasoning": {"$ref": "#/$defs/modelBinding"},
+        "compaction": {"$ref": "#/$defs/modelBinding"},
+        "summarization": {"$ref": "#/$defs/modelBinding"},
+        "memory": {"$ref": "#/$defs/modelBinding"},
+        "capabilityRouting": {"$ref": "#/$defs/modelBinding"},
+        "guardrail": {"$ref": "#/$defs/modelBinding"},
+        "evaluation": {"$ref": "#/$defs/modelBinding"}
+      }
+    },
+    "instructions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "system": {"type": "string", "maxLength": 65536}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "initialIntent": {"enum": ["OBSERVE", "ANALYZE", "PROPOSE", "EXECUTE"]},
+        "autonomyProfile": {"enum": ["READ_ONLY", "ASSISTED", "SUPERVISED", "AUTONOMOUS", "STRICT"]}
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxTokens": {"type": "integer", "minimum": 1, "maximum": 10000000},
+        "loadingPolicy": {"enum": ["ALWAYS", "ON_DEMAND", "SEMANTIC", "TOOL_TRIGGERED", "SKILL_TRIGGERED", "NEVER_INLINE"]},
+        "cacheAware": {"type": "boolean"},
+        "compaction": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {"type": "boolean"},
+            "threshold": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+            "strategy": {"enum": ["none", "sliding-window", "summary", "hierarchical", "artifact-aware"]}
+          }
+        }
+      }
+    },
+    "sandbox": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider"],
+      "properties": {
+        "provider": {"$ref": "#/$defs/identifier"},
+        "provisioning": {"enum": ["demand"]},
+        "image": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/:@+-]*$"
+        },
+        "cpu": {"type": "number", "exclusiveMinimum": 0, "maximum": 256},
+        "memory": {"type": "string", "maxLength": 32, "pattern": "^[1-9][0-9]*(Ki|Mi|Gi|Ti)?$"}
+      }
+    },
+    "memoryTier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled"],
+      "properties": {
+        "enabled": {"type": "boolean"}
+      }
+    },
+    "memory": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "conversation": {"$ref": "#/$defs/memoryTier"},
+        "working": {"$ref": "#/$defs/memoryTier"},
+        "semantic": {"$ref": "#/$defs/memoryTier"},
+        "episodic": {"$ref": "#/$defs/memoryTier"}
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxSteps": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "maxToolCalls": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "maxRuntime": {"type": "string", "maxLength": 16, "pattern": "^[1-9][0-9]*(ms|s|m|h)$"},
+        "maxCostUsd": {"type": "number", "minimum": 0, "maximum": 1000000}
+      }
+    }
+  }
+}

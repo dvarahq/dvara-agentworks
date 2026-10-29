@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Agents')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('agents')}"></header>
+<main id="main" class="container py-4">
+    <h1 class="h3">Agents</h1>
+    <table class="table table-sm align-middle">
+        <caption>Agent definitions of this workspace, by name</caption>
+        <thead><tr><th scope="col">Name</th><th scope="col">Description</th><th scope="col">Created</th></tr></thead>
+        <tbody>
+        <tr th:each="agent : ${agents.items()}">
+            <td><a th:href="@{/console/agents/{id}(id=${agent.id()})}" th:text="${agent.name()}">name</a></td>
+            <td th:text="${agent.description()}">description</td>
+            <td th:text="${agent.createdAt()}">time</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(agents.items())}"><td colspan="3">No agents yet.</td></tr>
+        </tbody>
+    </table>
+    <a class="btn btn-sm btn-outline-secondary" th:if="${agents.nextCursor() != null}"
+       th:href="@{/console/agents(cursor=${agents.nextCursor()})}">Next page</a>
+
+    <section class="mt-4" th:if="${console.can('AGENT_WRITE')}" aria-labelledby="create-agent">
+        <h2 id="create-agent" class="h5">Create an agent</h2>
+        <form method="post" action="/console/agents" hx-post="/console/agents" hx-target="#create-agent-result" hx-disabled-elt="find button"
+              class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label for="agent-name" class="form-label">Name</label>
+                <input id="agent-name" name="name" class="form-control" required maxlength="200">
+            </div>
+            <div class="col-md-6">
+                <label for="agent-description" class="form-label">Description (optional)</label>
+                <input id="agent-description" name="description" class="form-control" maxlength="1000">
+            </div>
+            <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Create</button></div>
+        </form>
+        <div id="create-agent-result" aria-live="polite"></div>
+    </section>
+    <p class="mt-4 text-body-secondary" th:unless="${console.can('AGENT_WRITE')}">
+        Your role cannot create agents; an AUTHOR or ADMIN can.</p>
+</main>
+</body>
+</html>

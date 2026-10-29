@@ -1,0 +1,15 @@
+/* Dvara AgentWorks Web Console (issue #36): the few rules Bootstrap does not provide. No inline styles are used. */
+.console-narrow { max-width: 32rem; }
+.console-timeline { max-height: 60vh; overflow-y: auto; }
+.console-event { border-left: 3px solid var(--bs-border-color); padding: 0.25rem 0 0.25rem 0.75rem; margin-bottom: 0.25rem; }
+.console-event pre { white-space: pre-wrap; word-break: break-word; }
+.console-gap { border-left: 3px dashed var(--bs-warning); padding-left: 0.75rem; }
+.console-document { max-height: 32rem; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+/* htmx marks a form while its request is in flight. */
+.htmx-request button[type="submit"] { opacity: 0.65; }
+/* Visible focus for keyboard users (WCAG 2.4.7), stronger than the browser default on dark backgrounds. */
+a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible,
+summary:focus-visible, [tabindex]:focus-visible {
+    /* Dark blue on light backgrounds, a yellow halo on the dark navigation: at least 3:1 against either (WCAG 1.4.11). */
+    outline: 3px solid #0a3069; outline-offset: 2px; box-shadow: 0 0 0 5px #ffbf47;
+}

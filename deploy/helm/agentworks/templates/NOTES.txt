@@ -1,0 +1,9 @@
+AgentWorks is available inside the cluster at:
+  http://{{ include "agentworks.fullname" . }}.{{ .Release.Namespace }}.svc:{{ .Values.service.port }}
+
+The chart never creates database credentials. It reads migration, Control Plane, and Run Plane connections from:
+  Secret/{{ .Values.database.existingSecret }}
+
+The database elects exactly one Pod to issue the bootstrap token. Read it with the shell-free packaged helper:
+  for pod in $(kubectl -n {{ .Release.Namespace }} get pods -l app.kubernetes.io/instance={{ .Release.Name }} -o name); do kubectl -n {{ .Release.Namespace }} exec "$pod" -- java -Dloader.main=com.dvarahq.agentworks.packaging.BootstrapTokenPrinter -cp /opt/agentworks/agentworks.jar org.springframework.boot.loader.launch.PropertiesLauncher && break; done
+Then immediately complete POST /api/v1/auth/bootstrap and disable bootstrap mode.

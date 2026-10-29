@@ -1,0 +1,35 @@
+{
+  "description": "Third-party frontend assets vendored into the Web Console (issue #36). Each file is byte-identical to the file of the same path in the npm registry tarball named here, which was verified against the registry's published integrity. verify_repository_policy.py checks every vendored file against its sha256, requires each package's license file, and requires the Console's pinned subresource integrity to match; verify_frontend_asset_sources.py (CI) downloads each tarball, checks its sourceIntegrity, and compares every vendored file with its tarball member. Never load these from a CDN at runtime.",
+  "root": "agentworks-server/src/main/resources/static/console/assets/vendor",
+  "packages": [
+    {
+      "name": "htmx.org",
+      "version": "2.0.11",
+      "license": "0BSD",
+      "copyright": "none stated; the 0BSD license requires no notice",
+      "homepage": "https://htmx.org/",
+      "source": "https://registry.npmjs.org/htmx.org/-/htmx.org-2.0.11.tgz",
+      "sourceIntegrity": "sha512-Thx/WtpeOQqSrqBCw/A1cwGJGg4UrVa3+sW0GmrM3p4gJgO89ecH4qtbnyzDDWFvBTqjnIMCgELTNt636dtamA==",
+      "directory": "htmx-2.0.11",
+      "files": [
+        {"path": "htmx.min.js", "from": "package/dist/htmx.min.js", "sha256": "d6fdc75f204e6bdefa99b69bf1e6d4ac69b8a364f77929f45c13476b4000f717", "integrity": "sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg"},
+        {"path": "LICENSE", "from": "package/LICENSE", "sha256": "d3d2456f76414f2456104660ebd65aff1c04cd7966b942bdabd63f3cdb316a38"}
+      ]
+    },
+    {
+      "name": "bootstrap",
+      "version": "5.3.8",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2011-2025 The Bootstrap Authors",
+      "homepage": "https://getbootstrap.com/",
+      "source": "https://registry.npmjs.org/bootstrap/-/bootstrap-5.3.8.tgz",
+      "sourceIntegrity": "sha512-HP1SZDqaLDPwsNiqRqi5NcP0SSXciX2s9E+RyqJIIqGo+vJeN5AJVM98CXmW/Wux0nQ5L7jeWUdplCEf0Ee+tg==",
+      "directory": "bootstrap-5.3.8",
+      "files": [
+        {"path": "bootstrap.min.css", "from": "package/dist/css/bootstrap.min.css", "sha256": "d85327d99c7a3ee1f9b5d0500d1370acea3ad2db39c163c2f51f232baedbdede", "integrity": "sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"},
+        {"path": "bootstrap.min.css.map", "from": "package/dist/css/bootstrap.min.css.map", "sha256": "48144faf6aa0fb3cd2ce748d9730238f888f4ab715f05dabd1c9af2c5671988a", "note": "The source map the stylesheet's sourceMappingURL names, vendored so the stylesheet stays byte-identical to the tarball."},
+        {"path": "LICENSE", "from": "package/LICENSE", "sha256": "4620c84ad5ce8602ff65640ed6b7c8b78ebb9e036584f0ebc1ccc88206a4bb51"}
+      ]
+    }
+  ]
+}

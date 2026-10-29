@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Operation')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('operations')}"></header>
+<main id="main" class="container py-4">
+    <p><a href="/console/operations">← Operations</a></p>
+    <h1 class="h3">Operation <code th:text="${operation.id()}">id</code></h1>
+    <dl class="row"><dt class="col-sm-3">Status</dt><dd class="col-sm-9" th:text="${operation.status()}">RUNNING</dd>
+        <dt class="col-sm-3">Provider / type</dt><dd class="col-sm-9" th:text="${operation.provider() + ' / ' + operation.operationType()}">type</dd>
+        <dt class="col-sm-3">Run</dt><dd class="col-sm-9"><a th:href="@{/console/runs/{id}(id=${operation.runId()})}"><code th:text="${operation.runId()}">run</code></a></dd>
+        <dt class="col-sm-3">Session</dt><dd class="col-sm-9"><a th:href="@{/console/sessions/{id}(id=${operation.sessionId()})}"><code th:text="${operation.sessionId()}">session</code></a></dd>
+        <dt class="col-sm-3">Correlation</dt><dd class="col-sm-9"><code th:text="${operation.correlationId()}">correlation</code></dd>
+        <dt class="col-sm-3">Progress</dt><dd class="col-sm-9" th:text="${operation.progressPercent()}">0</dd>
+        <dt class="col-sm-3">Result code</dt><dd class="col-sm-9" th:text="${operation.resultCode()}">code</dd>
+        <dt class="col-sm-3">Deadline</dt><dd class="col-sm-9" th:text="${operation.deadline()}">time</dd></dl>
+    <button th:if="${operation.status() == 'STARTING' || operation.status() == 'RUNNING'}" type="button"
+            class="btn btn-danger" th:attr="hx-post=@{/console/operations/{id}/cancel(id=${operation.id()})}"
+            hx-target="#action-result">Cancel operation</button>
+    <div id="action-result" aria-live="polite"></div>
+</main>
+</body>
+</html>

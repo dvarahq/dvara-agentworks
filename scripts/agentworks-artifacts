@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+base_url="${AGENTWORKS_URL:-http://localhost:8080}"
+token="${AGENTWORKS_TOKEN:-}"
+
+usage() {
+  echo "Usage: agentworks-artifacts <list|show|download|upload|expire|validate|pins|pin|unpin> ..." >&2
+  exit 2
+}
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" || "${1:-}" == "help" ]]; then
+  echo "Usage: agentworks-artifacts <list|show|download|upload|expire|validate|pins|pin|unpin> ..."
+  exit 0
+fi
+
+if [[ ! "$token" =~ ^awt_[A-Za-z0-9_-]+$ ]]; then
+  echo "AGENTWORKS_TOKEN must contain an AgentWorks API token." >&2
+  exit 2
+fi
+base_url="${base_url%/}"
+
+uuid() {
+  [[ "$1" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]] || {
+    echo "Expected a UUID, got: $1" >&2
+    exit 2
+  }
+}
+
+request() {
+  curl --fail-with-body --silent --show-error \
+    --config <(printf 'header = "Authorization: Bearer %s"\n' "$token") "$@"
+}
+
+digest() {
+  if command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$1" | awk '{print $1}'
+  elif command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{print $1}'
+  else
+    echo "shasum or sha256sum is required for upload integrity." >&2
+    exit 2
+  fi
+}
+
+command="${1:-}"
+shift || true
+case "$command" in
+  list)
+    [[ $# -eq 0 ]] || usage
+    request "$base_url/api/v1/artifacts"
+    ;;
+  show)
+    [[ $# -eq 1 ]] || usage
+    uuid "$1"
+    request "$base_url/api/v1/artifacts/$1"
+    ;;
+  download)
+    [[ $# -eq 2 ]] || usage
+    uuid "$1"
+    request --output "$2" "$base_url/api/v1/artifacts/$1/content"
+    ;;
+  upload)
+    [[ $# -ge 1 && $# -le 3 ]] || usage
+    file="$1"
+    [[ -f "$file" ]] || { echo "Upload file does not exist: $file" >&2; exit 2; }
+    media_type="${2:-application/octet-stream}"
+    classification="${3:-INTERNAL}"
+    [[ "$media_type" =~ ^[A-Za-z0-9.+_-]+/[A-Za-z0-9.+_-]+$ ]] || usage
+    [[ "$classification" =~ ^(PUBLIC|INTERNAL|CONFIDENTIAL|RESTRICTED)$ ]] || usage
+    request --request POST --header "Content-Type: $media_type" --header "X-Artifact-SHA256: $(digest "$file")" \
+      --data-binary "@$file" "$base_url/api/v1/artifacts?classification=$classification"
+    ;;
+  expire)
+    [[ $# -eq 1 ]] || usage
+    uuid "$1"
+    request --request POST "$base_url/api/v1/artifacts/$1/expire"
+    ;;
+  validate)
+    [[ $# -eq 3 ]] || usage
+    uuid "$1"
+    validation="$2"
+    [[ "$validation" =~ ^(ACCEPTED|QUARANTINED|REJECTED)$ ]] || usage
+    [[ "$3" =~ ^[A-Za-z0-9_.:-]{1,128}$ ]] || {
+      echo "Validation reason must be a 1-128 character code." >&2
+      exit 2
+    }
+    request --request POST --header "Content-Type: application/json" \
+      --data "{\"validation\":\"$validation\",\"reason\":\"$3\"}" \
+      "$base_url/api/v1/artifacts/$1/validation"
+    ;;
+  pins)
+    [[ $# -eq 1 ]] || usage
+    uuid "$1"
+    request "$base_url/api/v1/artifacts/$1/pins"
+    ;;
+  pin)
+    [[ $# -eq 3 ]] || usage
+    uuid "$1"
+    kind="$2"
+    uuid "$3"
+    [[ "$kind" =~ ^(RUN|RELEASE|EVALUATION|AUDIT|RETENTION)$ ]] || usage
+    request --request POST --header "Content-Type: application/json" \
+      --data "{\"kind\":\"$kind\",\"subjectId\":\"$3\"}" "$base_url/api/v1/artifacts/$1/pins"
+    ;;
+  unpin)
+    [[ $# -eq 2 ]] || usage
+    uuid "$1"
+    uuid "$2"
+    request --request DELETE "$base_url/api/v1/artifacts/$1/pins/$2"
+    ;;
+  *) usage ;;
+esac

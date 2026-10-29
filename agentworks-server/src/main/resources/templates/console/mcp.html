@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('MCP connections')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('mcp')}"></header>
+<main id="main" class="container py-4">
+    <h1 class="h3">MCP connections</h1>
+    <p class="text-body-secondary">Health is scoped to this workspace and exact release, deployment revision, and cohort.</p>
+    <table class="table table-sm align-middle">
+        <caption>Direct MCP connection health</caption>
+        <thead><tr><th scope="col">Connection</th><th scope="col">Version</th><th scope="col">Status</th>
+            <th scope="col">Code</th><th scope="col">Revision</th><th scope="col">Cohort</th><th scope="col">Failures</th></tr></thead>
+        <tbody>
+        <tr th:each="item : ${connections}"><td th:text="${item.connection()}">connection</td>
+            <td th:text="${item.version()}">version</td><td th:text="${item.status()}">status</td>
+            <td><code th:text="${item.code()}">code</code></td>
+            <td><code class="small" th:text="${item.deploymentRevisionId()}">revision</code></td>
+            <td><code class="small" th:text="${item.cohortId()}">cohort</code></td><td th:text="${item.failures()}">0</td></tr>
+        <tr th:if="${#lists.isEmpty(connections)}"><td colspan="7">No MCP connections are registered for this workspace.</td></tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

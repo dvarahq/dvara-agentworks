@@ -1,0 +1,16 @@
+Dvara AgentWorks Core
+Copyright 2026 DVARA Labs Inc
+
+This product includes software developed by DVARA Labs Inc.
+
+The names DVARA Labs Inc, Dvara AgentWorks, and DvaraHQ and their associated logos are
+trademarks or service marks of their respective owners. The Apache License 2.0
+does not grant permission to use those marks except as required for reasonable
+and customary attribution.
+
+This product includes third-party frontend assets, distributed under their own
+licenses, whose license texts accompany them under
+agentworks-server/src/main/resources/static/console/assets/vendor/:
+- htmx 2.0.11 (https://htmx.org/), Zero-Clause BSD (0BSD).
+- Bootstrap 5.3.8 (https://getbootstrap.com/), MIT License,
+  Copyright (c) 2011-2025 The Bootstrap Authors.

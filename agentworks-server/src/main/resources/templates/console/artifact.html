@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Artifact')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('artifacts')}"></header>
+<main id="main" class="container py-4">
+    <p><a href="/console/artifacts">← Artifacts</a></p>
+    <h1 class="h3">Artifact <code th:text="${artifact.id()}">id</code></h1>
+    <dl class="row">
+        <dt class="col-sm-3">State</dt><dd class="col-sm-9" th:text="${artifact.lifecycle()}">ACTIVE</dd>
+        <dt class="col-sm-3">Validation</dt><dd class="col-sm-9"><span th:text="${artifact.validation()}">ACCEPTED</span>
+            <span th:if="${artifact.validationReason() != null}" th:text="' · ' + ${artifact.validationReason()}">reason</span></dd>
+        <dt class="col-sm-3">Media type</dt><dd class="col-sm-9" th:text="${artifact.mediaType()}">text/plain</dd>
+        <dt class="col-sm-3">Size</dt><dd class="col-sm-9" th:text="${artifact.size()}">0</dd>
+        <dt class="col-sm-3">Digest</dt><dd class="col-sm-9"><code th:text="${artifact.digest()}">digest</code></dd>
+        <dt class="col-sm-3">Classification</dt><dd class="col-sm-9" th:text="${artifact.classification()}">INTERNAL</dd>
+        <dt class="col-sm-3">Created</dt><dd class="col-sm-9" th:text="${artifact.createdAt()}">time</dd>
+    </dl>
+    <div id="artifact-action-result" aria-live="polite"></div>
+    <a th:if="${artifact.lifecycle().name() == 'ACTIVE' and artifact.validation().name() == 'ACCEPTED'}"
+       class="btn btn-primary mb-3" th:href="@{/api/v1/artifacts/{id}/content(id=${artifact.id()})}">Download</a>
+    <div th:if="${console.can('ARTIFACT_ADMIN')}" class="row g-3 mb-4">
+        <div class="col-md-4"><form method="post" th:action="@{/console/artifacts/{id}/validation(id=${artifact.id()})}"
+                                    th:attr="hx-post=@{/console/artifacts/{id}/validation(id=${artifact.id()})}"
+                                    hx-target="#artifact-action-result">
+            <label for="validation" class="form-label">Validation decision</label>
+            <select id="validation" name="validation" class="form-select mb-2">
+                <option value="ACCEPTED">ACCEPTED</option><option value="QUARANTINED">QUARANTINED</option>
+                <option value="REJECTED">REJECTED</option></select>
+            <label for="validation-reason" class="form-label">Reason</label>
+            <input id="validation-reason" name="reason" class="form-control mb-2" required maxlength="256">
+            <button class="btn btn-outline-primary" type="submit">Record decision</button></form></div>
+        <div class="col-md-4"><form method="post" th:action="@{/console/artifacts/{id}/pins(id=${artifact.id()})}"
+                                    th:attr="hx-post=@{/console/artifacts/{id}/pins(id=${artifact.id()})}"
+                                    hx-target="#artifact-action-result">
+            <label for="pin-kind" class="form-label">Pin kind</label><select id="pin-kind" name="kind" class="form-select mb-2">
+                <option th:each="kind : ${ {'RUN','RELEASE','EVALUATION','AUDIT','RETENTION'} }"
+                        th:value="${kind}" th:text="${kind}">RETENTION</option></select>
+            <label for="pin-subject" class="form-label">Subject ID</label>
+            <input id="pin-subject" name="subjectId" class="form-control mb-2" required>
+            <button class="btn btn-outline-primary" type="submit">Pin</button></form></div>
+        <div class="col-md-4"><form method="post" th:action="@{/console/artifacts/{id}/expire(id=${artifact.id()})}"
+                                    th:attr="hx-post=@{/console/artifacts/{id}/expire(id=${artifact.id()})}"
+                                    hx-target="#artifact-action-result">
+            <p>Expiry is refused while a pin or resumable run retains this artifact.</p>
+            <button class="btn btn-outline-danger" type="submit">Expire artifact</button></form></div>
+    </div>
+    <h2 class="h5">Retention pins</h2>
+    <table class="table table-sm"><thead><tr><th>Kind</th><th>Subject</th><th>Expires</th><th>Action</th></tr></thead>
+        <tbody><tr th:each="pin : ${pins.items()}"><td th:text="${pin.kind()}">RUN</td>
+            <td><code th:text="${pin.subjectId()}">subject</code></td><td th:text="${pin.expiresAt()}">never</td>
+            <td><form th:if="${console.can('ARTIFACT_ADMIN')}" method="post"
+                      th:action="@{/console/artifacts/{id}/pins/{pin}/remove(id=${artifact.id()},pin=${pin.id()})}"
+                      th:attr="hx-post=@{/console/artifacts/{id}/pins/{pin}/remove(id=${artifact.id()},pin=${pin.id()})}"
+                      hx-target="#artifact-action-result">
+                <button class="btn btn-sm btn-outline-danger" type="submit">Remove</button></form></td></tr>
+        <tr th:if="${#lists.isEmpty(pins.items())}"><td colspan="4">No pins.</td></tr></tbody></table>
+</main>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+<parent><groupId>com.dvarahq</groupId><artifactId>agentworks-parent</artifactId><version>1.0.0-rc1</version><relativePath>..</relativePath></parent>
+<groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-api</artifactId><name>Dvara AgentWorks Gateway API</name>
+<description>Provider-neutral gateway capability SPI, model roles, release pinning, and the deterministic fake adapter</description>
+<dependencies>
+<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-api</artifactId></dependency>
+<dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId></dependency>
+<dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency><dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter-params</artifactId><scope>test</scope></dependency><dependency><groupId>org.assertj</groupId><artifactId>assertj-core</artifactId><scope>test</scope></dependency>
+</dependencies>
+<!-- The adapter conformance suite ships as a test-jar so every adapter module, including #76, runs the same suite. -->
+<build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId>
+<executions><execution><id>conformance-suite</id><goals><goal>test-jar</goal></goals></execution></executions></plugin></plugins></build>
+</project>

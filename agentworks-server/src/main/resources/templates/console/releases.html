@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Releases')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('releases')}"></header>
+<main id="main" class="container py-4">
+    <h1 class="h3">Releases</h1>
+    <p class="text-body-secondary small">Immutable releases with a resolved manifest. Build one from an agent version.</p>
+    <table class="table table-sm align-middle">
+        <caption>Releases of this workspace, oldest first</caption>
+        <thead><tr><th scope="col">Name</th><th scope="col">Release id</th><th scope="col">Manifest digest</th>
+            <th scope="col">Created</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
+        <tbody>
+        <tr th:each="release : ${releases.items()}">
+            <td><a th:href="@{/console/releases/{id}(id=${release.id()})}" th:text="${release.name()}">name</a></td>
+            <td><code class="small" th:text="${release.id()}">id</code></td>
+            <td><code class="small" th:text="${release.manifestDigest()}">sha256:</code></td>
+            <td th:text="${release.createdAt()}">time</td>
+            <td><a th:href="@{/console/deployments(release=${release.id()})}"
+                   th:attr="aria-label='Promote ' + ${release.name()}">Promote</a></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(releases.items())}"><td colspan="5">No releases yet.</td></tr>
+        </tbody>
+    </table>
+    <a class="btn btn-sm btn-outline-secondary" th:if="${releases.nextCursor() != null}"
+       th:href="@{/console/releases(cursor=${releases.nextCursor()})}">Next page</a>
+</main>
+</body>
+</html>

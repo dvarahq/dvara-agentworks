@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+base_url="${AGENTWORKS_URL:-http://localhost:8080}"
+token="${AGENTWORKS_TOKEN:-}"
+
+usage() {
+  echo "Usage: agentworks-replay <run-id> [--mode=exact|model] [--plan]" >&2
+  exit 2
+}
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" || "${1:-}" == "help" ]]; then
+  echo "Usage: agentworks-replay <run-id> [--mode=exact|model] [--plan]"
+  exit 0
+fi
+
+if [[ ! "$token" =~ ^awt_[A-Za-z0-9_-]+$ ]]; then
+  echo "AGENTWORKS_TOKEN must contain an AgentWorks API token." >&2
+  exit 2
+fi
+
+run_id="${1:-}"
+[[ "$run_id" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]] || usage
+shift
+mode="EXACT"
+plan=false
+for argument in "$@"; do
+  case "$argument" in
+    --mode=exact) mode="EXACT" ;;
+    --mode=model) mode="MODEL_REPLAY" ;;
+    --plan) plan=true ;;
+    *) usage ;;
+  esac
+done
+
+base_url="${base_url%/}"
+request() {
+  curl --fail-with-body --silent --show-error \
+    --config <(printf 'header = "Authorization: Bearer %s"\n' "$token") "$@"
+}
+
+if [[ "$plan" == true ]]; then
+  request "$base_url/api/v1/runs/$run_id/replay/plan?mode=$mode"
+else
+  request --request POST --header "Content-Type: application/json" \
+    --data "{\"mode\":\"$mode\"}" "$base_url/api/v1/runs/$run_id/replay"
+fi

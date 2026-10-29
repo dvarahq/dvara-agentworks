@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "release": {
+    "version": "1.0.0-rc1",
+    "tag": "v1.0.0-rc1",
+    "repository": "https://github.com/dvarahq/dvara-agentworks",
+    "commit": null,
+    "dirty": null,
+    "frozenAt": null
+  },
+  "artifacts": {
+    "releaseQualified": null,
+    "bundlePath": null,
+    "manifestSha256": null,
+    "checksumsSha256": null,
+    "kinds": ["maven", "cli", "oci", "helm"],
+    "independentlyVerified": null
+  },
+  "prerequisites": [
+    {"issue": 1, "status": null, "disposition": null},
+    {"issue": 2, "status": null, "disposition": null},
+    {"issue": 14, "status": null, "disposition": null},
+    {"issue": 26, "status": null, "disposition": null},
+    {"issue": 59, "status": null, "disposition": null},
+    {"issue": 60, "status": null, "disposition": null},
+    {"issue": 61, "status": null, "disposition": null},
+    {"issue": 62, "status": null, "disposition": null},
+    {"issue": 63, "status": null, "disposition": null},
+    {"issue": 64, "status": null, "disposition": null},
+    {"issue": 65, "status": null, "disposition": null},
+    {"issue": 66, "status": null, "disposition": null},
+    {"issue": 82, "status": null, "disposition": null}
+  ],
+  "passes": {
+    "protected-ci": {"commit": null, "environment": null, "evidence": null, "status": null},
+    "independent-clean": {"commit": null, "environment": null, "evidence": null, "status": null}
+  },
+  "gates": {},
+  "soak": {
+    "commit": null,
+    "durationHours": null,
+    "verdict": null,
+    "evidence": null
+  },
+  "findings": [],
+  "stabilization": {"startedAt": null, "endedAt": null},
+  "verdict": "PENDING",
+  "verdictAt": null
+}

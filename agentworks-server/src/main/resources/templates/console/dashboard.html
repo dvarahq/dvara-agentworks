@@ -1,0 +1,17 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Dashboard')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}"><header th:replace="~{console/layout :: nav('dashboard')}"></header>
+<main id="main" class="container py-4">
+<h1 class="h3">Workspace dashboard</h1><p class="text-body-secondary">Current canonical state from the same APIs used by automation.</p>
+<div class="row g-3">
+<section class="col-lg-6"><h2 class="h5">Recent runs</h2><ul class="list-group">
+<li class="list-group-item" th:each="run : ${runs}"><a th:href="@{/console/runs/{id}(id=${run.id()})}"><code th:text="${run.id()}">id</code></a> <span class="badge text-bg-secondary" th:text="${run.lifecycle()}">state</span></li>
+<li class="list-group-item" th:if="${#lists.isEmpty(runs)}">No runs yet.</li></ul></section>
+<section class="col-lg-6"><h2 class="h5">Deployments</h2><ul class="list-group">
+<li class="list-group-item" th:each="deployment : ${deployments}"><a th:href="@{/console/deployments/{id}(id=${deployment.id()})}" th:text="${deployment.name()}">name</a> <span class="small text-body-secondary" th:text="'generation ' + ${deployment.generation()}">generation</span></li>
+<li class="list-group-item" th:if="${#lists.isEmpty(deployments)}">No deployments yet.</li></ul></section>
+<section class="col-lg-6"><h2 class="h5">Releases</h2><ul class="list-group">
+<li class="list-group-item" th:each="release : ${releases}"><a th:href="@{/console/releases/{id}(id=${release.id()})}" th:text="${release.name()}">name</a></li>
+<li class="list-group-item" th:if="${#lists.isEmpty(releases)}">No releases yet.</li></ul></section>
+<section class="col-lg-6"><h2 class="h5">Attention</h2><p><a href="/console/interactions">Open interactions</a>: <strong th:text="${#lists.size(interactions)}">0</strong></p><p><a href="/console/operations">Recent operations</a>: <strong th:text="${#lists.size(operations)}">0</strong></p></section>
+</div></main></body></html>

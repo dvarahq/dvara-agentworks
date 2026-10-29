@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<body>
+<!--/* An API problem shown next to the form that caused it; every field is escaped. */-->
+<div th:fragment="problem" class="alert alert-danger mt-2" role="alert">
+    <strong th:text="${problem.code()}">CODE</strong>
+    <span th:text="${problem.detail()}">detail</span>
+    <ul class="mb-0" th:if="${!#lists.isEmpty(problem.diagnostics())}">
+        <li th:each="diagnostic : ${problem.diagnostics()}" th:text="${diagnostic}">diagnostic</li>
+    </ul>
+    <div class="small" th:if="${problem.errorId() != null}">Error id: <code th:text="${problem.errorId()}">id</code></div>
+    <div class="small" th:if="${problem.retryAfter() != null}">Retry after <span th:text="${problem.retryAfter()}">1</span> seconds.</div>
+</div>
+
+<!--/* A promotion the environment's gates refused: the committed decision and each gate's result. */-->
+<div th:fragment="promotion" class="alert alert-warning mt-2" role="status">
+    <strong>Promotion <span th:text="${promotion.outcome()}">OUTCOME</span></strong>
+    (decision <code th:text="${promotion.decisionId()}">id</code>)
+    <ul class="mb-0">
+        <li th:each="gate : ${promotion.gates()}" th:text="${gate}">gate</li>
+    </ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "spec": {
+    "limits": {"maxCostUsd": 10.0, "maxRuntime": "30m", "maxToolCalls": 60, "maxSteps": 100},
+    "memory": {"working": {"enabled": true}, "conversation": {"enabled": true}},
+    "sandbox": {"memory": "8Gi", "cpu": 4.000, "image": "eclipse-temurin@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "provisioning": "demand", "provider": "docker"},
+    "skills": ["spring-boot", "java"],
+    "capabilityPacks": ["software-development"],
+    "context": {
+      "compaction": {"strategy": "hierarchical", "threshold": 0.8, "enabled": true},
+      "cacheAware": true, "loadingPolicy": "ON_DEMAND", "maxTokens": 1E5
+    },
+    "execution": {"autonomyProfile": "SUPERVISED", "initialIntent": "ANALYZE"},
+    "instructions": {"system": "You are a senior software engineer.\nInspect repository state before proposing changes.\n"},
+    "models": {
+      "evaluation": {"model": "judge-model", "gateway": "direct"},
+      "compaction": {"model": "economical-small", "gateway": "direct"},
+      "reasoning": {"model": "coding-premium", "gateway": "direct"}
+    },
+    "executor": {"type": "spring-ai"}
+  },
+  "metadata": {"version": "1.0.0", "namespace": "default", "name": "software-engineer"},
+  "kind": "Agent",
+  "apiVersion": "dvarahq.com/v1alpha1"
+}

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["image", "database", "resources", "sandbox"],
+  "properties": {
+    "replicaCount": {"type": "integer", "minimum": 1, "maximum": 100},
+    "image": {
+      "type": "object",
+      "required": ["repository", "digest"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "pullPolicy": {"enum": ["Always", "IfNotPresent", "Never"]}
+      }
+    },
+    "database": {
+      "type": "object",
+      "required": ["existingSecret"],
+      "properties": {"existingSecret": {"type": "string", "minLength": 1}}
+    },
+    "terminationGracePeriodSeconds": {"type": "integer", "minimum": 30},
+    "sandbox": {
+      "type": "object",
+      "required": ["enabled", "namespace", "serviceAccount"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "namespace": {"type": "string", "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"},
+        "serviceAccount": {"type": "string", "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"},
+        "image": {"type": "string", "pattern": "^$|^[A-Za-z0-9][A-Za-z0-9._/:+-]*@sha256:[a-f0-9]{64}$"}
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+.git
+.github
+.idea
+.vscode
+**/target/*
+!agentworks-server/target/agentworks-server-*.jar
+dist
+deploy/compose/secrets
+*.log

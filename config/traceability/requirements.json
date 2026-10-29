@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "scope": "public-release-evidence",
+  "requirements": {
+    "REQ-C-001": {
+      "statement": "The published source must build without non-public source or services.",
+      "evidence": [
+        "scripts/verify-public-tree.sh",
+        "./mvnw -B -DskipTests package",
+        "scripts/test/fast.sh"
+      ]
+    },
+    "REQ-NFR-005": {
+      "statement": "Published artifacts must be reproducible from the reviewed public inventory.",
+      "evidence": [
+        "public-files.txt",
+        "scripts/verify-public-tree.sh"
+      ]
+    },
+    "REQ-NFR-008": {
+      "statement": "The public verification gate must fail when the approved inventory changes.",
+      "evidence": [
+        "scripts/verify-public-tree.sh",
+        ".github/workflows/core-ci.yml"
+      ]
+    }
+  }
+}

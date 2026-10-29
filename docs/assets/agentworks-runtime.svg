@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="700" viewBox="0 0 1600 700" role="img" aria-labelledby="title description">
+  <title id="title">How AgentWorks runs an agent</title>
+  <desc id="description">Applications use the AgentWorks API, durable state lives in PostgreSQL, and workers call models and tools.</desc>
+  <defs>
+    <linearGradient id="dvara-logo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="0.5" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1e1236" flood-opacity="0.06"/>
+    </filter>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0 0l8 4-8 4z" fill="#5352e8"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="700" fill="#f8f7fd"/>
+
+  <!-- DVARA signature -->
+  <g transform="translate(72 52)">
+    <rect width="44" height="44" rx="11" fill="url(#dvara-logo)"/>
+    <path d="M13 13h7c6.1 0 11 4.9 11 9s-4.9 9-11 9h-7V13z" fill="none" stroke="#fff" stroke-width="2.8" stroke-linejoin="round"/>
+    <circle cx="23" cy="22" r="2.2" fill="#fff"/>
+    <text x="58" y="21" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="750" letter-spacing="1.8">DVARA</text>
+    <text x="58" y="42" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="500">AgentWorks</text>
+  </g>
+
+  <text x="72" y="155" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="42" font-weight="720" letter-spacing="-1.2">How AgentWorks runs an agent</text>
+  <text x="72" y="194" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="21">The API controls the work. PostgreSQL remembers it. Workers can safely continue it.</text>
+
+  <!-- Entry points -->
+  <g transform="translate(72 270)" filter="url(#card-shadow)">
+    <rect width="280" height="190" rx="7" fill="#fff" stroke="#e2e0f2"/>
+    <text x="28" y="46" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" letter-spacing="1.2">ENTRY POINTS</text>
+    <text x="28" y="92" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="25" font-weight="700">Your application</text>
+    <text x="28" y="128" fill="#463f6a" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18">CLI · Web Console · SDK</text>
+    <path d="M28 157h48M88 157h48M148 157h48" stroke="#c7c3e6" stroke-width="8" stroke-linecap="round"/>
+  </g>
+
+  <!-- AgentWorks API -->
+  <g transform="translate(440 250)" filter="url(#card-shadow)">
+    <rect width="330" height="230" rx="7" fill="#fff" stroke="#c7c3e6"/>
+    <rect width="330" height="6" rx="3" fill="#5352e8"/>
+    <rect x="28" y="38" width="42" height="42" rx="10" fill="url(#dvara-logo)"/>
+    <path d="M40 50h7c6 0 11 4 11 9s-5 9-11 9h-7V50z" fill="none" stroke="#fff" stroke-width="2.4"/>
+    <circle cx="50" cy="59" r="2" fill="#fff"/>
+    <text x="28" y="126" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="28" font-weight="720">AgentWorks API</text>
+    <text x="28" y="164" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17">Admit · route · control</text>
+    <text x="28" y="198" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17">Enforce identity and limits</text>
+  </g>
+
+  <!-- workers -->
+  <g transform="translate(858 270)" filter="url(#card-shadow)">
+    <rect width="270" height="190" rx="7" fill="#fff" stroke="#e2e0f2"/>
+    <text x="28" y="46" fill="#087443" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" letter-spacing="1.2">EXECUTION</text>
+    <text x="28" y="92" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="26" font-weight="700">Run workers</text>
+    <text x="28" y="130" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17">Claim durable work</text>
+    <text x="28" y="158" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17">and resume safely</text>
+  </g>
+
+  <!-- external systems -->
+  <g transform="translate(1216 238)" filter="url(#card-shadow)">
+    <rect width="312" height="104" rx="7" fill="#fff" stroke="#fedf89"/>
+    <rect width="6" height="104" rx="3" fill="#a15c07"/>
+    <text x="30" y="43" fill="#a15c07" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" letter-spacing="1.2">INTELLIGENCE</text>
+    <text x="30" y="75" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="23" font-weight="700">Models</text>
+  </g>
+  <g transform="translate(1216 374)" filter="url(#card-shadow)">
+    <rect width="312" height="104" rx="7" fill="#fff" stroke="#fedf89"/>
+    <rect width="6" height="104" rx="3" fill="#a15c07"/>
+    <text x="30" y="43" fill="#a15c07" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="700" letter-spacing="1.2">EFFECTS</text>
+    <text x="30" y="75" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="23" font-weight="700">Tools · MCP · A2A</text>
+  </g>
+
+  <!-- durable state -->
+  <g transform="translate(440 530)" filter="url(#card-shadow)">
+    <rect width="688" height="112" rx="7" fill="#eff8ff" stroke="#b2ddff"/>
+    <ellipse cx="52" cy="41" rx="18" ry="8" fill="none" stroke="#175cd3" stroke-width="3"/>
+    <path d="M34 41v29c0 5 8 9 18 9s18-4 18-9V41M34 55c0 5 8 9 18 9s18-4 18-9" fill="none" stroke="#175cd3" stroke-width="3"/>
+    <text x="94" y="47" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="24" font-weight="700">PostgreSQL is the durable memory</text>
+    <text x="94" y="79" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16">Runs · events · checkpoints · leases · completed effects</text>
+  </g>
+
+  <!-- connectors -->
+  <g fill="none" stroke="#5352e8" stroke-width="2.5" marker-end="url(#arrow)">
+    <path d="M352 365h76"/>
+    <path d="M770 365h76"/>
+    <path d="M1128 330h42c18 0 26-10 26-28v-12h8"/>
+    <path d="M1128 400h42c18 0 26 10 26 28v-2h8"/>
+    <path d="M605 480v38"/>
+    <path d="M993 460v58"/>
+  </g>
+
+  <text x="800" y="678" text-anchor="middle" fill="#5352e8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="650" letter-spacing="0.3">IF A WORKER STOPS, ANOTHER CONTINUES FROM DURABLE STATE.</text>
+</svg>

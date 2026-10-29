@@ -1,0 +1,1 @@
+{"apiVersion":"dvarahq.com/v1alpha1","kind":"Agent","metadata":{"name":"refund-agent","version":"0.1.0"},"spec":{"executor":{"type":"remote-http"}}}

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.2</version><relativePath/>
+    </parent>
+    <groupId>com.dvarahq</groupId><artifactId>agentworks-parent</artifactId>
+    <version>1.0.0-rc1</version><packaging>pom</packaging>
+    <name>Dvara AgentWorks Reactor</name>
+    <description>Dvara AgentWorks open-source reactor</description>
+    <modules>
+        <module>agentworks-bom</module><module>agentworks-api</module><module>agentworks-capabilities</module><module>agentworks-context</module><module>agentworks-memory</module><module>agentworks-agent-test</module><module>agentworks-agent-test-sample</module><module>agentworks-evaluation</module><module>agentworks-spec</module>
+        <module>agentworks-sdk</module><module>agentworks-provider-tck</module><module>agentworks-spring-boot-starter</module>
+        <module>agentworks-reference-embedded</module><module>agentworks-reference-remote</module>
+        <module>agentworks-gateway-api</module><module>agentworks-gateway-openai-compatible</module><module>agentworks-gateway-dvarahq</module>
+        <module>agentworks-storage-jdbc</module><module>agentworks-release</module>
+        <module>agentworks-deployment</module><module>agentworks-runtime</module><module>agentworks-tools</module><module>agentworks-mcp</module><module>agentworks-agent-a2a</module><module>agentworks-server</module>
+    </modules>
+    <properties>
+        <java.version>25</java.version><maven.compiler.release>25</maven.compiler.release>
+        <archunit.version>1.5.1</archunit.version><spring-ai.version>2.0.1</spring-ai.version>
+        <testcontainers.version>2.0.5</testcontainers.version>
+        <json-schema-validator.version>3.0.8</json-schema-validator.version>
+        <!-- Issue #309: 2.4.20 fixes CVE-2026-53914 in Kotlin build-cache metadata. Kotlin is runtime-only
+             here through the OpenTelemetry OkHttp sender, but pinning the fixed release also removes the broad
+             kotlin-stdlib scanner match without an exception. -->
+        <kotlin.version>2.4.20</kotlin.version>
+        <!-- Issue #60: 11.0.27 is the first release containing every Tomcat security fix published through
+             2026-10-12; Spring Boot 4.1 supports the Tomcat 11.0.x line. -->
+        <tomcat.version>11.0.27</tomcat.version>
+        <!-- H2 2.4.240 evaluated string CHECK constraints with the closed session that created them, failing every
+             later insert; 2.5.250 fixes that and passes the full H2 and PostgreSQL suites (issue #155). H2 remains
+             local-development only. -->
+        <h2.version>2.5.250</h2.version>
+        <!-- Argon2id password hashing (issue #74): Spring Security's Argon2PasswordEncoder needs the Bouncy Castle
+             Argon2 implementation, which Spring Boot does not manage. -->
+        <bouncycastle.version>1.86</bouncycastle.version>
+        <!-- Issue #65: 3.1.7 is the first Jackson 3.1 patch covering the release-blocking
+             core/databind advisories published through 2026-10-24. -->
+        <jackson-bom.version>3.1.7</jackson-bom.version>
+        <!-- Issue #65: every Maven archive has a stable timestamp. Release builds override this with the
+             source commit epoch, while ordinary local builds remain reproducible without wall-clock input. -->
+        <project.build.outputTimestamp>1980-01-01T00:00:02Z</project.build.outputTimestamp>
+    </properties>
+    <dependencyManagement><dependencies>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-tools</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-mcp</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-agent-a2a</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-bom</artifactId><version>${spring-ai.version}</version><type>pom</type><scope>import</scope></dependency>
+        <dependency><groupId>org.testcontainers</groupId><artifactId>testcontainers-bom</artifactId><version>${testcontainers.version}</version><type>pom</type><scope>import</scope></dependency>
+        <dependency><groupId>com.networknt</groupId><artifactId>json-schema-validator</artifactId><version>${json-schema-validator.version}</version></dependency>
+        <dependency><groupId>org.bouncycastle</groupId><artifactId>bcprov-jdk18on</artifactId><version>${bouncycastle.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-api</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-api</artifactId><version>${project.version}</version><type>test-jar</type><scope>test</scope></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-capabilities</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-context</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-memory</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-agent-test</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-evaluation</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-spec</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-sdk</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-provider-tck</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-spring-boot-starter</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-api</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-api</artifactId><version>${project.version}</version><type>test-jar</type><scope>test</scope></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-openai-compatible</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-dvarahq</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-storage-jdbc</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-release</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-deployment</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-runtime</artifactId><version>${project.version}</version></dependency>
+        <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-server</artifactId><version>${project.version}</version></dependency>
+    </dependencies></dependencyManagement>
+    <build>
+        <pluginManagement><plugins>
+            <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-enforcer-plugin</artifactId><version>3.6.3</version></plugin>
+            <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.6.1</version></plugin>
+            <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId><version>3.5.1</version></plugin>
+            <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-source-plugin</artifactId><version>3.4.0</version></plugin>
+            <plugin><groupId>org.cyclonedx</groupId><artifactId>cyclonedx-maven-plugin</artifactId><version>2.9.3</version></plugin>
+        </plugins></pluginManagement>
+        <plugins><plugin>
+            <groupId>org.apache.maven.plugins</groupId><artifactId>maven-enforcer-plugin</artifactId>
+            <executions><execution><id>agentworks-baseline</id><goals><goal>enforce</goal></goals><configuration><rules>
+                <requireJavaVersion><version>[25,26)</version><message>Dvara AgentWorks requires JDK 25.</message></requireJavaVersion>
+                <bannedDependencies><searchTransitive>true</searchTransitive><excludes>
+                    <exclude>org.apache.kafka:*</exclude><exclude>org.springframework.kafka:*</exclude>
+                    <exclude>org.springframework.boot:spring-boot-starter-data-redis</exclude><exclude>org.springframework.data:spring-data-redis</exclude>
+                    <exclude>redis.clients:*</exclude><exclude>io.lettuce:*</exclude><exclude>org.redisson:*</exclude>
+                    <exclude>org.hibernate.orm:*</exclude><exclude>org.springframework.boot:spring-boot-starter-data-jpa</exclude>
+                    <exclude>software.amazon.awssdk:*</exclude><exclude>com.azure:*</exclude><exclude>com.google.cloud:*</exclude>
+                    <exclude>com.dvarahq.agentworks.enterprise:*</exclude>
+                </excludes><message>Core cannot require Kafka, Redis, JPA/Hibernate, provider SDKs, or proprietary artifacts.</message></bannedDependencies>
+            </rules></configuration></execution></executions>
+        </plugin></plugins>
+    </build>
+    <profiles>
+        <!-- Fast feedback keeps broad unit, contract, and H2 coverage while deferring the Docker-backed,
+             browser-level, and qualification suites to their explicit profiles below. Test classes run concurrently;
+             methods remain serial unless a class opts in after proving its own isolation. -->
+        <profile>
+            <id>fast-tests</id>
+            <build><plugins><plugin>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludedGroups>integration,qualification</excludedGroups>
+                    <excludes><exclude>**/*PostgresTest.java</exclude></excludes>
+                    <systemPropertyVariables>
+                        <spring.test.context.cache.maxSize>64</spring.test.context.cache.maxSize>
+                        <junit.jupiter.execution.parallel.enabled>true</junit.jupiter.execution.parallel.enabled>
+                        <junit.jupiter.execution.parallel.mode.default>same_thread</junit.jupiter.execution.parallel.mode.default>
+                        <junit.jupiter.execution.parallel.mode.classes.default>concurrent</junit.jupiter.execution.parallel.mode.classes.default>
+                        <junit.jupiter.execution.parallel.config.strategy>fixed</junit.jupiter.execution.parallel.config.strategy>
+                        <junit.jupiter.execution.parallel.config.fixed.parallelism>4</junit.jupiter.execution.parallel.config.fixed.parallelism>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin></plugins></build>
+        </profile>
+        <!-- Docker-backed correctness tests share one PostgreSQL process per test JVM and clone an already-migrated
+             template database where their schema contract permits it. -->
+        <profile>
+            <id>postgres-tests</id>
+            <build><plugins><plugin>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludedGroups>qualification</excludedGroups>
+                    <includes><include>**/*PostgresTest.java</include></includes>
+                    <systemPropertyVariables>
+                        <spring.test.context.cache.maxSize>64</spring.test.context.cache.maxSize>
+                        <junit.jupiter.execution.parallel.enabled>true</junit.jupiter.execution.parallel.enabled>
+                        <junit.jupiter.execution.parallel.mode.default>same_thread</junit.jupiter.execution.parallel.mode.default>
+                        <junit.jupiter.execution.parallel.mode.classes.default>concurrent</junit.jupiter.execution.parallel.mode.classes.default>
+                        <junit.jupiter.execution.parallel.config.strategy>fixed</junit.jupiter.execution.parallel.config.strategy>
+                        <junit.jupiter.execution.parallel.config.fixed.parallelism>4</junit.jupiter.execution.parallel.config.fixed.parallelism>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin></plugins></build>
+        </profile>
+        <!-- Slow full-HTTP browser and security journeys stay independently runnable instead of disappearing from
+             the fast gate. -->
+        <profile>
+            <id>integration-tests</id>
+            <build><plugins><plugin>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <groups>integration</groups>
+                    <systemPropertyVariables>
+                        <spring.test.context.cache.maxSize>64</spring.test.context.cache.maxSize>
+                        <junit.jupiter.execution.parallel.enabled>true</junit.jupiter.execution.parallel.enabled>
+                        <junit.jupiter.execution.parallel.mode.default>same_thread</junit.jupiter.execution.parallel.mode.default>
+                        <junit.jupiter.execution.parallel.mode.classes.default>concurrent</junit.jupiter.execution.parallel.mode.classes.default>
+                        <junit.jupiter.execution.parallel.config.strategy>fixed</junit.jupiter.execution.parallel.config.strategy>
+                        <junit.jupiter.execution.parallel.config.fixed.parallelism>4</junit.jupiter.execution.parallel.config.fixed.parallelism>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin></plugins></build>
+        </profile>
+        <!-- Issue #37: the walking-skeleton journey harness. Test-only and never released: it starts the packaged
+             server boot jar against PostgreSQL and drives it through public surfaces. Run it with
+             ./mvnw -B -ntp -Pjourney -DskipTests verify -pl agentworks-journey -am (the journey ignores -DskipTests). -->
+        <profile>
+            <id>journey</id>
+            <modules><module>agentworks-journey</module></modules>
+        </profile>
+        <!-- CI invokes this profile expecting Maven Enforcer to reject the injected dependency. -->
+        <profile>
+            <id>architecture-negative-fixture</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-data-redis</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+</project>

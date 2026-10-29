@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "release": {
+    "version": "1.0.0",
+    "tag": "v1.0.0",
+    "repository": "https://github.com/dvarahq/dvara-agentworks"
+  },
+  "allowedGitHubActors": ["grabdoc"],
+  "requiredPrerequisiteIssues": [67, 68, 83],
+  "requiredArtifactFamilies": [
+    "maven-bom", "maven-modules", "oci", "helm", "cli", "source",
+    "checksums", "sbom", "provenance"
+  ],
+  "destinations": {
+    "maven-bom": "https://repo1.maven.org/maven2/com/dvarahq/agentworks/",
+    "maven-modules": "https://repo1.maven.org/maven2/com/dvarahq/agentworks/",
+    "oci": "ghcr.io/dvarahq/dvara-agentworks",
+    "helm": "oci://ghcr.io/dvarahq/charts/agentworks",
+    "cli": "https://github.com/dvarahq/dvara-agentworks/releases/tag/v1.0.0",
+    "source": "https://github.com/dvarahq/dvara-agentworks/releases/tag/v1.0.0",
+    "checksums": "https://github.com/dvarahq/dvara-agentworks/releases/tag/v1.0.0",
+    "sbom": "https://github.com/dvarahq/dvara-agentworks/releases/tag/v1.0.0",
+    "provenance": "https://github.com/dvarahq/dvara-agentworks/releases/tag/v1.0.0"
+  },
+  "requiredVerificationGates": [
+    "maven-consumer", "oci-multiarch", "helm-install", "cli-smoke",
+    "source-build", "tamper-rejection", "staging-failure",
+    "atomic-promotion", "compromise-response"
+  ],
+  "indexSigning": {
+    "certificateIdentity": "https://github.com/dvarahq/dvara-agentworks/.github/workflows/release.yml@refs/tags/v1.0.0",
+    "certificateOidcIssuer": "https://token.actions.githubusercontent.com"
+  },
+  "allowedVerdicts": ["PASS", "FAIL"]
+}

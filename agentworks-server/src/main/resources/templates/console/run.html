@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Run')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('runs')}"></header>
+<main id="main" class="container py-4">
+    <nav aria-label="Breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="/console/runs">Runs</a></li>
+        <li class="breadcrumb-item active" aria-current="page"><code th:text="${run.id()}">id</code></li></ol></nav>
+    <h1 class="h3">Run <code th:text="${run.id()}">id</code></h1>
+
+    <!--/* The run's pins and pinned models never change, so they are rendered once and never refreshed. */-->
+    <section class="row g-3" aria-labelledby="pins-heading">
+        <h2 id="pins-heading" class="visually-hidden">Pinned identity</h2>
+            <div class="col-12">
+                <h3 class="h6">Pinned identity</h3>
+                <dl class="row small">
+                    <dt class="col-5">Agent definition</dt>
+                    <dd class="col-7"><a th:href="@{/console/agents/{id}(id=${run.definitionId()})}"><code th:text="${run.definitionId()}">id</code></a></dd>
+                    <dt class="col-5">Agent version</dt><dd class="col-7"><code th:text="${run.versionId()}">id</code></dd>
+                    <dt class="col-5">Release</dt><dd class="col-7"><code th:text="${run.releaseId()}">id</code></dd>
+                    <dt class="col-5">Manifest version</dt><dd class="col-7" th:text="${run.manifestVersion()}">2</dd>
+                    <dt class="col-5">Deployment</dt>
+                    <dd class="col-7"><a th:href="@{/console/deployments/{id}(id=${run.deploymentId()})}"><code th:text="${run.deploymentId()}">id</code></a></dd>
+                    <dt class="col-5">Environment</dt><dd class="col-7"><code th:text="${run.environmentId()}">id</code></dd>
+                    <dt class="col-5">Deployment revision</dt><dd class="col-7"><code th:text="${run.revisionId()}">id</code></dd>
+                    <dt class="col-5">Cohort</dt><dd class="col-7"><code th:text="${run.cohortId()}">id</code></dd>
+                    <dt class="col-5">Routing generation</dt>
+                    <dd class="col-7"><code th:text="${run.routingGenerationId()}">id</code>
+                        <span th:if="${run.routingTargetOrdinal() != null}" th:text="'target ' + ${run.routingTargetOrdinal()}">target</span></dd>
+                    <dt class="col-5">Admission</dt><dd class="col-7" th:text="${run.admission()}">ROOT</dd>
+                    <dt class="col-5" th:if="${run.parentRunId() != null}">Parent run</dt>
+                    <dd class="col-7" th:if="${run.parentRunId() != null}"><a th:href="@{/console/runs/{id}(id=${run.parentRunId()})}"><code th:text="${run.parentRunId()}">id</code></a></dd>
+                </dl>
+                <h3 class="h6">Pinned models</h3>
+                <p class="small text-body-secondary" th:if="${#lists.isEmpty(models)}">The release pins no model, or its
+                    manifest cannot be read now.</p>
+                <dl class="row small" th:each="model : ${models}">
+                    <dt class="col-5" th:text="${model.role()}">reasoning</dt>
+                    <dd class="col-7"><span th:each="field : ${model.fields()}" class="d-block"
+                                            th:text="${field.name()} + ': ' + ${field.value()}">model</span></dd>
+                </dl>
+            </div>
+    </section>
+
+    <!--/* The summary refreshes itself while the live timeline sees the run move on, and once when it ends. A failed
+           refresh keeps the section (and its refreshing) and says so inside it. */-->
+    <section id="run-summary" th:fragment="summary" aria-labelledby="summary-heading"
+             th:attr="hx-get=@{/console/runs/{id}/summary(id=${run.id()})}"
+             hx-trigger="run-changed from:body throttle:1s, run-ended from:body" hx-swap="outerHTML" data-refresh>
+        <h2 id="summary-heading" class="visually-hidden">Summary</h2>
+        <p class="small text-danger" data-refresh-status aria-live="polite"></p>
+        <div class="row g-3">
+            <div class="col-lg-12">
+                <h3 class="h6">Lifecycle</h3>
+                <p class="mb-1"><span class="badge text-bg-secondary console-lifecycle" th:text="${run.lifecycle()}">QUEUED</span>
+                    <span th:if="${run.blockReason() != null}" th:text="'blocked: ' + ${run.blockReason()}">reason</span></p>
+                <dl class="row small mb-2">
+                    <dt class="col-5">Events</dt><dd class="col-7" th:text="${run.eventSequence()}">0</dd>
+                    <dt class="col-5">Created</dt><dd class="col-7" th:text="${run.createdAt()}">time</dd>
+                    <dt class="col-5">Started</dt><dd class="col-7" th:text="${run.startedAt()} ?: '—'">time</dd>
+                    <dt class="col-5">Completed</dt><dd class="col-7" th:text="${run.completedAt()} ?: '—'">time</dd>
+                    <dt class="col-5">Trace id</dt><dd class="col-7"><code th:text="${run.traceId()}">trace</code></dd>
+                </dl>
+                <div th:if="${run.terminalCode() != null or #lists.contains(steps.![status().name()], 'FAILED')}"
+                     class="alert alert-danger py-2" role="status">
+                    <strong>Failure</strong>
+                    <span th:if="${run.terminalCode() != null}" th:text="${run.terminalCode()}">CODE</span>
+                    <ul class="mb-0 small">
+                        <li th:each="step : ${steps}" th:if="${step.status().name() == 'FAILED'}"
+                            th:text="${step.name()} + ' (' + ${step.category()} + ', events ' + ${step.firstSequence()} + '–' + ${step.lastSequence()} + ')'">step</li>
+                    </ul>
+                </div>
+                <h3 class="h6 mt-3">Usage</h3>
+                <dl class="row small" th:with="usage=${run.usage()}">
+                    <dt class="col-5">Tokens (in / out / total)</dt>
+                    <dd class="col-7" th:text="${usage.inputTokens()} + ' / ' + ${usage.outputTokens()} + ' / ' + ${usage.totalTokens()}">0</dd>
+                    <dt class="col-5">Model calls</dt><dd class="col-7" th:text="${usage.modelCalls()}">0</dd>
+                    <dt class="col-5">Tool calls</dt><dd class="col-7" th:text="${usage.toolCalls()}">0</dd>
+                    <dt class="col-5">Runtime</dt><dd class="col-7" th:text="${usage.runtimeMillis()} + ' ms'">0</dd>
+                    <dt class="col-5">Estimated cost</dt><dd class="col-7" th:text="${usage.estimatedCostUsd()} != null ? ${usage.estimatedCostUsd()} + ' USD' : '—'">0</dd>
+                </dl>
+            </div>
+        </div>
+        <h3 class="h6 mt-2" th:if="${!#lists.isEmpty(steps)}">Steps</h3>
+        <table class="table table-sm small" th:if="${!#lists.isEmpty(steps)}">
+            <caption>The step projection, rebuilt from the run's events</caption>
+            <thead><tr><th scope="col">Step</th><th scope="col">Category</th><th scope="col">Status</th>
+                <th scope="col">Events</th></tr></thead>
+            <tbody><tr th:each="step : ${steps}"><td th:text="${step.name()}">step</td>
+                <td th:text="${step.category()}">MODEL</td><td th:text="${step.status()}">COMPLETED</td>
+                <td th:text="${step.firstSequence()} + '–' + ${step.lastSequence()}">1–2</td></tr></tbody>
+        </table>
+    </section>
+
+    <!--/* Run actions, outside the self-refreshing summary so that typing, focus, and results survive its refreshes;
+           refreshed once when the run ends. Operator pause (#183) joins cancel here. */-->
+    <section id="run-actions" th:fragment="actions" aria-label="Run actions"
+             th:attr="hx-get=@{/console/runs/{id}/actions(id=${run.id()})}" hx-trigger="run-ended from:body"
+             hx-swap="outerHTML" data-refresh>
+        <p class="small text-danger" data-refresh-status aria-live="polite"></p>
+        <form class="mt-2" th:if="${console.can('RUN_ADMIT') and !terminal and run.lifecycle() != 'PAUSED'}" method="post"
+              th:attr="action=@{/console/runs/{id}/pause(id=${run.id()})},hx-post=@{/console/runs/{id}/pause(id=${run.id()})}" hx-target="#run-action-result" hx-disabled-elt="find button">
+            <div class="input-group input-group-sm console-narrow"><label for="pause-reason" class="visually-hidden">Pause reason</label><input id="pause-reason" name="reason" class="form-control" placeholder="Pause reason (optional)" maxlength="500"><button class="btn btn-outline-warning">Pause safely</button></div>
+        </form>
+        <form class="mt-2" th:if="${console.can('RUN_ADMIT') and run.lifecycle() == 'PAUSED'}" method="post"
+              th:attr="action=@{/console/runs/{id}/resume(id=${run.id()})},hx-post=@{/console/runs/{id}/resume(id=${run.id()})}" hx-target="#run-action-result" hx-disabled-elt="find button"><button class="btn btn-sm btn-outline-primary">Resume run</button></form>
+        <form class="mt-2" th:if="${console.can('RUN_ADMIT') and !terminal}" method="post"
+              th:attr="action=@{/console/runs/{id}/cancel(id=${run.id()})},hx-post=@{/console/runs/{id}/cancel(id=${run.id()})}" hx-target="#run-action-result"
+              hx-disabled-elt="find button" hx-confirm="Cancel this run?">
+            <label for="cancel-reason" class="visually-hidden">Cancellation reason</label>
+            <div class="input-group input-group-sm console-narrow">
+                <input id="cancel-reason" name="reason" class="form-control" placeholder="Reason (optional)" maxlength="500">
+                <button type="submit" class="btn btn-outline-danger">Cancel run</button>
+            </div>
+        </form>
+        <div id="run-action-result" aria-live="polite"></div>
+    </section>
+
+    <section class="mt-4" aria-labelledby="context-heading"><h2 id="context-heading" class="h5">Context decisions</h2><p class="small text-body-secondary">Content-free inclusion, exclusion, compaction, and provenance decisions. Sensitive context is never rendered.</p><ol class="list-group list-group-numbered"><li class="list-group-item" th:each="event : ${context.events()}"><strong th:text="${event.type()}">CONTEXT</strong> <span class="small text-body-secondary" th:text="${event.createdAt()}">time</span><pre class="small mb-0 console-document" th:text="${event.payload()}">{}</pre></li><li class="list-group-item" th:if="${#lists.isEmpty(context.events())}">No context decisions were recorded for this run.</li></ol></section>
+
+    <section class="mt-4" aria-labelledby="timeline-heading">
+        <h2 id="timeline-heading" class="h5">Timeline</h2>
+        <p id="stream-status" class="small text-body-secondary" role="status" aria-live="polite"
+           th:text="${terminal} ? 'The run has ended.' : 'Connecting to the live stream…'">status</p>
+        <p class="small" th:if="${moreEvents}">Earlier events are shown here; the live stream continues with the rest.</p>
+        <!--/* The live stream: the script opens it after the last rendered event, with a client id of its own. */-->
+        <ol id="timeline" class="list-unstyled console-timeline" data-run-stream tabindex="0" aria-label="Run events"
+            th:attr="data-stream-url=@{/api/v1/runs/{id}/stream(id=${run.id()})},data-run-url=@{/api/v1/runs/{id}(id=${run.id()})},data-cursor=${cursor},data-event-types=${eventTypes},data-terminal=${terminal},data-complete=${complete},data-terminal-lifecycles=${terminalLifecycles}">
+            <li th:each="event : ${events}" class="console-event" th:attr="data-sequence=${event.sequence()}">
+                <div class="d-flex flex-wrap gap-2 align-items-baseline">
+                    <span class="badge text-bg-light border" th:text="${event.sequence()}">1</span>
+                    <strong th:text="${event.type()}">RUN_CREATED</strong>
+                    <span class="small text-body-secondary" th:text="${event.category()}">LIFECYCLE</span>
+                    <time class="small text-body-secondary" th:text="${event.createdAt()}">time</time>
+                    <span class="small text-body-secondary" th:if="${event.actor() != null}" th:text="${event.actor()}">actor</span>
+                </div>
+                <details th:if="${event.payload() != ''}"><summary class="small">Payload</summary>
+                    <pre class="small mb-0" th:text="${event.payload()}">{}</pre></details>
+            </li>
+        </ol>
+    </section>
+</main>
+</body>
+</html>

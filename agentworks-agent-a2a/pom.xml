@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+<parent><groupId>com.dvarahq</groupId><artifactId>agentworks-parent</artifactId><version>1.0.0-rc1</version><relativePath>..</relativePath></parent>
+<groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-agent-a2a</artifactId><name>Dvara AgentWorks A2A and Remote Executor Adapter</name>
+<description>Optional authenticated, bounded HTTP/SSE and A2A protocol boundary for external executors</description>
+<dependencies>
+<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-api</artifactId></dependency>
+<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-runtime</artifactId></dependency>
+<dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId></dependency>
+<dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+<dependency><groupId>org.assertj</groupId><artifactId>assertj-core</artifactId><scope>test</scope></dependency>
+</dependencies></project>

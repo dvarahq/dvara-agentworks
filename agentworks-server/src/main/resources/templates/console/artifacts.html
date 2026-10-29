@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Artifacts')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('artifacts')}"></header>
+<main id="main" class="container py-4">
+    <h1 class="h3">Artifacts</h1>
+    <form th:if="${console.can('ARTIFACT_WRITE')}" method="post" action="/console/artifacts"
+          hx-post="/console/artifacts" hx-encoding="multipart/form-data" hx-target="#artifact-upload-result"
+          enctype="multipart/form-data" class="row g-2 align-items-end mb-2">
+        <div class="col-md-5"><label for="artifact-file" class="form-label">File</label>
+            <input id="artifact-file" class="form-control" type="file" name="file" required></div>
+        <div class="col-md-3"><label for="artifact-classification" class="form-label">Classification</label>
+            <select id="artifact-classification" class="form-select" name="classification">
+                <option th:each="level : ${ {'PUBLIC','INTERNAL','CONFIDENTIAL','RESTRICTED'} }"
+                        th:value="${level}" th:text="${level}" th:selected="${level == 'INTERNAL'}">INTERNAL</option>
+            </select></div>
+        <div class="col-md-2 form-check"><input id="artifact-redacted" class="form-check-input" type="checkbox"
+                                                name="redacted" value="true">
+            <label for="artifact-redacted" class="form-check-label">Redacted</label></div>
+        <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Upload</button></div>
+    </form>
+    <div id="artifact-upload-result" class="mb-3" aria-live="polite"></div>
+    <table class="table table-sm align-middle">
+        <caption>Accepted active artifacts, newest first</caption>
+        <thead><tr><th scope="col">Artifact</th><th scope="col">Media type</th><th scope="col">Size</th>
+            <th scope="col">Classification</th><th scope="col">Created</th></tr></thead>
+        <tbody>
+        <tr th:each="item : ${artifacts.items()}">
+            <td><a th:href="@{/console/artifacts/{id}(id=${item.id()})}"><code th:text="${item.id()}">id</code></a></td>
+            <td th:text="${item.mediaType()}">text/plain</td><td th:text="${item.size()}">0</td>
+            <td th:text="${item.classification()}">INTERNAL</td><td th:text="${item.createdAt()}">time</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(artifacts.items())}"><td colspan="5">No accepted artifacts.</td></tr>
+        </tbody>
+    </table>
+    <a class="btn btn-sm btn-outline-secondary" th:if="${artifacts.nextCursor() != null}"
+       th:href="@{/console/artifacts(cursor=${artifacts.nextCursor()})}">Next page</a>
+</main>
+</body>
+</html>

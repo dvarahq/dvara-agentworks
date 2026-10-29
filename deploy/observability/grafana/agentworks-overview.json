@@ -1,0 +1,19 @@
+{
+  "title": "AgentWorks Operations",
+  "uid": "agentworks-operations",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": ["agentworks", "operations"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "panels": [
+    {"id": 1, "title": "API request rate", "type": "timeseries", "targets": [{"expr": "sum(rate(http_server_requests_seconds_count[5m]))"}], "gridPos": {"x": 0, "y": 0, "w": 8, "h": 8}},
+    {"id": 2, "title": "API 5xx rate", "type": "timeseries", "targets": [{"expr": "sum(rate(http_server_requests_seconds_count{status=~\"5..\"}[5m]))"}], "gridPos": {"x": 8, "y": 0, "w": 8, "h": 8}},
+    {"id": 3, "title": "API p95 latency", "type": "timeseries", "targets": [{"expr": "histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket[5m])))"}], "gridPos": {"x": 16, "y": 0, "w": 8, "h": 8}},
+    {"id": 4, "title": "Worker polls and saturation", "type": "timeseries", "targets": [{"expr": "sum by (outcome) (rate(agentworks_run_worker_polls_total[5m]))"}, {"expr": "sum(agentworks_run_worker_threads)"}], "gridPos": {"x": 0, "y": 8, "w": 8, "h": 8}},
+    {"id": 5, "title": "Lease loss and recovery lag", "type": "timeseries", "targets": [{"expr": "increase(agentworks_run_lease_losses_total[10m])"}, {"expr": "histogram_quantile(0.95, sum by (le) (rate(agentworks_run_recovery_delay_seconds_bucket[15m])))"}], "gridPos": {"x": 8, "y": 8, "w": 8, "h": 8}},
+    {"id": 6, "title": "Recovery outbox", "type": "timeseries", "targets": [{"expr": "sum(agentworks_recovery_outbox_backlog)"}, {"expr": "max(agentworks_recovery_outbox_oldest_age_seconds)"}, {"expr": "sum(agentworks_recovery_outbox_quarantined)"}], "gridPos": {"x": 16, "y": 8, "w": 8, "h": 8}},
+    {"id": 7, "title": "Compiled cache", "type": "timeseries", "targets": [{"expr": "sum(agentworks_compiled_cache_entries)"}, {"expr": "sum(agentworks_compiled_cache_references)"}, {"expr": "max(agentworks_compiled_cache_retirement_lag)"}], "gridPos": {"x": 0, "y": 16, "w": 12, "h": 8}},
+    {"id": 8, "title": "Resource cleanup", "type": "timeseries", "targets": [{"expr": "sum(agentworks_shared_resources)"}, {"expr": "sum(agentworks_shared_resources_leases)"}, {"expr": "sum(agentworks_resource_cleanup_unresolved_at_startup)"}], "gridPos": {"x": 12, "y": 16, "w": 12, "h": 8}}
+  ]
+}

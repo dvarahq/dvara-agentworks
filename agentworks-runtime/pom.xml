@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+<parent><groupId>com.dvarahq</groupId><artifactId>agentworks-parent</artifactId><version>1.0.0-rc1</version><relativePath>..</relativePath></parent>
+<groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-runtime</artifactId><name>Dvara AgentWorks Runtime</name>
+<dependencies><dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-api</artifactId></dependency><dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-api</artifactId><type>test-jar</type><scope>test</scope></dependency><dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-capabilities</artifactId></dependency><dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-context</artifactId></dependency><dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-memory</artifactId></dependency><dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-api</artifactId></dependency><dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-storage-jdbc</artifactId></dependency><dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId></dependency>
+<dependency><groupId>org.springframework</groupId><artifactId>spring-jdbc</artifactId></dependency><dependency><groupId>org.springframework</groupId><artifactId>spring-tx</artifactId></dependency>
+<dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-client-chat</artifactId></dependency><dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-mcp</artifactId></dependency><dependency><groupId>io.micrometer</groupId><artifactId>micrometer-observation</artifactId></dependency><dependency><groupId>com.networknt</groupId><artifactId>json-schema-validator</artifactId></dependency>
+<dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency><dependency><groupId>org.assertj</groupId><artifactId>assertj-core</artifactId><scope>test</scope></dependency><dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><scope>test</scope></dependency>
+<dependency><groupId>org.postgresql</groupId><artifactId>postgresql</artifactId><scope>test</scope></dependency><dependency><groupId>org.testcontainers</groupId><artifactId>testcontainers-junit-jupiter</artifactId><scope>test</scope></dependency><dependency><groupId>org.testcontainers</groupId><artifactId>testcontainers-postgresql</artifactId><scope>test</scope></dependency>
+</dependencies>
+<!-- Issue #185: stamps the build identity of this runtime module into
+     META-INF/agentworks/agentworks-runtime/build-identity.properties, so the runtime compatibility identity that scopes
+     claim quarantines (DurableRunEngine.compatibilityOf) tells builds apart; the jar's Implementation-Version is only
+     the project version. It records the commit this module was built from, whether the tree differed from it (a
+     changed tracked file, including one marked skip-worktree or assume-unchanged, an untracked file under a src/
+     tree at any depth, or an ignored file that Maven builds: a Java source under src/main/java/ or anything under
+     src/main/resources/; other untracked and ignored files do not count), and, only for such a changed tree, the
+     build time in UTC;
+     never the builder's name, e-mail, host, time zone, or remote. git runs in the module's directory, so linked worktrees resolve their own HEAD (git-commit-id-maven-plugin resolves the enclosing
+     repository's instead), and without optional locks, so it never takes the index lock. Without git, or outside a
+     repository (a source archive), no commit is recorded: the build then fails on a CI system, for a release
+     (-Drelease), and with -Dagentworks.build.require-stamp (see agentworks.build.stamp-required below), and elsewhere the server refuses to start outside local development unless agentworks.runtime.build-id
+     names the build; see DurableRunEngine.BuildIdentity. agentworks.build.git names the git executable. -->
+<properties><agentworks.build.git>git</agentworks.build.git></properties>
+<build><plugins><plugin>
+    <groupId>org.apache.maven.plugins</groupId><artifactId>maven-antrun-plugin</artifactId>
+    <executions><execution><id>agentworks-build-identity</id><phase>generate-resources</phase><goals><goal>run</goal></goals>
+    <configuration><target>
+        <property environment="agentworks.env"/>
+        <exec executable="${agentworks.build.git}" dir="${project.basedir}" failifexecutionfails="false" failonerror="false"
+              outputproperty="agentworks.build.commit" errorproperty="agentworks.build.commit.error"
+              resultproperty="agentworks.build.commit.result">
+            <arg value="rev-parse"/><arg value="--verify"/><arg value="--quiet"/><arg value="HEAD^{commit}"/>
+        </exec>
+        <!-- A build must be stamped when it is a release (-Drelease), when the operator requires it
+             (-Dagentworks.build.require-stamp), or when it runs on a CI system (#189): CI set to anything but false or
+             0 (GitHub Actions, GitLab, CircleCI, Travis, Buildkite, Bitbucket, Drone, Woodpecker), or the marker that
+             Jenkins (JENKINS_URL), TeamCity (TEAMCITY_VERSION), Azure Pipelines (TF_BUILD), AWS CodeBuild
+             (CODEBUILD_BUILD_ID), or Bamboo (bamboo_buildKey) sets. -->
+        <condition property="agentworks.build.stamp-required"><or>
+            <isset property="release"/>
+            <isset property="agentworks.build.require-stamp"/>
+            <and><isset property="agentworks.env.CI"/>
+                <not><equals arg1="${agentworks.env.CI}" arg2="false" casesensitive="false"/></not>
+                <not><equals arg1="${agentworks.env.CI}" arg2="0"/></not>
+                <not><equals arg1="${agentworks.env.CI}" arg2=""/></not></and>
+            <isset property="agentworks.env.JENKINS_URL"/>
+            <isset property="agentworks.env.TEAMCITY_VERSION"/>
+            <isset property="agentworks.env.TF_BUILD"/>
+            <isset property="agentworks.env.CODEBUILD_BUILD_ID"/>
+            <isset property="agentworks.env.bamboo_buildKey"/>
+        </or></condition>
+        <fail message="The build identity cannot be stamped: git (${agentworks.build.git}) could not read this checkout's commit. CI and release builds (-Drelease) must build from a git checkout (#185, #189).">
+            <condition><and>
+                <isset property="agentworks.build.stamp-required"/>
+                <not><equals arg1="${agentworks.build.commit.result}" arg2="0"/></not>
+            </and></condition>
+        </fail>
+        <exec executable="${agentworks.build.git}" dir="${project.basedir}" failifexecutionfails="false" failonerror="false"
+              outputproperty="agentworks.build.changes" errorproperty="agentworks.build.changes.error"
+              resultproperty="agentworks.build.changes.result">
+            <arg value="--no-optional-locks"/><arg value="status"/><arg value="--porcelain"/>
+            <arg value="--untracked-files=no"/>
+        </exec>
+        <!-- Untracked files under a src/ tree at any depth are compiled or packaged, so they change the build (#189);
+             so do ignored files that Maven still builds (#194): Java sources under a src/main/java/ tree, and anything
+             under a src/main/resources/ tree, of the root or of a module one or two levels deep, except the operating
+             system's .DS_Store, which Maven's default excludes never package. Other ignored files (an IDE's .idea/ or
+             *.iml, __pycache__) outside those trees are never built. Ignored resources are listed file by file, even
+             inside a wholly ignored directory (see below). Untracked files elsewhere (for example agent worktrees
+             under .claude/, excluded explicitly) do not change the build. -->
+        <exec executable="${agentworks.build.git}" dir="${project.basedir}" failifexecutionfails="false" failonerror="false"
+              outputproperty="agentworks.build.untracked" errorproperty="agentworks.build.untracked.error"
+              resultproperty="agentworks.build.untracked.result">
+            <arg value="ls-files"/><arg value="--others"/><arg value="--exclude-standard"/><arg value="--"/>
+            <arg value=":(top,glob)**/src/**"/><arg value=":(top,exclude,glob).claude/**"/>
+        </exec>
+        <!-- Ignored Java sources, which the compiler compiles whether or not git ignores them. -->
+        <exec executable="${agentworks.build.git}" dir="${project.basedir}" failifexecutionfails="false" failonerror="false"
+              outputproperty="agentworks.build.ignored" errorproperty="agentworks.build.ignored.error"
+              resultproperty="agentworks.build.ignored.result">
+            <arg value="ls-files"/><arg value="--others"/><arg value="--ignored"/><arg value="--exclude-standard"/>
+            <arg value="--"/><arg value=":(top,glob)src/main/java/**/*.java"/>
+            <arg value=":(top,glob)*/src/main/java/**/*.java"/><arg value=":(top,glob)*/*/src/main/java/**/*.java"/>
+        </exec>
+        <!-- Ignored resources, file by file, so a resource inside a wholly ignored ancestor (resources/, main/, src/, or
+             the module directory itself) counts too (PR #199 review); the pathspecs keep git out of unrelated ignored
+             trees such as target/. Only an entry under a src/main/resources/ tree counts
+             (agentworks.build.ignored-resource). -->
+        <exec executable="${agentworks.build.git}" dir="${project.basedir}" failifexecutionfails="false" failonerror="false"
+              outputproperty="agentworks.build.ignored-resources" errorproperty="agentworks.build.ignored-resources.error"
+              resultproperty="agentworks.build.ignored-resources.result">
+            <arg value="ls-files"/><arg value="--others"/><arg value="--ignored"/><arg value="--exclude-standard"/>
+            <arg value="--"/><arg value=":(top,glob)src/main/resources/**"/>
+            <arg value=":(top,glob)*/src/main/resources/**"/><arg value=":(top,glob)*/*/src/main/resources/**"/>
+            <arg value=":(top,exclude,glob)**/.DS_Store"/>
+        </exec>
+        <condition property="agentworks.build.ignored-resource">
+            <matches string="${agentworks.build.ignored-resources}" pattern="^(.*/)?src/main/resources/(.|$)"
+                     multiline="true"/>
+        </condition>
+        <!-- Files marked skip-worktree (S) or assume-unchanged (lower case) are invisible to git status. -->
+        <exec executable="${agentworks.build.git}" dir="${project.basedir}" failifexecutionfails="false" failonerror="false"
+              outputproperty="agentworks.build.files" errorproperty="agentworks.build.files.error"
+              resultproperty="agentworks.build.files.result">
+            <arg value="ls-files"/><arg value="-v"/><arg value="--"/><arg value=":/"/>
+        </exec>
+        <condition property="agentworks.build.clean" value="true" else="false"><and>
+            <equals arg1="${agentworks.build.commit.result}" arg2="0"/>
+            <equals arg1="${agentworks.build.changes.result}" arg2="0"/>
+            <length string="${agentworks.build.changes}" length="0"/>
+            <equals arg1="${agentworks.build.untracked.result}" arg2="0"/>
+            <length string="${agentworks.build.untracked}" length="0"/>
+            <equals arg1="${agentworks.build.ignored.result}" arg2="0"/>
+            <length string="${agentworks.build.ignored}" length="0"/>
+            <equals arg1="${agentworks.build.ignored-resources.result}" arg2="0"/>
+            <not><isset property="agentworks.build.ignored-resource"/></not>
+            <equals arg1="${agentworks.build.files.result}" arg2="0"/>
+            <not><matches string="${agentworks.build.files}" pattern="^[a-zS] " multiline="true"/></not>
+        </and></condition>
+        <condition property="agentworks.build.revision" value="${agentworks.build.commit}" else=""><equals
+            arg1="${agentworks.build.commit.result}" arg2="0"/></condition>
+        <!-- The build time, in UTC, tells builds of a changed tree apart; a clean build records none, so its stamp is
+             reproducible. -->
+        <tstamp><format property="agentworks.build.now" pattern="yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" timezone="UTC"/></tstamp>
+        <condition property="agentworks.build.time" value="" else="${agentworks.build.now}"><istrue
+            value="${agentworks.build.clean}"/></condition>
+        <mkdir dir="${project.build.outputDirectory}/META-INF/agentworks/agentworks-runtime"/>
+        <echo file="${project.build.outputDirectory}/META-INF/agentworks/agentworks-runtime/build-identity.properties"
+              encoding="US-ASCII"
+              message="commit=${agentworks.build.revision}${line.separator}clean=${agentworks.build.clean}${line.separator}built=${agentworks.build.time}${line.separator}"/>
+    </target></configuration></execution></executions>
+</plugin></plugins></build>
+</project>

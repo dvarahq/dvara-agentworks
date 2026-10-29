@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="620" viewBox="0 0 1600 620" role="img" aria-labelledby="title description">
+  <title id="title">AgentWorks lifecycle</title>
+  <desc id="description">Define, test, release, deploy, run, and improve an agent through a safe repeatable lifecycle.</desc>
+  <defs>
+    <linearGradient id="dvara-logo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="0.5" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1e1236" flood-opacity="0.06"/>
+    </filter>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0 0l8 4-8 4z" fill="#9893b5"/>
+    </marker>
+    <marker id="return-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0 0l8 4-8 4z" fill="#5352e8"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="620" fill="#f8f7fd"/>
+
+  <!-- DVARA signature -->
+  <g transform="translate(72 52)">
+    <rect width="44" height="44" rx="11" fill="url(#dvara-logo)"/>
+    <path d="M13 13h7c6.1 0 11 4.9 11 9s-4.9 9-11 9h-7V13z" fill="none" stroke="#fff" stroke-width="2.8" stroke-linejoin="round"/>
+    <circle cx="23" cy="22" r="2.2" fill="#fff"/>
+    <text x="58" y="21" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="750" letter-spacing="1.8">DVARA</text>
+    <text x="58" y="42" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="500">AgentWorks</text>
+  </g>
+
+  <text x="72" y="155" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="42" font-weight="720" letter-spacing="-1.2">From definition to reliable operation</text>
+  <text x="72" y="194" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="21">A safe, repeatable path for changing agents without losing control of work already in progress.</text>
+
+  <!-- flow line -->
+  <path d="M196 340H1392" fill="none" stroke="#c7c3e6" stroke-width="2"/>
+
+  <!-- Step 1 -->
+  <g transform="translate(72 250)" filter="url(#card-shadow)">
+    <rect width="220" height="190" rx="7" fill="#fff" stroke="#e2e0f2"/>
+    <rect width="220" height="5" rx="2.5" fill="#5352e8"/>
+    <circle cx="34" cy="48" r="18" fill="#efeefd"/>
+    <text x="34" y="54" text-anchor="middle" fill="#5352e8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="700">1</text>
+    <text x="24" y="96" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="25" font-weight="700">Define</text>
+    <text x="24" y="130" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16">Write AgentSpec YAML</text>
+    <text x="24" y="156" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16">in Console or CLI.</text>
+  </g>
+
+  <!-- Step 2 -->
+  <g transform="translate(320 250)" filter="url(#card-shadow)">
+    <rect width="220" height="190" rx="7" fill="#fff" stroke="#e2e0f2"/>
+    <rect width="220" height="5" rx="2.5" fill="#5352e8"/>
+    <circle cx="34" cy="48" r="18" fill="#efeefd"/>
+    <text x="34" y="54" text-anchor="middle" fill="#5352e8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="700">2</text>
+    <text x="24" y="96" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="25" font-weight="700">Test</text>
+    <text x="24" y="130" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16">Run locally or</text>
+    <text x="24" y="156" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16">in CI.</text>
+  </g>
+
+  <!-- Step 3 -->
+  <g transform="translate(568 250)" filter="url(#card-shadow)">
+    <rect width="220" height="190" rx="7" fill="#fff" stroke="#e2e0f2"/>
+    <rect width="220" height="5" rx="2.5" fill="#175cd3"/>
+    <circle cx="34" cy="48" r="18" fill="#eff8ff"/>
+    <text x="34" y="54" text-anchor="middle" fill="#175cd3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="700">3</text>
+    <text x="24" y="96" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="25" font-weight="700">Release</text>
+    <text x="24" y="130" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16">Lock a tested</text>
+    <text x="24" y="156" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16">version.</text>
+  </g>
+
+  <!-- Step 4 -->
+  <g transform="translate(816 250)" filter="url(#card-shadow)">
+    <rect width="220" height="190" rx="7" fill="#fff" stroke="#e2e0f2"/>
+    <rect width="220" height="5" rx="2.5" fill="#175cd3"/>
+    <circle cx="34" cy="48" r="18" fill="#eff8ff"/>
+    <text x="34" y="54" text-anchor="middle" fill="#175cd3" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="700">4</text>
+    <text x="24" y="96" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="25" font-weight="700">Deploy</text>
+    <text x="24" y="130" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16">Select a named</text>
+    <text x="24" y="156" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16">environment.</text>
+  </g>
+
+  <!-- Step 5 -->
+  <g transform="translate(1064 250)" filter="url(#card-shadow)">
+    <rect width="220" height="190" rx="7" fill="#fff" stroke="#e2e0f2"/>
+    <rect width="220" height="5" rx="2.5" fill="#087443"/>
+    <circle cx="34" cy="48" r="18" fill="#ecfdf3"/>
+    <text x="34" y="54" text-anchor="middle" fill="#087443" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="700">5</text>
+    <text x="24" y="96" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="25" font-weight="700">Run</text>
+    <text x="24" y="130" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16">Start and resume</text>
+    <text x="24" y="156" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16">durable work.</text>
+  </g>
+
+  <!-- Step 6 -->
+  <g transform="translate(1312 250)" filter="url(#card-shadow)">
+    <rect width="220" height="190" rx="7" fill="#fff" stroke="#e2e0f2"/>
+    <rect width="220" height="5" rx="2.5" fill="#a15c07"/>
+    <circle cx="34" cy="48" r="18" fill="#fff7e8"/>
+    <text x="34" y="54" text-anchor="middle" fill="#a15c07" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="700">6</text>
+    <text x="24" y="96" fill="#1e1236" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="25" font-weight="700">Improve</text>
+    <text x="24" y="130" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16">Learn from events</text>
+    <text x="24" y="156" fill="#655f87" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="16">and metrics.</text>
+  </g>
+
+  <!-- connectors -->
+  <g fill="none" stroke="#9893b5" stroke-width="2" marker-end="url(#arrow)">
+    <path d="M296 345h18"/><path d="M544 345h18"/><path d="M792 345h18"/>
+    <path d="M1040 345h18"/><path d="M1288 345h18"/>
+  </g>
+  <path d="M1422 458v54c0 25-20 45-45 45H222c-25 0-45-20-45-45v-48" fill="none" stroke="#5352e8" stroke-width="2.5" marker-end="url(#return-arrow)"/>
+  <text x="800" y="548" text-anchor="middle" fill="#5352e8" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="650" letter-spacing="0.4">OBSERVE · LEARN · RELEASE THE NEXT VERSION</text>
+</svg>

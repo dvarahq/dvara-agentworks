@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "vectors": [
+    {"id": "agentspec-v1alpha1", "contract": "agentSpec", "version": "dvarahq.com/v1alpha1", "expect": "accept", "fixture": "agentworks-spec/src/test/resources/agentspec/golden/minimal-remote.json", "test": "agentworks-spec/src/test/java/com/dvarahq/agentworks/spec/AgentSpecCompatibilityTest.java#*"},
+    {"id": "agentspec-unknown", "contract": "agentSpec", "version": "dvara.ai/v2", "expect": "reject", "test": "agentworks-spec/src/test/java/com/dvarahq/agentworks/spec/AgentSpecCompatibilityTest.java#*"},
+    {"id": "manifest-v1", "contract": "releaseManifest", "version": 1, "expect": "read-but-refuse-unresolved-model", "test": "agentworks-gateway-api/src/test/java/com/dvarahq/agentworks/gateway/PinnedModelRolesTest.java#version1ManifestsKnowTheirRolesButRefuseToInvokeThem"},
+    {"id": "manifest-v13", "contract": "releaseManifest", "version": 13, "expect": "accept", "test": "agentworks-gateway-api/src/test/java/com/dvarahq/agentworks/gateway/PinnedModelRolesTest.java#version13RoundTripsClosedResilienceAndConcreteFallbackPins"},
+    {"id": "manifest-unknown", "contract": "releaseManifest", "version": 14, "expect": "reject", "test": "agentworks-gateway-api/src/test/java/com/dvarahq/agentworks/gateway/PinnedModelRolesTest.java#unknownVersionsFieldsAndMalformedEntriesAreRefused"},
+    {"id": "event-v1", "contract": "runEvent", "version": 1, "expect": "accept", "test": "agentworks-runtime/src/test/java/com/dvarahq/agentworks/runplane/execution/RunEventCodecTest.java#olderPayloadVersionsAreUpcastOnReadAndUnknownVersionsFailSafely"},
+    {"id": "event-unknown", "contract": "runEvent", "version": 2, "expect": "reject", "test": "agentworks-runtime/src/test/java/com/dvarahq/agentworks/runplane/execution/RunEventCodecTest.java#olderPayloadVersionsAreUpcastOnReadAndUnknownVersionsFailSafely"},
+    {"id": "external-subprocess-v1", "contract": "externalExecutorSubprocess", "version": "agentworks-executor/v1", "expect": "accept", "test": "agentworks-runtime/src/test/java/com/dvarahq/agentworks/agent/remote/ExternalRunnerClientTest.java#negotiatesAndExecutesOrderedCorrelatedMediatedFlow"},
+    {"id": "external-subprocess-unknown", "contract": "externalExecutorSubprocess", "version": "agentworks-executor/v2", "expect": "reject", "test": "agentworks-runtime/src/test/java/com/dvarahq/agentworks/agent/remote/ExternalRunnerClientTest.java#protocolVersionMismatchIsRejectedAndDomainContractsRemainFrameworkNeutral"},
+    {"id": "external-http-v1", "contract": "externalExecutorHttp", "version": "dvara-agentworks-executor/v1@2026-10-14", "expect": "accept", "test": "agentworks-agent-a2a/src/test/java/com/dvarahq/agentworks/a2a/RemoteExecutorHttpClientTest.java#negotiatesBeforeExecutionAndMediatesToolsAndArtifacts"},
+    {"id": "external-http-unknown", "contract": "externalExecutorHttp", "version": "dvara-agentworks-executor/v2@2099-01-01", "expect": "reject", "test": "agentworks-agent-a2a/src/test/java/com/dvarahq/agentworks/a2a/RemoteExecutorHttpClientTest.java#rejectsNegotiationMismatchBeforeExecution"},
+    {"id": "mcp-2025-06-18", "contract": "mcp", "version": "2025-06-18", "expect": "accept", "test": "agentworks-mcp/src/test/java/com/dvarahq/agentworks/mcp/McpTransportConformanceTest.java#officialSdkRunsThroughSandboxOwnedStdioTransport"},
+    {"id": "mcp-unknown", "contract": "mcp", "version": "2099-01-01", "expect": "reject", "test": "agentworks-mcp/src/test/java/com/dvarahq/agentworks/mcp/McpTransportConformanceTest.java#officialSdkRejectsAnUnknownProtocolBeforeDiscovery"},
+    {"id": "a2a-v1", "contract": "a2aExposure", "version": "agentworks-a2a/v1", "expect": "accept", "test": "agentworks-agent-a2a/src/test/java/com/dvarahq/agentworks/a2a/A2aExposureAdapterTest.java#authenticatesAndRoutesVersionedA2aOperations"},
+    {"id": "a2a-unknown", "contract": "a2aExposure", "version": "agentworks-a2a/v2", "expect": "reject", "test": "agentworks-agent-a2a/src/test/java/com/dvarahq/agentworks/a2a/A2aExposureAdapterTest.java#rejectsAnUnknownA2aProfilePathBeforeNegotiation"}
+  ]
+}

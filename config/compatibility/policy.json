@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "releaseLine": "1.0",
+  "reviewedOn": "2026-10-24",
+  "statusDefinitions": {
+    "tested": "Executed by the release CI matrix and supported for production use.",
+    "supported": "Supported for production use and covered by the stated compatibility range.",
+    "experimental": "May be evaluated, but is not a production support claim.",
+    "unsupported": "Rejected where AgentWorks can detect it; no execution or migration is attempted."
+  },
+  "eolPolicy": {
+    "noticeDays": 90,
+    "rule": "A supported dependency remains supported through its upstream security-support window. Removal is announced at least 90 days before an AgentWorks minor release; a dependency that reaches upstream EOL may be removed in the next AgentWorks minor release. Security emergencies may shorten notice with a published advisory.",
+    "oldStateRule": "Removing an executable version never repins existing runs. Non-quiescent cohorts require their exact compatible reader, executor, adapters, checkpoint/event upcasters, pending contracts, and runtime-owned resources until PostgreSQL proves quiescence. Unsupported old state is quarantined with a typed blocker.",
+    "retirementRule": "Runtime compatibility ends only after durable quiescence and irreversible cohort retirement. Audit, replay, legal-hold, retention, privacy-safe idempotency tombstones, and backup readers remain for their independent retention periods."
+  },
+  "java": {
+    "major": 25,
+    "testedDistributions": ["Eclipse Temurin", "Amazon Corretto"],
+    "supportedDistributions": ["Eclipse Temurin", "Amazon Corretto"],
+    "experimentalDistributions": ["Azul Zulu", "Oracle OpenJDK"],
+    "unsupported": ["Java <=24", "Java >=26", "non-TCK-compatible runtimes"]
+  },
+  "framework": {
+    "springBoot": {"version": "4.1.2", "status": "tested"},
+    "springAi": {"version": "2.0.1", "status": "tested"},
+    "upgradeRule": "Upgrade only as one reviewed dependency change after the complete Spring AI compatibility suite passes; adapter changes must not move framework/provider types outside adapter packages or change durable authority semantics."
+  },
+  "postgresql": {
+    "minimumMajor": 15,
+    "maximumMajor": 18,
+    "testedImages": ["postgres:15.19-alpine", "postgres:18.6-alpine"],
+    "referenceProductionMajor": 17,
+    "supportedMajors": [15, 16, 17, 18],
+    "experimental": ["H2 2.5.250 for loopback local development and tests only"],
+    "unsupported": ["PostgreSQL <=14", "PostgreSQL >=19", "H2 in a reachable or production installation", "other databases"]
+  },
+  "containers": {
+    "dockerEngine": {
+      "minimumMajor": 27,
+      "maximumMajor": 29,
+      "status": "supported",
+      "note": "Docker or an API-compatible engine must support Compose v2, BuildKit attestations, read-only filesystems, health checks, and the resource/security controls used by the supported packaging."
+    },
+    "kubernetes": {
+      "minimumMinor": "1.35",
+      "maximumMinor": "1.37",
+      "testedMinMax": ["1.35.9", "1.37.1"],
+      "supportedMinors": ["1.35", "1.36", "1.37"],
+      "unsupported": ["Kubernetes <=1.34", "Kubernetes >=1.38"]
+    }
+  },
+  "clients": {
+    "cli": {
+      "testedPlatforms": ["ubuntu-latest x86_64", "macos-latest arm64/x86_64"],
+      "supportedPlatforms": ["Linux x86_64/arm64 with Python 3.11+", "macOS arm64/x86_64 with Python 3.11+"],
+      "unsupported": ["Windows native", "Python <=3.10"]
+    },
+    "browser": {
+      "playwrightVersion": "1.63.0",
+      "testedEngines": ["chromium", "firefox", "webkit"],
+      "supported": ["current and previous stable Chrome/Chromium", "current and previous stable Firefox", "current and previous stable Safari"],
+      "experimental": ["mobile browser layouts"],
+      "unsupported": ["Internet Explorer", "browsers without EventSource, fetch, Web Crypto, or ES2022 support"]
+    }
+  },
+  "contracts": {
+    "agentSpec": {"read": ["dvarahq.com/v1alpha1"], "write": "dvarahq.com/v1alpha1", "unknown": "reject"},
+    "releaseManifest": {"read": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], "write": 13, "unknown": "reject"},
+    "runEvent": {"read": [1], "write": 1, "unknownTypeOrVersion": "reject; use an explicit contiguous upcaster before support is claimed"},
+    "externalExecutorSubprocess": {"read": ["agentworks-executor/v1"], "write": "agentworks-executor/v1", "unknown": "reject before start"},
+    "externalExecutorHttp": {"protocol": "dvara-agentworks-executor/v1", "schema": "2026-10-14", "unknown": "reject during negotiation before execution"},
+    "a2aExposure": {"profile": "agentworks-a2a/v1", "paths": ["/a2a/v1/handshake", "/a2a/v1/message:send", "/a2a/v1/tasks:cancel"], "unknown": "reject before invocation"},
+    "mcp": {"protocol": "2025-06-18", "transportProfiles": ["stdio", "streamable-http"], "unknown": "SDK negotiation rejects before tool discovery or invocation"},
+    "database": {"migrationPolicy": "forward-only and immutable after a v* release tag", "minimumReadableSchema": "1", "currentWriter": "latest Flyway migration", "unknown": "newer schema or incompatible migration state refuses startup"},
+    "mixedWorkers": {
+      "identityInputs": ["build commit", "manifest reader", "event/checkpoint upcasters", "executor and adapter protocols", "idempotency/fingerprint schema", "database-time lease semantics", "transition-authorized write schema", "uncertain-effect schema"],
+      "rule": "A worker may claim only state its stamped compatibility identity can read and execute. It must quarantine incompatible work before claim/commit; it never substitutes the current release or changes creation pins."
+    }
+  },
+  "deprecations": {
+    "inventory": "config/compatibility/deprecations.json",
+    "rule": "Every deliberate deprecated-API use must record an owner, tracking issue, removal release, and replacement. Unrecorded suppressions fail the repository policy gate."
+  },
+  "evidence": {
+    "goldenVectors": "config/compatibility/golden-vectors.json",
+    "springAiSuites": [
+      "SpringAiCompatibilityTest",
+      "SpringAiMcpCompatibilityTest",
+      "SpringAiAgentExecutorTest",
+      "ExecutorInputTest",
+      "SpringAiAuthorityBoundaryTest"
+    ]
+  }
+}

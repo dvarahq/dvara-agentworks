@@ -1,0 +1,19 @@
+# Local development only: activate with --spring.profiles.active=local. Binds to loopback, uses a fixed,
+# non-secret HMAC key for idempotency digests, relaxes only the session cookie's Secure attribute so that a browser
+# can sign in over plain http://127.0.0.1, and sets agentworks.development.local, which permits the deterministic
+# fake model gateway and is refused unless the server binds to loopback. Every request still authenticates: create
+# the first administrator with the one-time bootstrap token that the server writes at startup (issue #74). Never use
+# this profile for a reachable installation.
+server:
+  address: 127.0.0.1
+  forward-headers-strategy: none
+agentworks:
+  development:
+    local: true
+  security:
+    session:
+      cookie-secure: false
+  idempotency:
+    active-key-version: 1
+    hmac-keys:
+      "1": bG9jYWwtZGV2ZWxvcG1lbnQtb25seS1pZGVtcG90ZW5jeS1rZXktbm90LWEtc2VjcmV0

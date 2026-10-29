@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Sign in')}"></head>
+<body>
+<main id="main" class="container py-5 console-narrow">
+    <h1 class="h3 mb-4">Sign in to Dvara AgentWorks</h1>
+    <th:block th:if="${problem != null}"><div th:replace="~{console/fragments :: problem}"></div></th:block>
+    <!--/* A plain form, so sign-in works before or without scripts; the server checks its Origin. */-->
+    <form method="post" action="/console/login" class="vstack gap-3">
+        <div>
+            <label for="username" class="form-label">Username</label>
+            <input id="username" name="username" class="form-control" autocomplete="username" required
+                   autocapitalize="none" spellcheck="false">
+        </div>
+        <div>
+            <label for="password" class="form-label">Password</label>
+            <input id="password" name="password" type="password" class="form-control" autocomplete="current-password"
+                   required>
+        </div>
+        <button type="submit" class="btn btn-primary">Sign in</button>
+    </form>
+</main>
+</body>
+</html>

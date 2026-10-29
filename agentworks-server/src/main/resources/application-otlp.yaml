@@ -1,0 +1,20 @@
+# Push profile. Collector outages are asynchronous telemetry failures and never change product correctness/readiness.
+management:
+  prometheus:
+    metrics:
+      export:
+        enabled: false
+  otlp:
+    metrics:
+      export:
+        enabled: true
+        url: ${OTEL_EXPORTER_OTLP_METRICS_ENDPOINT:http://127.0.0.1:4318/v1/metrics}
+  tracing:
+    export:
+      otlp:
+        enabled: true
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:http://127.0.0.1:4318/v1/traces}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Session inbox')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('sessions')}"></header>
+<main id="main" class="container py-4">
+    <p><a href="/console/sessions">← Sessions</a></p>
+    <h1 class="h3">Session <code th:text="${session.id()}">id</code></h1>
+    <p>Deployment <a th:href="@{/console/deployments/{id}(id=${session.deploymentId()})}"><code th:text="${session.deploymentId()}">deployment</code></a></p>
+    <form method="get" class="row g-2 mb-3"><div class="col-md-3"><label for="status" class="form-label">Inbox status</label>
+        <select id="status" name="status" class="form-select"><option value="">Any</option>
+            <option th:each="state : ${ {'PENDING','CLAIMED','CONSUMED','SUPERSEDED','CANCELLED'} }"
+                    th:value="${state}" th:text="${state}" th:selected="${state == statusFilter}">PENDING</option>
+        </select></div><div class="col-md-2 align-self-end"><button class="btn btn-outline-secondary w-100">Filter</button></div></form>
+    <table class="table table-sm align-middle">
+        <caption>Durable inbox, newest sequence first</caption>
+        <thead><tr><th>Sequence</th><th>Type</th><th>Status</th><th>Run</th><th>Correlation</th></tr></thead>
+        <tbody><tr th:each="item : ${messages.items()}">
+            <td th:text="${item.sequence()}">1</td><td th:text="${item.type()}">USER_MESSAGE</td>
+            <td th:text="${item.status()}">PENDING</td>
+            <td><a th:href="@{/console/runs/{id}(id=${item.runId()})}"><code th:text="${item.runId()}">run</code></a></td>
+            <td><code th:text="${item.correlationId()}">correlation</code></td>
+        </tr><tr th:if="${#lists.isEmpty(messages.items())}"><td colspan="5">No inbox messages.</td></tr></tbody>
+    </table>
+    <a class="btn btn-sm btn-outline-secondary" th:if="${messages.nextCursor() != null}"
+       th:href="@{/console/sessions/{id}(id=${session.id()},status=${statusFilter},cursor=${messages.nextCursor()})}">Next page</a>
+</main>
+</body>
+</html>

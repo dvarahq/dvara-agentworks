@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent><groupId>com.dvarahq</groupId><artifactId>agentworks-parent</artifactId><version>1.0.0-rc1</version><relativePath>..</relativePath></parent>
+  <groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-dvarahq</artifactId>
+  <name>Dvara AgentWorks DvaraHQ Gateway Adapter</name>
+  <description>Optional DvaraHQ model, MCP and A2A adapters over public Core contracts</description>
+  <dependencies>
+    <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-api</artifactId></dependency>
+    <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-api</artifactId><type>test-jar</type><scope>test</scope></dependency>
+    <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-api</artifactId></dependency>
+    <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-openai-compatible</artifactId></dependency>
+    <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-mcp</artifactId></dependency>
+    <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-agent-a2a</artifactId></dependency>
+    <dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId></dependency>
+    <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-api</artifactId><type>test-jar</type><scope>test</scope></dependency>
+    <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-openai-compatible</artifactId><version>${project.version}</version><type>test-jar</type><scope>test</scope></dependency>
+    <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+    <dependency><groupId>org.assertj</groupId><artifactId>assertj-core</artifactId><scope>test</scope></dependency>
+  </dependencies>
+</project>

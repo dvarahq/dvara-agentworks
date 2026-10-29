@@ -1,0 +1,8 @@
+package com.dvarahq.agentworks.context;
+
+/** Closed OSS 1.0 context categories used for budgeting and explainability. */
+public enum ContextItemType {
+    SYSTEM_INSTRUCTION, AGENT_INSTRUCTION, USER_INPUT, CONVERSATION_MEMORY, WORKING_MEMORY,
+    SEMANTIC_MEMORY, SKILL, TOOL_DEFINITION, ARTIFACT_SUMMARY, SANDBOX_METADATA,
+    SUBAGENT_RESULT, POLICY_INSTRUCTION, ENVIRONMENT_METADATA, COMPACTION_SUMMARY
+}

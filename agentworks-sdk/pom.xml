@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+<parent><groupId>com.dvarahq</groupId><artifactId>agentworks-parent</artifactId><version>1.0.0-rc1</version><relativePath>..</relativePath></parent>
+<groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-sdk</artifactId><name>Dvara AgentWorks Java SDK</name>
+<description>Framework-neutral Java client, AgentSpec authoring, and reconnectable typed SSE</description>
+<dependencies>
+<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-spec</artifactId></dependency>
+<dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId></dependency>
+<dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+<dependency><groupId>org.assertj</groupId><artifactId>assertj-core</artifactId><scope>test</scope></dependency>
+</dependencies>
+<build><plugins>
+<plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-source-plugin</artifactId><version>3.4.0</version><executions><execution><id>sources</id><goals><goal>jar-no-fork</goal></goals></execution></executions></plugin>
+<plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-javadoc-plugin</artifactId><version>3.12.0</version><configuration><doclint>none</doclint><quiet>true</quiet></configuration><executions><execution><id>javadocs</id><goals><goal>jar</goal></goals></execution></executions></plugin>
+</plugins></build>
+</project>

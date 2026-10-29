@@ -1,0 +1,13 @@
+# Test-only overrides layered over the shipped application.yaml: each test context writes its bootstrap token
+# under the temporary directory instead of the working tree, and the per-address sign-in limit is raised because
+# every test client connects from loopback. Tests of the limit itself set their own value.
+agentworks:
+  compatibility:
+    # Production rejects H2 before Flyway mutates anything. Unit/API contexts use it as an explicitly test-only store.
+    allow-embedded-database: true
+  security:
+    bootstrap:
+      token-file: ${java.io.tmpdir}/agentworks-server-tests/${random.uuid}/bootstrap-token
+    login:
+      attempts-per-window: 100000
+      attempts-per-account-window: 100000

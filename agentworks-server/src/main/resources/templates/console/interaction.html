@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Interaction')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('interactions')}"></header>
+<main id="main" class="container py-4">
+    <p><a href="/console/interactions">← Interactions</a></p>
+    <h1 class="h3" th:text="${interaction.prompt().title()}">Interaction</h1>
+    <p class="lead" th:text="${interaction.prompt().prompt()}">Prompt</p>
+    <dl class="row small">
+        <dt class="col-sm-3">Kind</dt><dd class="col-sm-9" th:text="${interaction.kind()}">APPROVAL</dd>
+        <dt class="col-sm-3">Status</dt><dd class="col-sm-9" th:text="${interaction.status()}">OPEN</dd>
+        <dt class="col-sm-3">Interaction</dt><dd class="col-sm-9"><code th:text="${interaction.id()}">id</code></dd>
+        <dt class="col-sm-3">Run</dt><dd class="col-sm-9"><a th:href="@{/console/runs/{id}(id=${interaction.runId()})}"><code th:text="${interaction.runId()}">run</code></a></dd>
+        <dt class="col-sm-3">Correlation</dt><dd class="col-sm-9"><code th:text="${interaction.correlationId()}">correlation</code></dd>
+        <dt class="col-sm-3">Assignment</dt><dd class="col-sm-9"><span th:text="${interaction.assignment().level()}">USER</span>
+            <code th:if="${interaction.assignment().principalId() != null}" th:text="${interaction.assignment().principalId()}">principal</code></dd>
+        <dt class="col-sm-3">Deadline</dt><dd class="col-sm-9" th:text="${interaction.deadline()}">time</dd>
+        <dt class="col-sm-3">Release</dt><dd class="col-sm-9"><code th:text="${interaction.releaseId()}">release</code></dd>
+        <dt class="col-sm-3">Deployment revision</dt><dd class="col-sm-9"><code th:text="${interaction.deploymentId()}">deployment</code>
+            / <code th:text="${interaction.revisionId()}">revision</code></dd>
+        <dt class="col-sm-3">Cohort fence</dt><dd class="col-sm-9"><code th:text="${interaction.cohortId()}">cohort</code>
+            · version <span th:text="${interaction.cohortTransitionVersion()}">1</span></dd>
+    </dl>
+    <div class="alert alert-warning" th:if="${interaction.prompt().consequence() != null}">
+        <strong>Consequence:</strong> <span th:text="${interaction.prompt().consequence()}">consequence</span>
+    </div>
+
+    <section th:if="${interaction.status() == 'OPEN'}">
+        <h2 class="h5">Respond</h2>
+        <form method="post" th:action="@{/console/interactions/{id}/response(id=${interaction.id()})}"
+              th:attr="hx-post=@{/console/interactions/{id}/response(id=${interaction.id()})}"
+              hx-target="#response-result" hx-disabled-elt="find button" class="card card-body">
+            <div th:if="${interaction.kind().name() == 'APPROVAL'}" class="mb-3">
+                <label for="approved" class="form-label">Decision</label>
+                <select id="approved" name="approved" class="form-select" required>
+                    <option value="true">Approve</option><option value="false">Deny</option>
+                </select>
+            </div>
+            <div th:if="${interaction.kind().name() == 'QUESTION'}" class="mb-3">
+                <label for="answer" class="form-label">Answer</label>
+                <textarea id="answer" name="answer" class="form-control" required></textarea>
+                <div class="form-text" th:if="${interaction.prompt().answerSchema() != null}">Expected schema:
+                    <code th:text="${interaction.prompt().answerSchema()}">schema</code></div>
+            </div>
+            <fieldset th:if="${interaction.kind().name() == 'SELECTION'}" class="mb-3">
+                <legend class="h6">Choose options</legend>
+                <div class="form-check" th:each="option : ${interaction.prompt().options()}">
+                    <input class="form-check-input" type="checkbox" name="optionIds"
+                           th:id="${'option-' + option.id()}" th:value="${option.id()}">
+                    <label class="form-check-label" th:for="${'option-' + option.id()}" th:text="${option.label()}">Option</label>
+                </div>
+                <div class="form-text">Choose between <span th:text="${interaction.prompt().minimum()}">0</span> and
+                    <span th:text="${interaction.prompt().maximum()}">1</span>.</div>
+            </fieldset>
+            <div th:if="${interaction.kind().name() == 'FORM'}" class="mb-3">
+                <label for="fields" class="form-label">Fields (JSON object of string values)</label>
+                <textarea id="fields" name="fields" class="form-control" required>{}</textarea>
+                <div class="form-text" th:if="${interaction.prompt().responseSchema() != null}">Expected schema:
+                    <code th:text="${interaction.prompt().responseSchema()}">schema</code></div>
+            </div>
+            <div th:if="${interaction.kind().name() == 'CONFIRMATION'}" class="mb-3">
+                <label for="confirmed" class="form-label">Confirmation</label>
+                <select id="confirmed" name="confirmed" class="form-select" required>
+                    <option value="true">Confirm</option><option value="false">Do not confirm</option>
+                </select>
+            </div>
+            <div th:if="${interaction.kind().name() == 'AUTHORIZATION'}" class="mb-3">
+                <p>Credential reference: <code th:text="${interaction.prompt().credentialRef()}">reference</code></p>
+                <p>Scopes: <code th:text="${interaction.prompt().scopes()}">scopes</code></p>
+                <label for="granted" class="form-label">Authorization</label>
+                <select id="granted" name="granted" class="form-select" required>
+                    <option value="true">Grant</option><option value="false">Deny</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit response</button>
+        </form>
+        <div id="response-result" aria-live="polite"></div>
+    </section>
+
+    <section th:if="${interaction.outcome() != null}">
+        <h2 class="h5">Outcome</h2>
+        <p>Resolved <span th:text="${interaction.outcome().resolvedAt()}">time</span> by
+            <code th:text="${interaction.outcome().resolvedBy()}">actor</code>.</p>
+        <p th:if="${interaction.outcome().response() == null}">No response payload.</p>
+        <dl class="row" th:if="${interaction.outcome().response() != null}">
+            <dt class="col-sm-3">Response</dt><dd class="col-sm-9">
+                <span th:if="${interaction.outcome().response().approved() != null}"
+                      th:text="${interaction.outcome().response().approved() ? 'Approved' : 'Denied'}">Approved</span>
+                <span th:if="${interaction.outcome().response().answerRedacted() == true}">Answer recorded (redacted)</span>
+                <span th:if="${interaction.outcome().response().optionIds() != null}"
+                      th:text="${interaction.outcome().response().optionIds()}">options</span>
+                <span th:if="${interaction.outcome().response().formRedacted() == true}">Form recorded (redacted)</span>
+                <span th:if="${interaction.outcome().response().confirmed() != null}"
+                      th:text="${interaction.outcome().response().confirmed() ? 'Confirmed' : 'Not confirmed'}">Confirmed</span>
+                <span th:if="${interaction.outcome().response().granted() != null}"
+                      th:text="${interaction.outcome().response().granted() ? 'Granted' : 'Denied'}">Granted</span>
+            </dd>
+        </dl>
+    </section>
+</main>
+</body>
+</html>

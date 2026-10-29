@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{console/layout :: head('Deployments')}"></head>
+<body th:attr="hx-headers=${console.csrfHeaders()}">
+<header th:replace="~{console/layout :: nav('deployments')}"></header>
+<main id="main" class="container py-4">
+    <h1 class="h3">Deployments</h1>
+
+    <form method="get" action="/console/deployments" class="row g-2 align-items-end mb-3">
+        <div class="col-md-4">
+            <label for="environment-filter" class="form-label">Environment</label>
+            <select id="environment-filter" name="environment" class="form-select">
+                <option value="">All environments</option>
+                <option th:each="environment : ${environments}" th:value="${environment.id()}"
+                        th:text="${environment.name()}" th:selected="${environment.id() == selectedEnvironment}">env</option>
+            </select>
+        </div>
+        <div class="col-md-2"><button type="submit" class="btn btn-outline-secondary w-100">Filter</button></div>
+    </form>
+
+    <table class="table table-sm align-middle">
+        <caption>Deployments, with their current release and routing generation</caption>
+        <thead><tr><th scope="col">Name</th><th scope="col">Environment</th><th scope="col">Generation</th>
+            <th scope="col">Current revision</th><th scope="col">Desired release</th></tr></thead>
+        <tbody>
+        <tr th:each="deployment : ${deployments.items()}">
+            <td><a th:href="@{/console/deployments/{id}(id=${deployment.id()})}" th:text="${deployment.name()}">name</a></td>
+            <td><code class="small" th:text="${deployment.environmentId()}">env</code></td>
+            <td th:text="${deployment.generation()}">1</td>
+            <td><code class="small" th:text="${deployment.currentRevisionId()}">rev</code></td>
+            <td><code class="small" th:text="${deployment.desiredReleaseId()}">rel</code></td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(deployments.items())}"><td colspan="5">No deployments yet.</td></tr>
+        </tbody>
+    </table>
+    <a class="btn btn-sm btn-outline-secondary" th:if="${deployments.nextCursor() != null}"
+       th:href="@{/console/deployments(environment=${selectedEnvironment},cursor=${deployments.nextCursor()})}">Next page</a>
+
+    <section class="mt-4" th:if="${console.can('DEPLOYMENT_OPERATE')}" aria-labelledby="promote">
+        <h2 id="promote" class="h5">Promote a release</h2>
+        <p class="small text-body-secondary">Creates or updates the named deployment in the environment through the
+            environment's promotion gates, atomically, as a new immutable revision.</p>
+        <form th:if="${!#lists.isEmpty(environments) and !#lists.isEmpty(releases)}" id="promote-form" method="post"
+              action="/console/promotions"
+              hx-post="/console/promotions" hx-target="#promote-result" hx-disabled-elt="find button"
+              class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label for="promote-environment" class="form-label">Environment</label>
+                <select id="promote-environment" name="environmentId" class="form-select" required>
+                    <option value="" disabled th:selected="${selectedEnvironment == null}">Choose an environment</option>
+                    <option th:each="environment : ${environments}" th:value="${environment.id()}"
+                            th:text="${environment.name()}" th:selected="${environment.id() == selectedEnvironment}">env</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="promote-deployment" class="form-label">Deployment name</label>
+                <input id="promote-deployment" name="deployment" class="form-control" required maxlength="200">
+            </div>
+            <div class="col-md-4">
+                <label for="promote-release" class="form-label">Release</label>
+                <select id="promote-release" name="releaseId" class="form-select" required>
+                    <option value="" disabled th:selected="${selectedRelease == null}">Choose a release</option>
+                    <option th:each="release : ${releases}" th:value="${release.id()}"
+                            th:text="${release.name()} + ' (' + ${release.createdAt()} + ')'"
+                            th:selected="${release.id() == selectedRelease}">release</option>
+                </select>
+            </div>
+            <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Promote</button></div>
+        </form>
+        <p th:if="${#lists.isEmpty(environments) or #lists.isEmpty(releases)}" class="text-body-secondary">
+            Promotion needs an environment and a release.</p>
+        <div id="promote-result" aria-live="polite"></div>
+    </section>
+
+    <section class="mt-4" aria-labelledby="environments">
+        <h2 id="environments" class="h5">Environments</h2>
+        <ul>
+            <li th:each="environment : ${environments}">
+                <a th:href="@{/console/environments/{id}(id=${environment.id()})}" th:text="${environment.name()}">env</a>
+                <span class="text-body-secondary small" th:text="'policy v' + ${environment.policyVersion()}">policy</span>
+            </li>
+            <li th:if="${#lists.isEmpty(environments)}">No environments yet.</li>
+        </ul>
+        <form th:if="${console.can('ENVIRONMENT_ADMIN')}" method="post" action="/console/environments" hx-post="/console/environments" hx-target="#environment-result"
+              hx-disabled-elt="find button" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label for="environment-name" class="form-label">New environment name</label>
+                <input id="environment-name" name="name" class="form-control" required maxlength="200">
+            </div>
+            <div class="col-md-6">
+                <label for="environment-description" class="form-label">Description (optional)</label>
+                <input id="environment-description" name="description" class="form-control" maxlength="1000">
+            </div>
+            <div class="col-md-2"><button type="submit" class="btn btn-outline-primary w-100">Create</button></div>
+        </form>
+        <div id="environment-result" aria-live="polite"></div>
+    </section>
+</main>
+</body>
+</html>

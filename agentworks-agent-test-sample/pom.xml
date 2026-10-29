@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
+<parent><groupId>com.dvarahq</groupId><artifactId>agentworks-parent</artifactId><version>1.0.0-rc1</version><relativePath>..</relativePath></parent>
+<groupId>com.dvarahq.agentworks.samples</groupId><artifactId>agentworks-agent-test-sample</artifactId><name>AgentTest Maven Sample</name>
+<description>Non-published sample proving AgentTest runs with Maven and no server</description>
+<properties><maven.install.skip>true</maven.install.skip><maven.deploy.skip>true</maven.deploy.skip></properties>
+<dependencies>
+<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-agent-test</artifactId><scope>test</scope></dependency>
+<dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
+</dependencies>
+</project>

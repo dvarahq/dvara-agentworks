@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<!--/* Shared page parts of the Web Console (issue #36). No inline script or style anywhere: see the CSP. */-->
+<head th:fragment="head(title)">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="htmx-config"
+          content='{"allowEval":false,"allowScriptTags":false,"includeIndicatorStyles":false,"selfRequestsOnly":true,"historyEnabled":false,"responseHandling":[{"code":"204","swap":false},{"code":"[23]..","swap":true},{"code":"[45]..","swap":true,"error":true}]}'>
+    <title th:text="${title} + ' · Dvara AgentWorks'">Dvara AgentWorks</title>
+    <link rel="stylesheet" href="/console/assets/vendor/bootstrap-5.3.8/bootstrap.min.css"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="/console/assets/console.css">
+    <script src="/console/assets/vendor/htmx-2.0.11/htmx.min.js"
+            integrity="sha384-2OatzQy1H+Zd/IIrjr1TcuDGqLXeHhbooAyJY1KdQMKnr4LZ22k31GBLdYKHmVjg" crossorigin="anonymous"
+            defer></script>
+    <script src="/console/assets/console.js" defer></script>
+</head>
+<body>
+<header th:fragment="nav(active)">
+    <a class="visually-hidden-focusable" href="#main">Skip to main content</a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Console">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/console/dashboard">Dvara AgentWorks</a>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/console/dashboard" th:classappend="${active == 'dashboard'} ? 'active'"
+                                        th:attr="aria-current=${active == 'dashboard'} ? 'page' : null">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" href="/console/agents" th:classappend="${active == 'agents'} ? 'active'"
+                                        th:attr="aria-current=${active == 'agents'} ? 'page' : null">Agents</a></li>
+                <li class="nav-item"><a class="nav-link" href="/console/releases" th:classappend="${active == 'releases'} ? 'active'"
+                                        th:attr="aria-current=${active == 'releases'} ? 'page' : null">Releases</a></li>
+                <li class="nav-item"><a class="nav-link" href="/console/deployments" th:classappend="${active == 'deployments'} ? 'active'"
+                                        th:attr="aria-current=${active == 'deployments'} ? 'page' : null">Deployments</a></li>
+                <li class="nav-item"><a class="nav-link" href="/console/runs" th:classappend="${active == 'runs'} ? 'active'"
+                                        th:attr="aria-current=${active == 'runs'} ? 'page' : null">Runs</a></li>
+                <li class="nav-item"><a class="nav-link" href="/console/interactions"
+                                        th:classappend="${active == 'interactions'} ? 'active'"
+                                        th:attr="aria-current=${active == 'interactions'} ? 'page' : null">Interactions</a></li>
+                <li class="nav-item"><a class="nav-link" href="/console/sessions"
+                                        th:classappend="${active == 'sessions'} ? 'active'"
+                                        th:attr="aria-current=${active == 'sessions'} ? 'page' : null">Sessions</a></li>
+                <li class="nav-item"><a class="nav-link" href="/console/operations"
+                                        th:classappend="${active == 'operations'} ? 'active'"
+                                        th:attr="aria-current=${active == 'operations'} ? 'page' : null">Operations</a></li>
+                <li class="nav-item"><a class="nav-link" href="/console/artifacts"
+                                        th:classappend="${active == 'artifacts'} ? 'active'"
+                                        th:attr="aria-current=${active == 'artifacts'} ? 'page' : null">Artifacts</a></li>
+                <li class="nav-item"><a class="nav-link" href="/console/mcp"
+                                        th:classappend="${active == 'mcp'} ? 'active'"
+                                        th:attr="aria-current=${active == 'mcp'} ? 'page' : null">MCP</a></li>
+                <li class="nav-item"><a class="nav-link" href="/console/features" th:classappend="${active == 'features'} ? 'active'"
+                                        th:attr="aria-current=${active == 'features'} ? 'page' : null">Features</a></li>
+                <li class="nav-item"><a class="nav-link" href="/console/audit" th:classappend="${active == 'audit'} ? 'active'"
+                                        th:attr="aria-current=${active == 'audit'} ? 'page' : null">Audit</a></li>
+                <li class="nav-item"><a class="nav-link" href="/console/settings" th:classappend="${active == 'settings'} ? 'active'"
+                                        th:attr="aria-current=${active == 'settings'} ? 'page' : null">Settings</a></li>
+                <li class="nav-item"><a class="nav-link" href="/console/diagnostics" th:classappend="${active == 'diagnostics'} ? 'active'"
+                                        th:attr="aria-current=${active == 'diagnostics'} ? 'page' : null">Diagnostics</a></li>
+            </ul>
+            <div class="d-flex flex-wrap align-items-center gap-2" th:if="${console != null}">
+                <form class="d-flex align-items-center gap-1" th:if="${!#lists.isEmpty(console.workspaces())}" method="post"
+                      action="/console/workspace"
+                      hx-post="/console/workspace" hx-target="#nav-result" hx-disabled-elt="find button">
+                    <label for="workspace-select" class="navbar-text text-light small mb-0">Workspace</label>
+                    <select id="workspace-select" name="workspaceId" class="form-select form-select-sm">
+                        <option th:each="workspace : ${console.workspaces()}" th:value="${workspace.workspaceId()}"
+                                th:text="${workspace.name()} + ' (' + ${workspace.role()} + ')'"
+                                th:selected="${workspace.workspaceId() == console.workspaceId()}">workspace</option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-outline-light">Switch</button>
+                </form>
+                <span class="navbar-text text-light small">
+                    Signed in as <strong th:text="${console.username()}">user</strong>
+                    <span th:if="${console.role() != null}" th:text="'· ' + ${console.role()}">· ROLE</span>
+                </span>
+                <button type="button" class="btn btn-sm btn-outline-light" hx-post="/console/logout"
+                        hx-target="#nav-result">Sign out</button>
+            </div>
+        </div>
+    </nav>
+    <div id="nav-result" class="container-fluid" aria-live="polite"></div>
+    <noscript><div class="alert alert-warning m-2">Console actions need JavaScript; pages remain readable without it.</div></noscript>
+</header>
+</body>
+</html>

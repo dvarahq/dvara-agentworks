@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "reviewedOn": "2026-10-24",
+  "entries": [],
+  "finding": "No deprecated API use or deprecation/removal suppression remains in compiled Java source at this review; the Java compatibility matrix compiles with deprecation detail and warnings-as-errors.",
+  "entryRequiredFields": ["symbol", "owner", "trackingIssue", "removalRelease", "replacement", "reason"]
+}

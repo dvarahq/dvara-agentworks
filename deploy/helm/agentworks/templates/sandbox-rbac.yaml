@@ -1,0 +1,47 @@
+{{- if .Values.sandbox.enabled }}
+{{- if .Values.sandbox.createNamespace }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.sandbox.namespace }}
+  labels:
+    app.kubernetes.io/part-of: agentworks
+---
+{{- end }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.sandbox.serviceAccount }}
+  namespace: {{ .Values.sandbox.namespace }}
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "agentworks.fullname" . }}-sandbox-controller
+  namespace: {{ .Values.sandbox.namespace }}
+rules:
+  - apiGroups: [""]
+    resources: [pods]
+    verbs: [create, get, list, watch, delete]
+  - apiGroups: [""]
+    resources: [pods/exec]
+    verbs: [create]
+  - apiGroups: [networking.k8s.io]
+    resources: [networkpolicies]
+    verbs: [create, get, list, watch, delete]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "agentworks.fullname" . }}-sandbox-controller
+  namespace: {{ .Values.sandbox.namespace }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "agentworks.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "agentworks.fullname" . }}-sandbox-controller
+{{- end }}
