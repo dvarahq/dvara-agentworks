@@ -130,8 +130,8 @@ def policy_problems(root: Path = ROOT) -> list[str]:
     if release != {"version": "1.0.0-rc1", "tag": "v1.0.0-rc1",
                     "canonicalSource": "https://github.com/dvarahq/dvara-agentworks"}:
         problems.append("GA policy release identity differs from the frozen RC")
-    if policy.get("requiredPrerequisiteIssues") != [67, 83]:
-        problems.append("GA prerequisite inventory must contain #67 then #83")
+    if policy.get("requiredPrerequisiteIssues") != [6, 13]:
+        problems.append("GA prerequisite inventory must contain public issues #6 then #13")
     if policy.get("allowedVerdicts") != ["PASS", "PASS_WITH_NON_BLOCKING_FOLLOW_UPS", "FAIL"]:
         problems.append("GA verdict vocabulary differs from ADR-024")
     if policy.get("reportSigning") != {
@@ -169,7 +169,7 @@ def policy_problems(root: Path = ROOT) -> list[str]:
     if template.get("release") != expected_template_release or template.get("verdict") != "PENDING":
         problems.append("GA evidence template must be PENDING and share the frozen RC identity")
     prerequisites = template.get("prerequisites", [])
-    if [entry.get("issue") for entry in prerequisites if isinstance(entry, dict)] != [67, 83]:
+    if [entry.get("issue") for entry in prerequisites if isinstance(entry, dict)] != [6, 13]:
         problems.append("GA evidence template prerequisite inventory differs from policy")
     if template.get("invariants") != {} or template.get("audits") != {}:
         problems.append("GA evidence template cannot pre-attest invariant or audit results")
@@ -211,8 +211,8 @@ def evidence_problems(evidence: dict[str, Any], root: Path = ROOT, *, evidence_b
         problems.append("GA release commit is not exact and clean")
 
     prerequisites = evidence.get("prerequisites", [])
-    if not isinstance(prerequisites, list) or [item.get("issue") for item in prerequisites if isinstance(item, dict)] != [67, 83]:
-        problems.append("GA prerequisite evidence differs from #67 and #83")
+    if not isinstance(prerequisites, list) or [item.get("issue") for item in prerequisites if isinstance(item, dict)] != [6, 13]:
+        problems.append("GA prerequisite evidence differs from public issues #6 and #13")
     else:
         for item in prerequisites:
             number = item.get("issue")
@@ -225,21 +225,21 @@ def evidence_problems(evidence: dict[str, Any], root: Path = ROOT, *, evidence_b
                     or not SHA256.fullmatch(item["evidenceSha256"]) \
                     or digest(path) != item["evidenceSha256"]:
                 problems.append(f"issue #{number} evidence SHA-256 does not match")
-            elif number == 83:
+            elif number == 13:
                 try:
                     readiness = load(path)
                 except (OSError, ValueError) as error:
-                    problems.append(f"cannot inspect issue #83 evidence: {error}")
+                    problems.append(f"cannot inspect public issue #13 evidence: {error}")
                 else:
                     readiness_artifacts = readiness.get("artifacts", {})
                     outer_artifacts = evidence.get("artifacts", {})
                     outer_artifacts = outer_artifacts if isinstance(outer_artifacts, dict) else {}
                     if readiness.get("commit") != commit or readiness.get("verdict") != "PASS":
-                        problems.append("issue #83 evidence does not PASS the exact RC commit")
+                        problems.append("public issue #13 evidence does not PASS the exact RC commit")
                     if not isinstance(readiness_artifacts, dict) \
                             or readiness_artifacts.get("manifestSha256") != outer_artifacts.get("manifestSha256") \
                             or readiness_artifacts.get("checksumsSha256") != outer_artifacts.get("checksumsSha256"):
-                        problems.append("issue #83 evidence names different RC artifacts")
+                        problems.append("public issue #13 evidence names different RC artifacts")
 
     artifacts = evidence.get("artifacts", {})
     if not isinstance(artifacts, dict):
@@ -249,19 +249,19 @@ def evidence_problems(evidence: dict[str, Any], root: Path = ROOT, *, evidence_b
             problems.append(f"artifacts.{field} is not an exact SHA-256")
     rc_evidence = resolve(base, artifacts.get("rc1EvidencePath"))
     if rc_evidence is None or not rc_evidence.is_file():
-        problems.append("artifacts.rc1EvidencePath does not identify final #67 evidence")
+        problems.append("artifacts.rc1EvidencePath does not identify final public issue #6 evidence")
     else:
         try:
             rc_data = load(rc_evidence)
         except (OSError, ValueError) as error:
-            problems.append(f"cannot inspect final #67 evidence: {error}")
+            problems.append(f"cannot inspect final public issue #6 evidence: {error}")
         else:
             if rc_data.get("release", {}).get("commit") != commit:
-                problems.append("final #67 evidence names a different RC commit")
+                problems.append("final public issue #6 evidence names a different RC commit")
             rc_artifacts = rc_data.get("artifacts", {})
             if rc_artifacts.get("manifestSha256") != artifacts.get("manifestSha256") \
                     or rc_artifacts.get("checksumsSha256") != artifacts.get("checksumsSha256"):
-                problems.append("GA artifact digests differ from final #67 evidence")
+                problems.append("GA artifact digests differ from final public issue #6 evidence")
         if verify_external:
             verify_command([sys.executable, str(root / "scripts/release/verify_rc1_readiness.py"),
                             "--evidence", str(rc_evidence)], root, "RC1 evidence", problems)

@@ -5,7 +5,7 @@
     "tag": "v1.0.0-rc1",
     "canonicalSource": "https://github.com/dvarahq/dvara-agentworks"
   },
-  "requiredPrerequisiteIssues": [67, 83],
+  "requiredPrerequisiteIssues": [6, 13],
   "allowedVerdicts": ["PASS", "PASS_WITH_NON_BLOCKING_FOLLOW_UPS", "FAIL"],
   "reportSigning": {
     "certificateIdentity": "https://github.com/dvarahq/dvara-agentworks/.github/workflows/release.yml@refs/tags/v1.0.0-rc1",

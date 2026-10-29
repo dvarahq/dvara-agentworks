@@ -1310,9 +1310,11 @@ docs/operations/observability.md
 docs/operations/packaging.md
 docs/operations/postgresql-production.md
 docs/operations/production.md
+docs/operations/rc1.md
 docs/operations/upgrade-and-rollback.md
 docs/reference/api.md
 docs/reference/configuration.md
+docs/release/rc1-go-no-go.md
 docs/security/operations.md
 docs/security/threat-model.md
 docs/spring-boot-integration.md
