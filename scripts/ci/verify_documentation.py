@@ -35,7 +35,7 @@ LEGAL_REQUIRED = {
 }
 PUBLIC_NAMESPACES = {
     "agents", "artifacts", "capabilities", "children", "client", "compatibility", "console", "context",
-    "credentials", "development", "gateway", "idempotency", "jdbc", "lifecycle", "node-id", "observability",
+    "configuration", "credentials", "development", "gateway", "idempotency", "jdbc", "lifecycle", "node-id", "observability",
     "operations", "planes", "recovery", "release-evidence", "runs", "runtime", "sandbox", "security",
     "spring-ai", "tenancy",
 }

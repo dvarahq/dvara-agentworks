@@ -757,6 +757,8 @@ agentworks-server/src/main/java/com/dvarahq/agentworks/autoconfigure/RunPlaneSta
 agentworks-server/src/main/java/com/dvarahq/agentworks/autoconfigure/RunWorkerLifecycle.java
 agentworks-server/src/main/java/com/dvarahq/agentworks/autoconfigure/SandboxReconciliationLifecycle.java
 agentworks-server/src/main/java/com/dvarahq/agentworks/autoconfigure/SharedResourceMaintenanceLifecycle.java
+agentworks-server/src/main/java/com/dvarahq/agentworks/configuration/AgentWorksConfigurationCatalog.java
+agentworks-server/src/main/java/com/dvarahq/agentworks/configuration/AgentWorksConfigurationEnvironmentPostProcessor.java
 agentworks-server/src/main/java/com/dvarahq/agentworks/console/web/ConsoleAdvice.java
 agentworks-server/src/main/java/com/dvarahq/agentworks/console/web/ConsoleAgentsController.java
 agentworks-server/src/main/java/com/dvarahq/agentworks/console/web/ConsoleApi.java
@@ -862,6 +864,8 @@ agentworks-server/src/main/java/com/dvarahq/agentworks/runplane/session/web/Sess
 agentworks-server/src/main/java/com/dvarahq/agentworks/runplane/session/web/SessionApiResources.java
 agentworks-server/src/main/java/com/dvarahq/agentworks/runplane/session/web/SessionController.java
 agentworks-server/src/main/java/com/dvarahq/agentworks/runplane/stream/RunEventStreams.java
+agentworks-server/src/main/resources/META-INF/agentworks/configuration-schema.json
+agentworks-server/src/main/resources/META-INF/spring.factories
 agentworks-server/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
 agentworks-server/src/main/resources/api/agentworks-api-v1.openapi.yaml
 agentworks-server/src/main/resources/application-local.yaml
@@ -939,6 +943,7 @@ agentworks-server/src/test/java/com/dvarahq/agentworks/autoconfigure/RegistryDep
 agentworks-server/src/test/java/com/dvarahq/agentworks/autoconfigure/ResourceCleanupJournalTest.java
 agentworks-server/src/test/java/com/dvarahq/agentworks/autoconfigure/RunPlaneStartupReconciliationTest.java
 agentworks-server/src/test/java/com/dvarahq/agentworks/autoconfigure/RunStreamSettingsTest.java
+agentworks-server/src/test/java/com/dvarahq/agentworks/configuration/AgentWorksConfigurationEnvironmentPostProcessorTest.java
 agentworks-server/src/test/java/com/dvarahq/agentworks/console/web/ConsoleBrowser.java
 agentworks-server/src/test/java/com/dvarahq/agentworks/console/web/ConsoleEndToEndTest.java
 agentworks-server/src/test/java/com/dvarahq/agentworks/console/web/ConsoleProblemsTest.java
@@ -1337,6 +1342,7 @@ scripts/ci/test_policy_gates.py
 scripts/ci/test_supply_chain.py
 scripts/ci/traceability_catalog.py
 scripts/ci/verify_compatibility_policy.py
+scripts/ci/verify_configuration_contract.py
 scripts/ci/verify_dco.sh
 scripts/ci/verify_detailed_references.py
 scripts/ci/verify_documentation.py
@@ -1382,6 +1388,7 @@ scripts/verify-public-tree.sh
 src/test/python/test_agentworks_cli.py
 src/test/python/test_agentworks_cli_openapi.py
 src/test/python/test_agentworks_cli_package.py
+src/test/python/test_configuration_contract.py
 src/test/python/test_console_timeline.py
 src/test/python/test_documentation.py
 src/test/python/test_fake_external_runner.py

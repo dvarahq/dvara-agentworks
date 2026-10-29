@@ -21,6 +21,7 @@ from verify_m3_gate import problems as m3_gate_problems  # noqa: E402
 from verify_compatibility_policy import problems as compatibility_policy_problems  # noqa: E402
 from verify_supply_chain import problems as supply_chain_problems  # noqa: E402
 from verify_documentation import documentation_problems  # noqa: E402
+from verify_configuration_contract import problems as configuration_contract_problems  # noqa: E402
 sys.path.insert(0, str(ROOT / "scripts" / "release"))
 from verify_rc1_readiness import policy_problems as rc1_policy_problems  # noqa: E402
 from verify_ga_audit import policy_problems as ga_audit_policy_problems  # noqa: E402
@@ -196,6 +197,10 @@ if problems := supply_chain_problems():
 
 # Public guides, links, commands, API operations, and configuration namespaces cannot drift (#66).
 if problems := documentation_problems(ROOT):
+    fail("; ".join(problems))
+
+# The configuration schema, early validation, redaction metadata, and public lookups cannot drift (#86).
+if problems := configuration_contract_problems(ROOT):
     fail("; ".join(problems))
 
 # RC1 keeps one frozen distribution identity and cannot manufacture GO without external qualification evidence (#67).
