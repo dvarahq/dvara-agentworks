@@ -1,13 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
-<parent><groupId>com.dvarahq</groupId><artifactId>agentworks-parent</artifactId><version>1.0.0-rc1</version><relativePath>..</relativePath></parent>
-<groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-api</artifactId><name>Dvara AgentWorks API</name>
-<dependencies>
-<dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
-<dependency><groupId>org.assertj</groupId><artifactId>assertj-core</artifactId><scope>test</scope></dependency>
-</dependencies>
-<!-- Credential, sandbox, and artifact conformance suites ship as a test-jar for provider modules. -->
-<build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-jar-plugin</artifactId>
-<executions><execution><id>provider-conformance-suites</id><goals><goal>test-jar</goal></goals></execution></executions>
-</plugin></plugins></build>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.dvarahq</groupId>
+    <artifactId>agentworks-parent</artifactId>
+    <version>1.0.0-rc1</version>
+    <relativePath>..</relativePath>
+  </parent>
+  <groupId>com.dvarahq.agentworks</groupId>
+  <artifactId>agentworks-api</artifactId>
+  <name>Dvara AgentWorks API</name>
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <!-- Credential, sandbox, and artifact conformance suites ship as a test-jar for provider modules. -->
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>provider-conformance-suites</id>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

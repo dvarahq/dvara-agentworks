@@ -1,16 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
-<parent><groupId>com.dvarahq</groupId><artifactId>agentworks-parent</artifactId><version>1.0.0-rc1</version><relativePath>..</relativePath></parent>
-<groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-spring-boot-starter</artifactId><name>Dvara AgentWorks Spring Boot Starter</name>
-<description>Opt-in Java SDK and extension registration autoconfiguration</description>
-<dependencies>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-sdk</artifactId></dependency>
-<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-autoconfigure</artifactId></dependency>
-<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-actuator</artifactId></dependency>
-<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
-</dependencies>
-<build><plugins>
-<plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-source-plugin</artifactId><version>3.4.0</version><executions><execution><id>sources</id><goals><goal>jar-no-fork</goal></goals></execution></executions></plugin>
-<plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-javadoc-plugin</artifactId><version>3.12.0</version><configuration><doclint>none</doclint><quiet>true</quiet></configuration><executions><execution><id>javadocs</id><goals><goal>jar</goal></goals></execution></executions></plugin>
-</plugins></build>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.dvarahq</groupId>
+    <artifactId>agentworks-parent</artifactId>
+    <version>1.0.0-rc1</version>
+    <relativePath>..</relativePath>
+  </parent>
+  <groupId>com.dvarahq.agentworks</groupId>
+  <artifactId>agentworks-spring-boot-starter</artifactId>
+  <name>Dvara AgentWorks Spring Boot Starter</name>
+  <description>Opt-in Java SDK and extension registration autoconfiguration</description>
+  <dependencies>
+    <dependency>
+      <groupId>com.dvarahq.agentworks</groupId>
+      <artifactId>agentworks-sdk</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.4.0</version>
+        <executions>
+          <execution>
+            <id>sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.12.0</version>
+        <configuration>
+          <doclint>none</doclint>
+          <quiet>true</quiet>
+        </configuration>
+        <executions>
+          <execution>
+            <id>javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

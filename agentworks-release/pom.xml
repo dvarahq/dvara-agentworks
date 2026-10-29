@@ -1,9 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
-<parent><groupId>com.dvarahq</groupId><artifactId>agentworks-parent</artifactId><version>1.0.0-rc1</version><relativePath>..</relativePath></parent>
-<groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-release</artifactId><name>Dvara AgentWorks Release</name>
-<dependencies><dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-api</artifactId></dependency><dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-capabilities</artifactId></dependency><dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-memory</artifactId></dependency><dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-spec</artifactId></dependency><dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-api</artifactId></dependency><dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-storage-jdbc</artifactId></dependency>
-<dependency><groupId>org.springframework</groupId><artifactId>spring-jdbc</artifactId></dependency><dependency><groupId>org.springframework</groupId><artifactId>spring-tx</artifactId></dependency>
-<dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency><dependency><groupId>org.assertj</groupId><artifactId>assertj-core</artifactId><scope>test</scope></dependency>
-<dependency><groupId>org.postgresql</groupId><artifactId>postgresql</artifactId><scope>test</scope></dependency><dependency><groupId>org.testcontainers</groupId><artifactId>testcontainers-junit-jupiter</artifactId><scope>test</scope></dependency><dependency><groupId>org.testcontainers</groupId><artifactId>testcontainers-postgresql</artifactId><scope>test</scope></dependency>
-</dependencies></project>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.dvarahq</groupId>
+    <artifactId>agentworks-parent</artifactId>
+    <version>1.0.0-rc1</version>
+    <relativePath>..</relativePath>
+  </parent>
+  <groupId>com.dvarahq.agentworks</groupId>
+  <artifactId>agentworks-release</artifactId>
+  <name>Dvara AgentWorks Release</name>
+  <dependencies>
+    <dependency>
+      <groupId>com.dvarahq.agentworks</groupId>
+      <artifactId>agentworks-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.dvarahq.agentworks</groupId>
+      <artifactId>agentworks-capabilities</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.dvarahq.agentworks</groupId>
+      <artifactId>agentworks-memory</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.dvarahq.agentworks</groupId>
+      <artifactId>agentworks-spec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.dvarahq.agentworks</groupId>
+      <artifactId>agentworks-gateway-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.dvarahq.agentworks</groupId>
+      <artifactId>agentworks-storage-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>

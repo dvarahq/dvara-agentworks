@@ -1,28 +1,123 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
-<parent><groupId>com.dvarahq</groupId><artifactId>agentworks-parent</artifactId><version>1.0.0-rc1</version><relativePath>..</relativePath></parent>
-<groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-bom</artifactId><packaging>pom</packaging><name>Dvara AgentWorks BOM</name>
-<dependencyManagement><dependencies>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-tools</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-mcp</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-agent-a2a</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-api</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-capabilities</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-context</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-memory</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-agent-test</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-evaluation</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-spec</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-sdk</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-provider-tck</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-spring-boot-starter</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-api</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-openai-compatible</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-dvarahq</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-storage-jdbc</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-release</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-deployment</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-runtime</artifactId><version>${project.version}</version></dependency>
-<dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-server</artifactId><version>${project.version}</version></dependency>
-</dependencies></dependencyManagement>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.dvarahq</groupId>
+    <artifactId>agentworks-parent</artifactId>
+    <version>1.0.0-rc1</version>
+    <relativePath>..</relativePath>
+  </parent>
+  <groupId>com.dvarahq.agentworks</groupId>
+  <artifactId>agentworks-bom</artifactId>
+  <packaging>pom</packaging>
+  <name>Dvara AgentWorks BOM</name>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-tools</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-mcp</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-agent-a2a</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-capabilities</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-context</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-memory</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-agent-test</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-evaluation</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-spec</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-sdk</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-provider-tck</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-spring-boot-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-gateway-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-gateway-openai-compatible</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-gateway-dvarahq</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-storage-jdbc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-release</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-runtime</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.dvarahq.agentworks</groupId>
+        <artifactId>agentworks-server</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

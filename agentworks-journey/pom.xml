@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion>
-<parent><groupId>com.dvarahq</groupId><artifactId>agentworks-parent</artifactId><version>1.0.0-rc1</version><relativePath>..</relativePath></parent>
-<groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-journey</artifactId><name>Dvara AgentWorks Walking-Skeleton Journey</name>
-<description>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.dvarahq</groupId>
+    <artifactId>agentworks-parent</artifactId>
+    <version>1.0.0-rc1</version>
+    <relativePath>..</relativePath>
+  </parent>
+  <groupId>com.dvarahq.agentworks</groupId>
+  <artifactId>agentworks-journey</artifactId>
+  <name>Dvara AgentWorks Walking-Skeleton Journey</name>
+  <description>
     Issue #37: the end-to-end journey harness. Test-only and never released: it is built only under the `journey`
     profile, is not part of the BOM, and is not packaged into the server. Its main jar is the harness extension
     (a reference tool and a scripted deterministic fake gateway, contributed through the public versioned capability
     callback and ConfiguredGateway extension points) that the journey puts on the unmodified server boot jar's loader.path.
     Its integration tests start that boot jar against PostgreSQL and drive it through REST, SSE, and the Console.
 </description>
-<properties>
+  <properties>
     <!-- The journey runs in its own CI job, which skips the upstream unit suites with -DskipTests. The journey's
          integration tests are skipped only with -Djourney.skip=true. -->
     <journey.skip>false</journey.skip>
@@ -17,41 +25,110 @@
     <maven.deploy.skip>true</maven.deploy.skip>
     <maven.install.skip>true</maven.install.skip>
     <journey.server.jar>${project.basedir}/../agentworks-server/target/agentworks-server-${project.version}.jar</journey.server.jar>
-</properties>
-<dependencies>
+  </properties>
+  <dependencies>
     <!-- Extension: compiled against the server's public extension points, which the boot jar already contains. -->
-    <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-gateway-api</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-capabilities</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-runtime</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.springframework.ai</groupId><artifactId>spring-ai-model</artifactId><scope>provided</scope></dependency>
-    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-autoconfigure</artifactId><scope>provided</scope></dependency>
+    <dependency>
+      <groupId>com.dvarahq.agentworks</groupId>
+      <artifactId>agentworks-gateway-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.dvarahq.agentworks</groupId>
+      <artifactId>agentworks-capabilities</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.dvarahq.agentworks</groupId>
+      <artifactId>agentworks-runtime</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.ai</groupId>
+      <artifactId>spring-ai-model</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <!-- Orders the reactor so the server's boot jar is packaged first; a pom-type dependency puts nothing of it on
          the harness's classpath. -->
-    <dependency><groupId>com.dvarahq.agentworks</groupId><artifactId>agentworks-server</artifactId><version>${project.version}</version><type>pom</type><scope>test</scope>
-        <exclusions><exclusion><groupId>*</groupId><artifactId>*</artifactId></exclusion></exclusions></dependency>
-    <dependency><groupId>tools.jackson.core</groupId><artifactId>jackson-databind</artifactId><scope>test</scope></dependency>
-    <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><scope>test</scope></dependency>
-    <dependency><groupId>org.assertj</groupId><artifactId>assertj-core</artifactId><scope>test</scope></dependency>
-    <dependency><groupId>org.postgresql</groupId><artifactId>postgresql</artifactId><scope>test</scope></dependency>
-    <dependency><groupId>org.testcontainers</groupId><artifactId>testcontainers-postgresql</artifactId><scope>test</scope></dependency>
-</dependencies>
-<build><plugins>
-    <!-- The journey is an integration test of the packaged artifacts, so it runs in failsafe's integration-test phase,
+    <dependency>
+      <groupId>com.dvarahq.agentworks</groupId>
+      <artifactId>agentworks-server</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>tools.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <!-- The journey is an integration test of the packaged artifacts, so it runs in failsafe's integration-test phase,
          after this module's extension jar is built; surefire runs nothing here. -->
-    <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId>
-        <configuration><skipTests>true</skipTests></configuration></plugin>
-    <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-failsafe-plugin</artifactId>
-        <executions><execution><goals><goal>integration-test</goal><goal>verify</goal></goals></execution></executions>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-            <skipTests>${journey.skip}</skipTests>
-            <skipITs>${journey.skip}</skipITs>
-            <includes><include>**/*JourneyTest.java</include></includes>
-            <systemPropertyVariables>
-                <journey.server.jar>${journey.server.jar}</journey.server.jar>
-                <journey.extension.jar>${project.build.directory}/${project.build.finalName}.jar</journey.extension.jar>
-                <journey.evidence.dir>${project.build.directory}/journey-evidence</journey.evidence.dir>
-            </systemPropertyVariables>
+          <skipTests>true</skipTests>
         </configuration>
-    </plugin>
-</plugins></build>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <skipTests>${journey.skip}</skipTests>
+          <skipITs>${journey.skip}</skipITs>
+          <includes>
+            <include>**/*JourneyTest.java</include>
+          </includes>
+          <systemPropertyVariables>
+            <journey.server.jar>${journey.server.jar}</journey.server.jar>
+            <journey.extension.jar>${project.build.directory}/${project.build.finalName}.jar</journey.extension.jar>
+            <journey.evidence.dir>${project.build.directory}/journey-evidence</journey.evidence.dir>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
