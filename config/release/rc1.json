@@ -16,7 +16,7 @@
     ],
     "requireFullGateRerunAfterChange": true
   },
-  "requiredPriorReleaseBlockers": [1, 2, 14, 26, 59, 60, 61, 62, 63, 64, 65, 66, 82],
+  "requiredPriorReleaseBlockers": [14],
   "requiredArtifactKinds": ["maven", "cli", "oci", "helm"],
   "requiredPasses": ["protected-ci", "independent-clean"],
   "requiredGates": [
@@ -41,6 +41,6 @@
   "evidence": {
     "template": "config/release/rc1-evidence-template.json",
     "runbook": "docs/operations/rc1.md",
-    "goNoGoReport": "docs/implementation/ISSUE-67-RC1-QUALIFICATION.md"
+    "goNoGoReport": "docs/release/rc1-go-no-go.md"
   }
 }

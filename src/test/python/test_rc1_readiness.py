@@ -89,6 +89,11 @@ def local_problems(evidence):
 class Rc1ReadinessTest(unittest.TestCase):
     def test_repository_policy_is_internally_consistent(self):
         self.assertEqual([], MODULE.policy_problems(ROOT))
+        policy = MODULE.load(ROOT / MODULE.POLICY)
+        self.assertEqual([14], policy["requiredPriorReleaseBlockers"])
+        for relative in policy["evidence"].values():
+            self.assertTrue((ROOT / relative).is_file(), relative)
+            self.assertNotIn("docs/implementation/", relative)
 
     def test_complete_independent_evidence_can_authorize_go(self):
         self.assertEqual([], local_problems(valid_evidence()))

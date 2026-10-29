@@ -21,8 +21,8 @@ def valid_evidence(base: Path):
     rc = base / "rc1-evidence.json"
     rc.write_text(json.dumps({"release": {"commit": commit}, "artifacts": {
         "manifestSha256": "b" * 64, "checksumsSha256": "c" * 64}}) + "\n", encoding="utf-8")
-    readiness = base / "issue-83-evidence.json"
-    readiness.write_text(json.dumps({"issue": 83, "commit": commit, "verdict": "PASS", "artifacts": {
+    readiness = base / "issue-13-evidence.json"
+    readiness.write_text(json.dumps({"issue": 13, "commit": commit, "verdict": "PASS", "artifacts": {
         "manifestSha256": "b" * 64, "checksumsSha256": "c" * 64}}) + "\n",
                          encoding="utf-8")
     report = base / "ga-report.json"
@@ -43,9 +43,9 @@ def valid_evidence(base: Path):
         "artifacts": {"rc1EvidencePath": str(rc), "manifestSha256": "b" * 64,
                       "checksumsSha256": "c" * 64},
         "prerequisites": [
-            {"issue": 67, "status": "CLOSED", "commit": commit, "evidence": str(rc),
+            {"issue": 6, "status": "CLOSED", "commit": commit, "evidence": str(rc),
              "evidenceSha256": MODULE.digest(rc)},
-            {"issue": 83, "status": "CLOSED", "commit": commit, "evidence": str(readiness),
+            {"issue": 13, "status": "CLOSED", "commit": commit, "evidence": str(readiness),
              "evidenceSha256": MODULE.digest(readiness)},
         ],
         "invariants": {
@@ -113,12 +113,12 @@ class GaAuditTest(unittest.TestCase):
             self.assertTrue(any("report SHA-256 does not match" in problem for problem in problems))
             self.assertTrue(any("verdictAt is in the future" in problem for problem in problems))
 
-    def test_issue_83_body_must_name_the_same_passing_rc_and_artifacts(self):
+    def test_public_issue_13_body_must_name_the_same_passing_rc_and_artifacts(self):
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)
             evidence = valid_evidence(base)
             readiness = Path(evidence["prerequisites"][1]["evidence"])
-            readiness.write_text(json.dumps({"issue": 83, "commit": "d" * 40, "verdict": "FAIL",
+            readiness.write_text(json.dumps({"issue": 13, "commit": "d" * 40, "verdict": "FAIL",
                                              "artifacts": {"manifestSha256": "e" * 64,
                                                            "checksumsSha256": "f" * 64}}) + "\n",
                                  encoding="utf-8")

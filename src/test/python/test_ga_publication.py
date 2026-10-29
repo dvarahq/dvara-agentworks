@@ -28,7 +28,7 @@ def valid_evidence(base: Path):
     prerequisites = []
     for number in policy["requiredPrerequisiteIssues"]:
         path = base / f"issue-{number}.json"
-        verdict = "GO" if number == 67 else "PASS"
+        verdict = "GO" if number == 6 else "PASS"
         write_json(path, {"issue": number, "release": {"commit": commit}, "verdict": verdict})
         prerequisites.append({"issue": number, "status": "CLOSED", "commit": commit,
                               "evidence": str(path), "evidenceSha256": MODULE.digest(path)})
@@ -164,11 +164,11 @@ class GaPublicationTest(unittest.TestCase):
             body["tag"] = "v1.0.1"
             write_json(source, body)
             prerequisite = Path(evidence["prerequisites"][0]["evidence"])
-            write_json(prerequisite, {"issue": 67, "release": {"commit": "b" * 40}, "verdict": "FAIL"})
+            write_json(prerequisite, {"issue": 6, "release": {"commit": "b" * 40}, "verdict": "FAIL"})
             evidence["prerequisites"][0]["evidenceSha256"] = MODULE.digest(prerequisite)
             problems = self.problems(evidence, base)
             self.assertTrue(any("exact release-qualified public commit" in problem for problem in problems))
-            self.assertTrue(any("issue #67 evidence does not authorize" in problem for problem in problems))
+            self.assertTrue(any("issue #6 evidence does not authorize" in problem for problem in problems))
 
     def test_duplicate_destination_name_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:

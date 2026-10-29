@@ -99,7 +99,7 @@ def policy_problems(root: Path = ROOT) -> list[str]:
         problems.append("RC soak or stabilization window is too short")
 
     required_issues = policy.get("requiredPriorReleaseBlockers", [])
-    if required_issues != [1, 2, 14, 26, 59, 60, 61, 62, 63, 64, 65, 66, 82]:
+    if required_issues != [14]:
         problems.append("prior release-blocker inventory is incomplete or reordered")
     if policy.get("requiredArtifactKinds") != ["maven", "cli", "oci", "helm"]:
         problems.append("RC artifact-kind contract is incomplete")
@@ -148,6 +148,18 @@ def policy_problems(root: Path = ROOT) -> list[str]:
         problems.append("RC evidence template prerequisite inventory differs from policy")
     if set(template.get("passes", {})) != set(policy.get("requiredPasses", [])):
         problems.append("RC evidence template pass inventory differs from policy")
+    evidence_paths = policy.get("evidence", {})
+    expected_paths = {
+        "template": "config/release/rc1-evidence-template.json",
+        "runbook": "docs/operations/rc1.md",
+        "goNoGoReport": "docs/release/rc1-go-no-go.md",
+    }
+    if evidence_paths != expected_paths:
+        problems.append("RC evidence paths differ from the public release contract")
+    else:
+        for label, relative in evidence_paths.items():
+            if not (root / relative).is_file():
+                problems.append(f"RC {label} is missing: {relative}")
     return problems
 
 

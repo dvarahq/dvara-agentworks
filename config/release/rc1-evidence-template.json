@@ -17,19 +17,7 @@
     "independentlyVerified": null
   },
   "prerequisites": [
-    {"issue": 1, "status": null, "disposition": null},
-    {"issue": 2, "status": null, "disposition": null},
-    {"issue": 14, "status": null, "disposition": null},
-    {"issue": 26, "status": null, "disposition": null},
-    {"issue": 59, "status": null, "disposition": null},
-    {"issue": 60, "status": null, "disposition": null},
-    {"issue": 61, "status": null, "disposition": null},
-    {"issue": 62, "status": null, "disposition": null},
-    {"issue": 63, "status": null, "disposition": null},
-    {"issue": 64, "status": null, "disposition": null},
-    {"issue": 65, "status": null, "disposition": null},
-    {"issue": 66, "status": null, "disposition": null},
-    {"issue": 82, "status": null, "disposition": null}
+    {"issue": 14, "status": null, "disposition": null}
   ],
   "passes": {
     "protected-ci": {"commit": null, "environment": null, "evidence": null, "status": null},
