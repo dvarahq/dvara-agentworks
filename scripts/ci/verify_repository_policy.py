@@ -23,7 +23,7 @@ from verify_supply_chain import problems as supply_chain_problems  # noqa: E402
 from verify_documentation import documentation_problems  # noqa: E402
 from verify_configuration_contract import problems as configuration_contract_problems  # noqa: E402
 sys.path.insert(0, str(ROOT / "scripts" / "release"))
-from verify_rc1_readiness import policy_problems as rc1_policy_problems  # noqa: E402
+from verify_rc2_readiness import policy_problems as rc2_policy_problems  # noqa: E402
 from verify_ga_audit import policy_problems as ga_audit_policy_problems  # noqa: E402
 from verify_ga_publication import policy_problems as ga_publication_policy_problems  # noqa: E402
 
@@ -54,7 +54,7 @@ private_required = (
     "config/compatibility/policy.json", "config/compatibility/deprecations.json",
     "config/compatibility/golden-vectors.json",
     "config/supply-chain/policy.json", "config/supply-chain/vulnerability-exceptions.json",
-    "config/release/rc1.json", "config/release/rc1-evidence-template.json",
+    "config/release/rc2.json", "config/release/rc2-evidence-template.json",
     "config/release/ga-audit.json", "config/release/ga-audit-evidence-template.json",
     "config/release/ga-publication.json", "config/release/ga-publication-evidence-template.json",
     "legal/oss/SOURCE-OFFER.md",
@@ -203,8 +203,8 @@ if problems := documentation_problems(ROOT):
 if problems := configuration_contract_problems(ROOT):
     fail("; ".join(problems))
 
-# RC1 keeps one frozen distribution identity and cannot manufacture GO without external qualification evidence (#67).
-if problems := rc1_policy_problems(ROOT):
+# RC2 keeps one frozen distribution identity and cannot manufacture GO without external qualification evidence (#67).
+if problems := rc2_policy_problems(ROOT):
     fail("; ".join(problems))
 
 # GA requires a closed, exact-RC, independently signed audit; policy scaffolding alone never claims PASS (#68).

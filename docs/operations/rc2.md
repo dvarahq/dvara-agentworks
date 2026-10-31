@@ -1,36 +1,36 @@
-# Qualify the RC1 release
+# Qualify the RC2 release
 
-RC1 is ready only when one exact public commit, its immutable tag, its signed artifacts, and all qualification
+RC2 is ready only when one exact public commit, its immutable tag, its signed artifacts, and all qualification
 evidence agree. A successful local build by itself is not a release.
 
-The machine-readable policy is [`config/release/rc1.json`](../../config/release/rc1.json). Start from its
-[`rc1-evidence-template.json`](../../config/release/rc1-evidence-template.json), and use the public
-[go/no-go contract](../release/rc1-go-no-go.md) when recording the final decision.
+The machine-readable policy is [`config/release/rc2.json`](../../config/release/rc2.json). Start from its
+[`rc2-evidence-template.json`](../../config/release/rc2-evidence-template.json), and use the public
+[go/no-go contract](../release/rc2-go-no-go.md) when recording the final decision.
 
 ## What must stay identical
 
-- Version: `1.0.0-rc1`
-- Tag: `v1.0.0-rc1`
+- Version: `1.0.0-rc2`
+- Tag: `v1.0.0-rc2`
 - Source: `https://github.com/dvarahq/dvara-agentworks`
 - Artifacts: Maven, CLI, multi-platform OCI, and Helm
 - Minimum soak: 24 continuous hours on the exact release commit
 - Minimum stabilization: seven complete days without changing that commit
 
-Changing source after the tag invalidates the candidate. Never move or replace a release tag. If RC1 needs a source
-fix after publication, prepare RC2 from a new reviewed commit.
+Changing source after the tag invalidates the candidate. Never move or replace a release tag. If RC2 needs a source
+fix after publication, prepare RC3 from a new reviewed commit.
 
 ## 1. Finish local qualification
 
 Run the inexpensive policy checks first, then the full build and journeys:
 
 ```bash
-python3 scripts/release/verify_rc1_readiness.py --policy-only
+python3 scripts/release/verify_rc2_readiness.py --policy-only
 python3 scripts/ci/verify_repository_policy.py
 python3 scripts/ci/test_policy_gates.py
 python3 scripts/ci/test_supply_chain.py
 ./mvnw -B -ntp clean verify
 ./mvnw -B -ntp -Pjourney -pl agentworks-journey -am verify
-scripts/release/build-release-candidate.sh qualification v1.0.0-rc1 target/oss-release-candidate
+scripts/release/build-release-candidate.sh qualification v1.0.0-rc2 target/oss-release-candidate
 python3 scripts/release/verify_release_candidate.py \
   target/oss-release-candidate --phase build --allow-qualification
 ```
@@ -48,7 +48,7 @@ Before creating the tag:
 3. Confirm there is no unresolved BLOCKER or HIGH finding.
 4. Configure `main`, the release tag, and the `oss-release` environment so only reviewed work and an approved
    `grabdoc` release can publish.
-5. Create the immutable `v1.0.0-rc1` tag at the reviewed public commit.
+5. Create the immutable `v1.0.0-rc2` tag at the reviewed public commit.
 
 Any accepted source change restarts qualification and stabilization on a new commit.
 
@@ -78,10 +78,10 @@ Copy the evidence template to an evidence directory outside the repository, fill
 verify it:
 
 ```bash
-python3 scripts/release/verify_rc1_readiness.py --evidence /path/to/rc1-evidence.json
+python3 scripts/release/verify_rc2_readiness.py --evidence /path/to/rc2-evidence.json
 ```
 
-Only `rc1-readiness=GO` authorizes the final go/no-go record. Attach the evidence and exact digests to
+Only `rc2-readiness=GO` authorizes the final go/no-go record. Attach the evidence and exact digests to
 [public issue #6](https://github.com/dvarahq/dvara-agentworks/issues/6) and the immutable GitHub release. Until then,
 the verdict is `PENDING`.
 

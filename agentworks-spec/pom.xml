@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.dvarahq</groupId>
     <artifactId>agentworks-parent</artifactId>
-    <version>1.0.0-rc1</version>
+    <version>1.0.0-rc2</version>
     <relativePath>..</relativePath>
   </parent>
   <groupId>com.dvarahq.agentworks</groupId>

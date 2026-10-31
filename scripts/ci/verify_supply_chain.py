@@ -178,6 +178,12 @@ def workflow_problems(policy: dict) -> list[str]:
     approve = re.search(r"(?ms)^  approve-and-publish:\n(.*?)(?=^  [a-zA-Z0-9_-]+:\n|\Z)", text)
     if not approve or "needs: build" not in approve.group(1):
         problems.append("protected publish job must consume the isolated build job")
+    elif approve:
+        block = approve.group(1)
+        archive = re.search(r'-czf\s+"([^"]+\.tar\.gz)"', block)
+        published = re.search(r'(?m)^\s+(target/agentworks-\$\{\{ inputs\.tag \}\}\.tar\.gz)\s*$', block)
+        if not archive or not published or archive.group(1) != published.group(1):
+            problems.append("release archive output does not match published asset path")
     return problems
 
 

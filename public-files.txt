@@ -1274,8 +1274,8 @@ config/release/ga-audit-evidence-template.json
 config/release/ga-audit.json
 config/release/ga-publication-evidence-template.json
 config/release/ga-publication.json
-config/release/rc1-evidence-template.json
-config/release/rc1.json
+config/release/rc2-evidence-template.json
+config/release/rc2.json
 config/supply-chain/policy.json
 config/supply-chain/vulnerability-exceptions.json
 config/traceability/requirements.json
@@ -1310,11 +1310,11 @@ docs/operations/observability.md
 docs/operations/packaging.md
 docs/operations/postgresql-production.md
 docs/operations/production.md
-docs/operations/rc1.md
+docs/operations/rc2.md
 docs/operations/upgrade-and-rollback.md
 docs/reference/api.md
 docs/reference/configuration.md
-docs/release/rc1-go-no-go.md
+docs/release/rc2-go-no-go.md
 docs/security/operations.md
 docs/security/threat-model.md
 docs/spring-boot-integration.md
@@ -1381,7 +1381,7 @@ scripts/release/package_chart.py
 scripts/release/verify_ga_audit.py
 scripts/release/verify_ga_publication.py
 scripts/release/verify_oci_reproducibility.py
-scripts/release/verify_rc1_readiness.py
+scripts/release/verify_rc2_readiness.py
 scripts/release/verify_release_candidate.py
 scripts/test/fast.sh
 scripts/test/integration.sh
@@ -1396,4 +1396,4 @@ src/test/python/test_documentation.py
 src/test/python/test_fake_external_runner.py
 src/test/python/test_ga_audit.py
 src/test/python/test_ga_publication.py
-src/test/python/test_rc1_readiness.py
+src/test/python/test_rc2_readiness.py

@@ -110,7 +110,7 @@ Continue with the [15-minute guide](docs/getting-started.md) to start the Web Co
 AgentWorks is useful for agents that do real work: multi-step workflows, human approval, scheduled work, tool use,
 or tasks that must survive failure. A small stateless chatbot may not need this much machinery.
 
-The `1.0.0-rc1` release is still a release candidate. Read the [known limitations](docs/limitations.md) before using
+The `1.0.0-rc2` release is still a release candidate. Read the [known limitations](docs/limitations.md) before using
 it in production.
 
 ## Learn more
