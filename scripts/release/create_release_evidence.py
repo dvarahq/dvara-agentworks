@@ -63,7 +63,7 @@ def main() -> None:
         seen_kinds.add(kind)
         target = args.output / "artifacts" / relative
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(source, target)
+        shutil.copy2(source, target)
         sha256 = digest(target)
         artifact_name = target.relative_to(args.output).as_posix()
         sbom_name = f"evidence/sbom/{artifact_name.replace('/', '__')}.spdx.json"
@@ -102,7 +102,7 @@ def main() -> None:
         source = ROOT / "legal/oss" / name
         target = args.output / "legal" / name
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(source, target)
+        shutil.copy2(source, target)
         legal_hashes[name] = digest(target)
     source_record = {
         "repository": CANONICAL_SOURCE, "tag": args.tag, "commit": args.commit,

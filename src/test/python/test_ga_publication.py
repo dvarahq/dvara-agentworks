@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import stat
 import subprocess
 import sys
 import tempfile
@@ -28,7 +29,7 @@ def valid_evidence(base: Path):
     prerequisites = []
     for number in policy["requiredPrerequisiteIssues"]:
         path = base / f"issue-{number}.json"
-        verdict = "GO" if number == 6 else "PASS"
+        verdict = "GO" if number == 31 else "PASS"
         write_json(path, {"issue": number, "release": {"commit": commit}, "verdict": verdict})
         prerequisites.append({"issue": number, "status": "CLOSED", "commit": commit,
                               "evidence": str(path), "evidenceSha256": MODULE.digest(path)})
@@ -138,6 +139,29 @@ class GaPublicationTest(unittest.TestCase):
                 self.assertIn("requires GitHub actor grabdoc", result.stdout + result.stderr)
                 self.assertEqual("keep\n", sentinel.read_text(encoding="utf-8"))
 
+    def test_release_evidence_preserves_cli_executable_mode(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            artifacts = base / "artifacts"
+            for kind in ("maven", "oci", "helm"):
+                path = artifacts / kind / f"{kind}.txt"
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(kind + "\n", encoding="utf-8")
+            cli = artifacts / "cli" / "agentworks"
+            cli.parent.mkdir(parents=True)
+            cli.write_text("#!/usr/bin/env python3\n", encoding="utf-8")
+            cli.chmod(0o755)
+            output = base / "output"
+            result = subprocess.run([
+                sys.executable, str(ROOT / "scripts/release/create_release_evidence.py"),
+                "--artifacts", str(artifacts), "--output", str(output),
+                "--commit", "a" * 40, "--tag", "v1.0.0-rc3",
+                "--source-date-epoch", "1800000000", "--qualification",
+            ], cwd=ROOT, capture_output=True, text=True, check=False)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            copied = output / "artifacts" / "cli" / "agentworks"
+            self.assertEqual(0o755, stat.S_IMODE(copied.stat().st_mode))
+
     def test_destination_and_complete_family_are_fail_closed(self):
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)
@@ -164,11 +188,11 @@ class GaPublicationTest(unittest.TestCase):
             body["tag"] = "v1.0.1"
             write_json(source, body)
             prerequisite = Path(evidence["prerequisites"][0]["evidence"])
-            write_json(prerequisite, {"issue": 6, "release": {"commit": "b" * 40}, "verdict": "FAIL"})
+            write_json(prerequisite, {"issue": 31, "release": {"commit": "b" * 40}, "verdict": "FAIL"})
             evidence["prerequisites"][0]["evidenceSha256"] = MODULE.digest(prerequisite)
             problems = self.problems(evidence, base)
             self.assertTrue(any("exact release-qualified public commit" in problem for problem in problems))
-            self.assertTrue(any("issue #6 evidence does not authorize" in problem for problem in problems))
+            self.assertTrue(any("issue #31 evidence does not authorize" in problem for problem in problems))
 
     def test_duplicate_destination_name_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:

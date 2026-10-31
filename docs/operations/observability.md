@@ -12,10 +12,11 @@ Telemetry export is off by default. Enable the `prometheus` profile for an authe
 | Question | Useful signal |
 |---|---|
 | Can this instance receive traffic? | Readiness health, HTTP errors, and request latency. |
-| Are workers doing useful work? | `agentworks.run.worker.threads`, `.polls`, and `.poll.duration`. |
+| Are workers doing useful work? | `agentworks.run.worker.threads`, `agentworks.run.worker.polls`, and `.poll.duration`. |
 | Are claims being lost? | `agentworks.run.lease.losses`. |
-| Is recovery working? | `agentworks.run.recoveries` and `.recovery.delay`. |
-| Is durable delivery falling behind? | `agentworks.recovery.outbox.backlog` and `.oldest.age`. |
+| Is recovery working? | `agentworks.run.recoveries` and `agentworks.run.recovery.delay`. |
+| Is durable delivery falling behind? | `agentworks.recovery.outbox.backlog` and `agentworks.recovery.outbox.oldest.age`. |
+| Are old compiled agents retiring? | `agentworks.compiled.cache.retirement.lag`. |
 | Are resources cleaning up? | `agentworks.resource.cleanup.unresolved.at.startup`. |
 | Is PostgreSQL healthy? | Connection use, query latency, locks, storage, WAL, and replication lag. |
 | Are users seeing problems? | HTTP throughput, error rate, and latency. |
@@ -28,9 +29,13 @@ is isolated or widespread.
 
 Prompts, tool arguments, model responses, credentials, tenant names, and other user content do not belong in metric
 labels or ordinary logs. Dynamic metric labels are capped to prevent accidental memory and monitoring-cost spikes.
+This **cardinality** limit keeps workspace, run, release, and user identifiers out of metric labels.
+
+The readiness endpoint includes `required-dependencies`, which reports whether PostgreSQL and other required
+dependencies are available. Optional telemetry destinations do not make the service unready.
 
 ## When you need support
 
 Capture the time window, application version or image digest, symptoms, safe correlation identifiers, relevant
-metrics, and a redacted support bundle. Review it before sharing. Never include passwords, tokens, prompts, tool
+metrics, and a redacted `support-bundle`. Review it before sharing. Never include passwords, tokens, prompts, tool
 arguments, model output, or customer data.

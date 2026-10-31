@@ -9,8 +9,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[3]
-MODULE_PATH = ROOT / "scripts/release/verify_rc2_readiness.py"
-SPEC = importlib.util.spec_from_file_location("verify_rc2_readiness", MODULE_PATH)
+MODULE_PATH = ROOT / "scripts/release/verify_rc3_readiness.py"
+SPEC = importlib.util.spec_from_file_location("verify_rc3_readiness", MODULE_PATH)
 MODULE = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = MODULE
 SPEC.loader.exec_module(MODULE)
@@ -86,14 +86,14 @@ def local_problems(evidence):
     return MODULE.evidence_problems(evidence, ROOT, verify_external=False, now=OBSERVED_NOW)
 
 
-class Rc2ReadinessTest(unittest.TestCase):
+class Rc3ReadinessTest(unittest.TestCase):
     def test_repository_policy_is_internally_consistent(self):
         self.assertEqual([], MODULE.policy_problems(ROOT))
         policy = MODULE.load(ROOT / MODULE.POLICY)
         self.assertEqual([14], policy["requiredPriorReleaseBlockers"])
         for relative in policy["evidence"].values():
             self.assertTrue((ROOT / relative).is_file(), relative)
-            self.assertNotIn("docs/implementation/", relative)
+            self.assertTrue(relative.startswith(("config/release/", "docs/operations/", "docs/release/")), relative)
 
     def test_complete_independent_evidence_can_authorize_go(self):
         self.assertEqual([], local_problems(valid_evidence()))
@@ -185,7 +185,7 @@ class Rc2ReadinessTest(unittest.TestCase):
             (bundle / "SHA256SUMS").write_text("manifest checksums\n", encoding="utf-8")
             (bundle / "SOURCE.json").write_text(json.dumps({
                 "repository": "https://github.com/dvarahq/dvara-agentworks",
-                "tag": "v1.0.0-rc2",
+                "tag": "v1.0.0-rc3",
                 "commit": evidence["release"]["commit"],
                 "releaseQualified": True,
             }), encoding="utf-8")

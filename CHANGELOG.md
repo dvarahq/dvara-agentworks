@@ -3,7 +3,23 @@
 All notable changes to Dvara AgentWorks Core are recorded here. The project follows Semantic Versioning; release
 candidate entries remain `Unreleased` until an immutable public tag and its release-qualified artifacts exist.
 
-## [1.0.0-rc2] - Unreleased
+## [1.0.0-rc3] - Unreleased
+
+### Fixed
+
+- Public traceability and security checks now validate only evidence that is intentionally present in the public
+  source tree, while the private source keeps its additional internal checks.
+- The observability guide and executable contract use the same metric and diagnostic names.
+- Release evidence preserves executable permissions on the command-line client.
+- RC qualification, final audit, and GA publication policies route evidence through active public issues.
+
+### Changed
+
+- The Maven reactor, Helm chart, Compose distribution, and qualification policy are version-frozen at
+  `1.0.0-rc3`.
+- RC3 replaces RC2 after independent RC2 qualification found release-blocking verification-contract defects.
+
+## [1.0.0-rc2] - 2026-10-31
 
 ### Added
 
@@ -31,8 +47,8 @@ candidate entries remain `Unreleased` until an immutable public tag and its rele
 
 ### Known limitations
 
-- This entry is not a release announcement. Until the protected public workflow produces and independently verifies
-  the signed candidate, the authoritative RC verdict remains `PENDING`.
+- RC2 was published for evaluation, but independent qualification recorded `NO-GO`; it is not approved for
+  production use.
 - Current limitations and deferred 1.1 work remain listed in `docs/limitations.md`; no deferred feature is silently
   represented as part of RC2.
 

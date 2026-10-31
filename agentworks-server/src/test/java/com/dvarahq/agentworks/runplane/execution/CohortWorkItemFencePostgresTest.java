@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * The {@code cohort_work_item} ledger (docs/implementation/LIFECYCLE-CONTRACTS.md): its fence, its typed quiescence
+ * The {@code cohort_work_item} ledger: its fence, its typed quiescence
  * blockers, and retirement races for the implemented work categories.
  */
 class CohortWorkItemFencePostgresTest {

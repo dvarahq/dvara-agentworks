@@ -34,7 +34,7 @@ import java.util.TreeSet;
 import java.util.UUID;
 
 /**
- * The first reader that admits work from a release manifest (docs/implementation/LIFECYCLE-CONTRACTS.md). It
+ * The first reader that admits work from a release manifest. It
  * dispatches on {@code manifestVersion}, refuses a version it does not implement with
  * {@code UNSUPPORTED_MANIFEST_VERSION}, and refuses unknown or missing fields of a version it implements with
  * {@code INVALID_MANIFEST}: a manifest version is a closed shape.

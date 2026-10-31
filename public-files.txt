@@ -1268,14 +1268,13 @@ config/compatibility/golden-vectors.json
 config/compatibility/policy.json
 config/dependency-check-suppressions.xml
 config/frontend-assets.json
-config/issue-spec/README.md
 config/lifecycle/resumable-work-categories.json
 config/release/ga-audit-evidence-template.json
 config/release/ga-audit.json
 config/release/ga-publication-evidence-template.json
 config/release/ga-publication.json
-config/release/rc2-evidence-template.json
-config/release/rc2.json
+config/release/rc3-evidence-template.json
+config/release/rc3.json
 config/supply-chain/policy.json
 config/supply-chain/vulnerability-exceptions.json
 config/traceability/requirements.json
@@ -1310,11 +1309,11 @@ docs/operations/observability.md
 docs/operations/packaging.md
 docs/operations/postgresql-production.md
 docs/operations/production.md
-docs/operations/rc2.md
+docs/operations/rc3.md
 docs/operations/upgrade-and-rollback.md
 docs/reference/api.md
 docs/reference/configuration.md
-docs/release/rc2-go-no-go.md
+docs/release/rc3-go-no-go.md
 docs/security/operations.md
 docs/security/threat-model.md
 docs/spring-boot-integration.md
@@ -1337,7 +1336,6 @@ scripts/agentworks-eval
 scripts/agentworks-replay
 scripts/build-cli.sh
 scripts/ci/configure_branch_protection.sh
-scripts/ci/issue_spec.py
 scripts/ci/pr-verification.sh
 scripts/ci/run_dependency_check.sh
 scripts/ci/test_policy_gates.py
@@ -1351,11 +1349,7 @@ scripts/ci/verify_documentation.py
 scripts/ci/verify_frontend_asset_sources.py
 scripts/ci/verify_frontend_assets.py
 scripts/ci/verify_journey_isolation.py
-scripts/ci/verify_m1_gate.py
-scripts/ci/verify_m2_gate.py
-scripts/ci/verify_m3_gate.py
 scripts/ci/verify_migration_immutability.py
-scripts/ci/verify_mvp_evidence.py
 scripts/ci/verify_negative_dependency_fixture.sh
 scripts/ci/verify_observability_contract.py
 scripts/ci/verify_oci_archive.py
@@ -1381,7 +1375,7 @@ scripts/release/package_chart.py
 scripts/release/verify_ga_audit.py
 scripts/release/verify_ga_publication.py
 scripts/release/verify_oci_reproducibility.py
-scripts/release/verify_rc2_readiness.py
+scripts/release/verify_rc3_readiness.py
 scripts/release/verify_release_candidate.py
 scripts/test/fast.sh
 scripts/test/integration.sh
@@ -1396,4 +1390,4 @@ src/test/python/test_documentation.py
 src/test/python/test_fake_external_runner.py
 src/test/python/test_ga_audit.py
 src/test/python/test_ga_publication.py
-src/test/python/test_rc2_readiness.py
+src/test/python/test_rc3_readiness.py

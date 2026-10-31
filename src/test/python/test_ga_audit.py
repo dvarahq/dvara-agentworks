@@ -18,13 +18,9 @@ OBSERVED_NOW = datetime(2026, 11, 3, tzinfo=timezone.utc)
 def valid_evidence(base: Path):
     policy = MODULE.load(ROOT / MODULE.POLICY)
     commit = "a" * 40
-    rc = base / "rc2-evidence.json"
-    rc.write_text(json.dumps({"release": {"commit": commit}, "artifacts": {
+    rc = base / "rc3-evidence.json"
+    rc.write_text(json.dumps({"issue": 31, "release": {"commit": commit}, "verdict": "GO", "artifacts": {
         "manifestSha256": "b" * 64, "checksumsSha256": "c" * 64}}) + "\n", encoding="utf-8")
-    readiness = base / "issue-13-evidence.json"
-    readiness.write_text(json.dumps({"issue": 13, "commit": commit, "verdict": "PASS", "artifacts": {
-        "manifestSha256": "b" * 64, "checksumsSha256": "c" * 64}}) + "\n",
-                         encoding="utf-8")
     report = base / "ga-report.json"
     report.write_text(json.dumps({"commit": commit, "verdict": "PASS", "manifestSha256": "b" * 64,
                                   "checksumsSha256": "c" * 64}) + "\n", encoding="utf-8")
@@ -37,16 +33,14 @@ def valid_evidence(base: Path):
         return {"path": str(path), "sha256": MODULE.digest(path)}
     return {
         "schemaVersion": 1,
-        "release": {"version": "1.0.0-rc2", "tag": "v1.0.0-rc2",
+        "release": {"version": "1.0.0-rc3", "tag": "v1.0.0-rc3",
                     "repository": "https://github.com/dvarahq/dvara-agentworks",
                     "commit": commit, "dirty": False},
         "artifacts": {"rcEvidencePath": str(rc), "manifestSha256": "b" * 64,
                       "checksumsSha256": "c" * 64},
         "prerequisites": [
-            {"issue": 6, "status": "CLOSED", "commit": commit, "evidence": str(rc),
+            {"issue": 31, "status": "CLOSED", "commit": commit, "evidence": str(rc),
              "evidenceSha256": MODULE.digest(rc)},
-            {"issue": 13, "status": "CLOSED", "commit": commit, "evidence": str(readiness),
-             "evidenceSha256": MODULE.digest(readiness)},
         ],
         "invariants": {
             entry["id"]: {"status": "PASS", "commit": commit,
@@ -63,7 +57,7 @@ def valid_evidence(base: Path):
                       "impact": "Editorial follow-up only.", "disposition": "Tracked for 1.0.1."}],
         "report": {"path": str(report), "sha256": MODULE.digest(report),
                    "sigstoreBundlePath": str(bundle), "sigstoreBundleSha256": MODULE.digest(bundle),
-                   "certificateIdentity": "https://github.com/dvarahq/dvara-agentworks/.github/workflows/release.yml@refs/tags/v1.0.0-rc2",
+                   "certificateIdentity": "https://github.com/dvarahq/dvara-agentworks/.github/workflows/release.yml@refs/tags/v1.0.0-rc3",
                    "certificateOidcIssuer": "https://token.actions.githubusercontent.com"},
         "verdict": "PASS",
         "verdictAt": "2026-11-02T12:00:00Z",
@@ -113,19 +107,19 @@ class GaAuditTest(unittest.TestCase):
             self.assertTrue(any("report SHA-256 does not match" in problem for problem in problems))
             self.assertTrue(any("verdictAt is in the future" in problem for problem in problems))
 
-    def test_public_issue_13_body_must_name_the_same_passing_rc_and_artifacts(self):
+    def test_public_issue_31_body_must_name_the_same_passing_rc_and_artifacts(self):
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)
             evidence = valid_evidence(base)
-            readiness = Path(evidence["prerequisites"][1]["evidence"])
-            readiness.write_text(json.dumps({"issue": 13, "commit": "d" * 40, "verdict": "FAIL",
+            readiness = Path(evidence["prerequisites"][0]["evidence"])
+            readiness.write_text(json.dumps({"issue": 31, "release": {"commit": "d" * 40}, "verdict": "FAIL",
                                              "artifacts": {"manifestSha256": "e" * 64,
                                                            "checksumsSha256": "f" * 64}}) + "\n",
                                  encoding="utf-8")
-            evidence["prerequisites"][1]["evidenceSha256"] = MODULE.digest(readiness)
+            evidence["prerequisites"][0]["evidenceSha256"] = MODULE.digest(readiness)
             problems = MODULE.evidence_problems(evidence, ROOT, evidence_base=base,
                                                  verify_external=False, now=OBSERVED_NOW)
-            self.assertTrue(any("does not PASS the exact RC commit" in problem for problem in problems))
+            self.assertTrue(any("does not authorize GO for the exact RC commit" in problem for problem in problems))
             self.assertTrue(any("names different RC artifacts" in problem for problem in problems))
 
     def test_sigstore_bundle_is_digest_bound(self):

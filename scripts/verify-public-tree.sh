@@ -38,14 +38,6 @@ for module in modules:
     if not (root / module / "pom.xml").is_file():
         raise SystemExit(f"public reactor module is incomplete: {module}")
 
-forbidden_paths = ("AGENTS.md", "docs/implementation/", "/src/")
-for relative in (root / "public-files.txt").read_text(encoding="utf-8").splitlines():
-    normalized = "/" + relative
-    enterprise_source = (forbidden_paths[2] in normalized
-                         and "/com/dvarahq/agentworks/enterprise/" in normalized)
-    if relative == forbidden_paths[0] or forbidden_paths[1] in normalized or enterprise_source:
-        raise SystemExit(f"forbidden public path: {relative}")
-
 forbidden_content = (
     "dvara-agentworks" + "-ee",
     "dvara-agent-os" + "-enterprise",

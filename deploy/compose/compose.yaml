@@ -26,7 +26,7 @@ services:
       context: ../..
       dockerfile: Dockerfile
       args:
-        VERSION: ${AGENTWORKS_VERSION:-1.0.0-rc2}
+        VERSION: ${AGENTWORKS_VERSION:-1.0.0-rc3}
         REVISION: ${AGENTWORKS_REVISION:-dev}
     restart: unless-stopped
     depends_on:
