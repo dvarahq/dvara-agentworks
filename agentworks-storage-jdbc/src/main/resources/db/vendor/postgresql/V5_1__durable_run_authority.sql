@@ -467,7 +467,7 @@ create trigger agent_run_effect_guard before insert or update or delete on agent
 create trigger agent_run_effect_no_truncate before truncate on agent_run_effect
     for each statement execute function agentworks_reject_history_mutation();
 
--- The resumable-work ledger fence (docs/implementation/LIFECYCLE-CONTRACTS.md): the same semantics as
+-- The resumable-work ledger fence: the same semantics as
 -- agentworks_fence_run. Terminal writes are always permitted; non-terminal writes are rejected under RETIRED,
 -- REVOKED, and PENDING; claims, resumes, and new effectful operations are rejected under SUSPENDED; late
 -- non-terminal work under QUIESCENT returns the cohort to DRAINING with a LATE_WORK transition.

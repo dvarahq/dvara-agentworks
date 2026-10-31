@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the resumable-work category catalog that cohort retirement depends on (issue #155).
-
-Every migration table carrying a cohort_id column must be catalogued as a work ledger or as non-work evidence, so
-new resumable work cannot bypass the retirement fence silently. Implemented categories must name a ledger table,
-a fence function present in the migrations, and existing fence and retirement-race test methods; planned categories must name an owner.
-"""
+"""Verify that every resumable-work category is fenced and has a declared owner."""
 
 import json
 import os
@@ -18,21 +13,27 @@ MIGRATIONS = Path("agentworks-storage-jdbc/src/main/resources/db")
 
 def cohort_tables(sql: str) -> set[str]:
     tables = set()
-    for name, body in re.findall(r"create\s+table\s+(?:if\s+not\s+exists\s+)?(\w+)\s*\((.*?)\n\);", sql, re.I | re.S):
+    for name, body in re.findall(r"create\s+table\s+(?:if\s+not\s+exists\s+)?(\w+)\s*\((.*?)\n\);", sql,
+                                 re.I | re.S):
         if re.search(r"(?:^|,|\()\s*cohort_id\s+\w+", body, re.I):
             tables.add(name.lower())
-    for name in re.findall(r"alter\s+table\s+(?:if\s+exists\s+)?(\w+)\s+add\s+(?:column\s+)?(?:if\s+not\s+exists\s+)?cohort_id\b",
-                           sql, re.I):
+    for name in re.findall(
+            r"alter\s+table\s+(?:if\s+exists\s+)?(\w+)\s+add\s+(?:column\s+)?(?:if\s+not\s+exists\s+)?cohort_id\b",
+            sql, re.I):
         tables.add(name.lower())
     return tables
 
 
 def problems(root: Path) -> list[str]:
     catalog = json.loads((root / CATALOG).read_text(encoding="utf-8"))
-    follow_up_file = root / "config/traceability/follow-up-issues.json"
-    follow_ups = {int(number) for number in json.loads(follow_up_file.read_text(encoding="utf-8"))["issues"]}
+    declared_owners = catalog.get("planned_owner_issues")
+    if (not isinstance(declared_owners, list)
+            or not all(isinstance(number, int) and number > 0 for number in declared_owners)
+            or declared_owners != sorted(set(declared_owners))):
+        return ["planned_owner_issues must be a sorted, unique list of positive issue numbers"]
+    declared_owners = set(declared_owners)
     sql = "\n".join(path.read_text(encoding="utf-8") for path in sorted((root / MIGRATIONS).rglob("*.sql")))
-    found, ledgers = [], set()
+    found, ledgers, used_owners = [], set(), set()
     for name, category in catalog["categories"].items():
         status = category.get("status")
         if status == "implemented":
@@ -53,17 +54,22 @@ def problems(root: Path) -> list[str]:
                 for reference in category.get(kind, []):
                     path, _, method = reference.partition("#")
                     source = root / path
-                    if not method or not source.is_file() or not re.search(rf"void\s+{re.escape(method)}\s*\(",
-                                                                            source.read_text(encoding="utf-8")):
+                    if not method or not source.is_file() or not re.search(
+                            rf"void\s+{re.escape(method)}\s*\(", source.read_text(encoding="utf-8")):
                         found.append(f"{name}: test {reference} does not exist")
         elif status == "planned":
-            if category.get("owner_issue") not in follow_ups:
-                found.append(f"{name}: planned category needs an owner_issue listed in follow-up-issues.json")
+            owner = category.get("owner_issue")
+            if owner not in declared_owners:
+                found.append(f"{name}: planned category needs an owner_issue declared in planned_owner_issues")
+            else:
+                used_owners.add(owner)
         else:
             found.append(f"{name}: status must be implemented or planned")
     allowed = ledgers | set(catalog.get("non_work_tables", {}))
     for table in sorted(cohort_tables(sql) - allowed):
         found.append(f"table {table} carries cohort_id but is not catalogued as resumable work or non-work evidence")
+    if unused := declared_owners - used_owners:
+        found.append(f"planned_owner_issues contains unused owners {sorted(unused)}")
     return found
 
 

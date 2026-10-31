@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "description": "Every category of durable work that can resume on a runtime cohort. Cohort retirement is safe only when each implemented category is ledgered, fenced by the database, and counted by the quiescence predicate. A migration table that carries cohort_id must be listed here as a work ledger or as non-work evidence.",
+  "planned_owner_issues": [57, 87],
   "categories": {
     "RUN": {
       "status": "implemented",

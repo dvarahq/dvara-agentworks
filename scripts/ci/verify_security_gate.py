@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail closed when the OSS security RC policy or executable gate is weakened."""
+"""Verify the self-contained public security policy and executable gate."""
 
 import os
 from pathlib import Path
@@ -26,11 +26,10 @@ def forbid(path: str, markers: tuple[str, ...]) -> list[str]:
 problems = []
 problems += require("SECURITY.md", ("Report a vulnerability", "three business days", "seven business days",
                                     "docs/security/threat-model.md"))
-problems += require("docs/implementation/OSS-SECURITY-GATE.md", ("## Assets and data flow", "## Authorization inventory",
-        "## ADR-027 adversarial analysis", "## Isolation profile checks and residual risk",
-        "## Release security gate", "RequestBodyLimitTest", "RunAdmissionFencePostgresTest",
-        "Dependabot alerts are currently disabled"))
-problems += require(".github/workflows/security.yml", ("scripts/ci/run_dependency_check.sh",))
+problems += require("docs/security/threat-model.md", ("## What we protect", "## Main risks and controls",
+        "## What the operator must provide", "## Safe failure behavior", "PostgreSQL RLS",
+        "Exact versions and digests"))
+problems += require("scripts/ci/pr-verification.sh", ("verify_repository_policy.py", "unittest discover"))
 problems += require("scripts/ci/run_dependency_check.sh", ("dependency-check-maven:12.2.2:aggregate",
         "DependencyCheck_Builder/nvd_cache/nvdcve-{0}.json.gz", "config/dependency-check-suppressions.xml",
         "-DfailBuildOnCVSS=7", "-DfailOnError=true"))

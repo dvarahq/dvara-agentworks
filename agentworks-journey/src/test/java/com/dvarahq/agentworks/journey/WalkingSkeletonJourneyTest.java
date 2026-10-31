@@ -1119,9 +1119,9 @@ class WalkingSkeletonJourneyTest {
         properties.put("agentworks.runs.worker.lease-duration", "30s");
         properties.put("agentworks.runs.worker.idle-backoff", "100ms");
         properties.put("agentworks.spring-ai.chunk-batch-chars", "8");
-        properties.put("agentworks.journey.extension.enabled", "true");
-        properties.put("agentworks.journey.effects-file", effectsFile.toString());
-        properties.put("agentworks.journey.hold-file", holdFile.toString());
+        properties.put("journey.extension.enabled", "true");
+        properties.put("journey.effects-file", effectsFile.toString());
+        properties.put("journey.hold-file", holdFile.toString());
         properties.putAll(overrides);
         return properties;
     }

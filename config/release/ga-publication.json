@@ -6,7 +6,7 @@
     "repository": "https://github.com/dvarahq/dvara-agentworks"
   },
   "allowedGitHubActors": ["grabdoc"],
-  "requiredPrerequisiteIssues": [6, 7, 13],
+  "requiredPrerequisiteIssues": [31, 7],
   "requiredArtifactFamilies": [
     "maven-bom", "maven-modules", "oci", "helm", "cli", "source",
     "checksums", "sbom", "provenance"

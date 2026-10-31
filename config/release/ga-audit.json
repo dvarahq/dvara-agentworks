@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "release": {
-    "version": "1.0.0-rc2",
-    "tag": "v1.0.0-rc2",
+    "version": "1.0.0-rc3",
+    "tag": "v1.0.0-rc3",
     "canonicalSource": "https://github.com/dvarahq/dvara-agentworks"
   },
-  "requiredPrerequisiteIssues": [6, 13],
+  "requiredPrerequisiteIssues": [31],
   "allowedVerdicts": ["PASS", "PASS_WITH_NON_BLOCKING_FOLLOW_UPS", "FAIL"],
   "reportSigning": {
-    "certificateIdentity": "https://github.com/dvarahq/dvara-agentworks/.github/workflows/release.yml@refs/tags/v1.0.0-rc2",
+    "certificateIdentity": "https://github.com/dvarahq/dvara-agentworks/.github/workflows/release.yml@refs/tags/v1.0.0-rc3",
     "certificateOidcIssuer": "https://token.actions.githubusercontent.com"
   },
   "requiredAudits": [

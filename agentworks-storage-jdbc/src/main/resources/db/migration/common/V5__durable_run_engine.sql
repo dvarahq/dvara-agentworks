@@ -111,7 +111,7 @@ create table agent_run_effect (
         and (state = 'ABANDONED') = (resolution is not null))
 );
 
--- The resumable-work ledger specified by docs/implementation/LIFECYCLE-CONTRACTS.md. run_id is null only for
+-- The resumable-work ledger. run_id is null only for
 -- categories whose work has no run yet (for example schedules, owned by #57).
 create table cohort_work_item (
     workspace_id uuid not null, id uuid not null, cohort_id uuid not null, run_id uuid,

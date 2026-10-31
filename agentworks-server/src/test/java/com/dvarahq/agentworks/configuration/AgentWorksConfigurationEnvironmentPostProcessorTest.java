@@ -61,6 +61,18 @@ class AgentWorksConfigurationEnvironmentPostProcessorTest {
     }
 
     @Test
+    void zeroRunBudgetsAreValidAndNegativeBudgetsFailClosed() {
+        for (String name : new String[]{"agentworks.runs.limits.max-total-tokens",
+                "agentworks.runs.limits.max-model-calls", "agentworks.runs.limits.max-tool-calls",
+                "agentworks.runs.limits.max-cost-usd"}) {
+            validate(environment(name, "0"));
+            assertThatThrownBy(() -> validate(environment(name, "-1")))
+                    .hasMessageContaining(name)
+                    .hasMessageContaining("must be non-negative");
+        }
+    }
+
+    @Test
     void secretCanariesNeverAppearInValidationFailures() {
         String canary = "super-secret-canary-material";
         MockEnvironment environment = environment("agentworks.client.credential-ref", canary);

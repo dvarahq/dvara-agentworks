@@ -17,7 +17,7 @@ import java.util.Map;
 
 /**
  * Issue #37's test-only harness extension. The journey puts this jar on the unmodified server boot jar's
- * {@code loader.path} and enables it with {@code agentworks.journey.extension.enabled=true}. It contributes, through
+ * {@code loader.path} and enables it with {@code journey.extension.enabled=true}. It contributes, through
  * public extension points only:
  * <ul>
  *   <li>a {@link ConfiguredGateway} {@code journey}: the deterministic fake adapter with the {@link JourneyScript}. The
@@ -30,7 +30,7 @@ import java.util.Map;
  * server's own authority.
  */
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "agentworks.journey.extension", name = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "journey.extension", name = "enabled", havingValue = "true")
 public class JourneyExtensionAutoConfiguration {
     public static final String GATEWAY = "journey";
 
@@ -40,13 +40,13 @@ public class JourneyExtensionAutoConfiguration {
         models.put("reference", "journey-model-a");
         models.put("second", "journey-model-b");
         DeterministicFakeGatewayAdapter adapter = DeterministicFakeGatewayAdapter.builder(GATEWAY).models(models)
-                .script(new JourneyScript(path(environment, "agentworks.journey.hold-file"))).build();
+                .script(new JourneyScript(path(environment, "journey.hold-file"))).build();
         return new ConfiguredGateway(adapter, CapabilityPolicy.DEFAULT, null);
     }
 
     @Bean
     CapabilityToolCallbackProvider journeyTools(Environment environment) {
-        var callback = new JourneyLedgerTool(path(environment, "agentworks.journey.effects-file"));
+        var callback = new JourneyLedgerTool(path(environment, "journey.effects-file"));
         return CapabilityToolCallbackProvider.from(new CapabilityToolCallback(
                 new ToolId("journey", "journey-ledger", "1.0.0"), callback));
     }

@@ -113,6 +113,9 @@ public final class AgentWorksConfigurationEnvironmentPostProcessor implements En
                 case "decimal" -> {
                     java.math.BigDecimal value = new java.math.BigDecimal(raw.strip());
                     if (entry.constraint().equals("positive") && value.signum() <= 0) fail(name, "must be positive");
+                    if (entry.constraint().equals("non-negative") && value.signum() < 0) {
+                        fail(name, "must be non-negative");
+                    }
                 }
                 case "duration" -> positive(DurationStyle.detectAndParse(raw), name);
                 case "data-size" -> {
@@ -142,6 +145,7 @@ public final class AgentWorksConfigurationEnvironmentPostProcessor implements En
 
     private static void validateLong(long value, String constraint, String name) {
         if (constraint.equals("positive") && value <= 0) fail(name, "must be positive");
+        if (constraint.equals("non-negative") && value < 0) fail(name, "must be non-negative");
         if (constraint.matches("\\d+\\.\\.\\d+")) {
             String[] bounds = constraint.split("\\.\\.");
             if (value < Long.parseLong(bounds[0]) || value > Long.parseLong(bounds[1])) {

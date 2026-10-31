@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Spring AI compatibility suite (issue #34 AC7). It pins, as executable assertions, every Spring AI behavior the
  * executor relies on, so a dependency update that changes one fails the build. It runs in every {@code clean verify},
  * so it runs on every dependency update. When it fails after an upgrade, update the adapter (not the assertion) and
- * record the change in {@code docs/implementation/ISSUE-34-SPRING-AI-EXECUTOR.md}.
+ * record the change in the versioned compatibility policy.
  */
 class SpringAiCompatibilityTest {
 
