@@ -163,6 +163,12 @@ def workflow_problems(policy: dict) -> list[str]:
         "id-token: write", "attestations: write", "contents: write", "github.repository == 'dvarahq/dvara-agentworks'",
         "scripts/ci/verify_supply_chain.py", "scripts/release/build-release-candidate.sh", "trivy-action@",
         "cosign-installer@", "attest-build-provenance@",
+        "github.ref == format('refs/tags/{0}', inputs.tag)",
+        "chmod 0755 target/oss-release-candidate/artifacts/cli/agentworks",
+        "Verify the release archive preserves the executable CLI",
+        'test -x "$archive_check/oss-release-candidate/artifacts/cli/agentworks"',
+        '"$archive_check/oss-release-candidate/artifacts/cli/agentworks" --version',
+        "prerelease: ${{ contains(inputs.tag, '-') }}",
     ):
         if required not in text:
             problems.append(f"release workflow is missing {required}")

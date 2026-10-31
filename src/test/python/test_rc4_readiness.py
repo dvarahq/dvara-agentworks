@@ -9,8 +9,8 @@ from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[3]
-MODULE_PATH = ROOT / "scripts/release/verify_rc3_readiness.py"
-SPEC = importlib.util.spec_from_file_location("verify_rc3_readiness", MODULE_PATH)
+MODULE_PATH = ROOT / "scripts/release/verify_rc4_readiness.py"
+SPEC = importlib.util.spec_from_file_location("verify_rc4_readiness", MODULE_PATH)
 MODULE = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = MODULE
 SPEC.loader.exec_module(MODULE)
@@ -86,7 +86,7 @@ def local_problems(evidence):
     return MODULE.evidence_problems(evidence, ROOT, verify_external=False, now=OBSERVED_NOW)
 
 
-class Rc3ReadinessTest(unittest.TestCase):
+class Rc4ReadinessTest(unittest.TestCase):
     def test_repository_policy_is_internally_consistent(self):
         self.assertEqual([], MODULE.policy_problems(ROOT))
         policy = MODULE.load(ROOT / MODULE.POLICY)
@@ -185,7 +185,7 @@ class Rc3ReadinessTest(unittest.TestCase):
             (bundle / "SHA256SUMS").write_text("manifest checksums\n", encoding="utf-8")
             (bundle / "SOURCE.json").write_text(json.dumps({
                 "repository": "https://github.com/dvarahq/dvara-agentworks",
-                "tag": "v1.0.0-rc3",
+                "tag": "v1.0.0-rc4",
                 "commit": evidence["release"]["commit"],
                 "releaseQualified": True,
             }), encoding="utf-8")

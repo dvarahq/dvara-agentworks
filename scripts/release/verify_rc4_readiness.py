@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the RC3 freeze contract and, when supplied, final go/no-go evidence."""
+"""Validate the RC4 freeze contract and, when supplied, final go/no-go evidence."""
 
 from __future__ import annotations
 
@@ -17,8 +17,8 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(os.environ.get("AGENTWORKS_REPOSITORY_ROOT", Path(__file__).resolve().parents[2]))
-POLICY = Path("config/release/rc3.json")
-TEMPLATE = Path("config/release/rc3-evidence-template.json")
+POLICY = Path("config/release/rc4.json")
+TEMPLATE = Path("config/release/rc4-evidence-template.json")
 SHA256 = re.compile(r"[0-9a-f]{64}")
 COMMIT = re.compile(r"[0-9a-f]{40}")
 SEMVER_RC = re.compile(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-rc[1-9][0-9]*")
@@ -136,7 +136,7 @@ def policy_problems(root: Path = ROOT) -> list[str]:
         if f"AGENTWORKS_VERSION:-{version}" not in compose:
             problems.append("Compose default differs from the frozen RC version")
         if f"## [{version}] - Unreleased" not in changelog:
-            problems.append("CHANGELOG has no frozen RC3 candidate section")
+            problems.append("CHANGELOG has no frozen RC4 candidate section")
     except OSError as error:
         problems.append(f"cannot inspect distribution version freeze: {error}")
 
@@ -150,9 +150,9 @@ def policy_problems(root: Path = ROOT) -> list[str]:
         problems.append("RC evidence template pass inventory differs from policy")
     evidence_paths = policy.get("evidence", {})
     expected_paths = {
-        "template": "config/release/rc3-evidence-template.json",
-        "runbook": "docs/operations/rc3.md",
-        "goNoGoReport": "docs/release/rc3-go-no-go.md",
+        "template": "config/release/rc4-evidence-template.json",
+        "runbook": "docs/operations/rc4.md",
+        "goNoGoReport": "docs/release/rc4-go-no-go.md",
     }
     if evidence_paths != expected_paths:
         problems.append("RC evidence paths differ from the public release contract")
@@ -377,17 +377,17 @@ def main() -> None:
         try:
             evidence = load(args.evidence)
         except (OSError, ValueError) as error:
-            raise SystemExit(f"rc3-readiness=FAIL: invalid evidence: {error}") from error
+            raise SystemExit(f"rc4-readiness=FAIL: invalid evidence: {error}") from error
         problems = evidence_problems(evidence, evidence_base=args.evidence.resolve().parent)
         if problems:
-            raise SystemExit("rc3-readiness=FAIL: " + "; ".join(problems))
-        print(f"rc3-readiness=GO commit={evidence['release']['commit']} tag={evidence['release']['tag']}")
+            raise SystemExit("rc4-readiness=FAIL: " + "; ".join(problems))
+        print(f"rc4-readiness=GO commit={evidence['release']['commit']} tag={evidence['release']['tag']}")
         return
     problems = policy_problems()
     if problems:
-        raise SystemExit("rc3-policy=FAIL: " + "; ".join(problems))
+        raise SystemExit("rc4-policy=FAIL: " + "; ".join(problems))
     policy = load(ROOT / POLICY)
-    print(f"rc3-readiness=PENDING tag={policy['release']['tag']} external-evidence-required=true")
+    print(f"rc4-readiness=PENDING tag={policy['release']['tag']} external-evidence-required=true")
 
 
 if __name__ == "__main__":
