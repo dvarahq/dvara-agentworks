@@ -18,7 +18,7 @@ OBSERVED_NOW = datetime(2026, 11, 3, tzinfo=timezone.utc)
 def valid_evidence(base: Path):
     policy = MODULE.load(ROOT / MODULE.POLICY)
     commit = "a" * 40
-    rc = base / "rc1-evidence.json"
+    rc = base / "rc2-evidence.json"
     rc.write_text(json.dumps({"release": {"commit": commit}, "artifacts": {
         "manifestSha256": "b" * 64, "checksumsSha256": "c" * 64}}) + "\n", encoding="utf-8")
     readiness = base / "issue-13-evidence.json"
@@ -37,10 +37,10 @@ def valid_evidence(base: Path):
         return {"path": str(path), "sha256": MODULE.digest(path)}
     return {
         "schemaVersion": 1,
-        "release": {"version": "1.0.0-rc1", "tag": "v1.0.0-rc1",
+        "release": {"version": "1.0.0-rc2", "tag": "v1.0.0-rc2",
                     "repository": "https://github.com/dvarahq/dvara-agentworks",
                     "commit": commit, "dirty": False},
-        "artifacts": {"rc1EvidencePath": str(rc), "manifestSha256": "b" * 64,
+        "artifacts": {"rcEvidencePath": str(rc), "manifestSha256": "b" * 64,
                       "checksumsSha256": "c" * 64},
         "prerequisites": [
             {"issue": 6, "status": "CLOSED", "commit": commit, "evidence": str(rc),
@@ -63,7 +63,7 @@ def valid_evidence(base: Path):
                       "impact": "Editorial follow-up only.", "disposition": "Tracked for 1.0.1."}],
         "report": {"path": str(report), "sha256": MODULE.digest(report),
                    "sigstoreBundlePath": str(bundle), "sigstoreBundleSha256": MODULE.digest(bundle),
-                   "certificateIdentity": "https://github.com/dvarahq/dvara-agentworks/.github/workflows/release.yml@refs/tags/v1.0.0-rc1",
+                   "certificateIdentity": "https://github.com/dvarahq/dvara-agentworks/.github/workflows/release.yml@refs/tags/v1.0.0-rc2",
                    "certificateOidcIssuer": "https://token.actions.githubusercontent.com"},
         "verdict": "PASS",
         "verdictAt": "2026-11-02T12:00:00Z",

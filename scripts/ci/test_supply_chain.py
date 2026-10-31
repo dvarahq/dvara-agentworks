@@ -106,6 +106,10 @@ reject("pr_release_credentials", "release workflow must never run for pull reque
        lambda root: replace(root, ".github/workflows/release.yml", "  workflow_dispatch:", "  pull_request:\n  workflow_dispatch:") or [])
 reject("unprotected_signer", "release workflow is missing environment: oss-release",
        lambda root: replace(root, ".github/workflows/release.yml", "environment: oss-release", "environment: staging") or [])
+reject("missing_release_archive", "release archive output does not match published asset path",
+       lambda root: replace(root, ".github/workflows/release.yml",
+                            '-czf "target/agentworks-${{ inputs.tag }}.tar.gz" -C target',
+                            '-C target -czf "agentworks-${{ inputs.tag }}.tar.gz"') or [])
 reject("unknown_or_incompatible_license", "incompatible license", lambda root: sbom(root))
 reject("private_dependency", "private dependency", lambda root: sbom(
     root, "Apache-2.0", "pkg:maven/com.dvarahq.agentworks.enterprise/private-runtime@1"))

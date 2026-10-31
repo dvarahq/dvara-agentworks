@@ -127,7 +127,7 @@ def policy_problems(root: Path = ROOT) -> list[str]:
     if policy.get("schemaVersion") != 1 or template.get("schemaVersion") != 1:
         problems.append("GA policy and evidence template must use schema version 1")
     release = policy.get("release", {})
-    if release != {"version": "1.0.0-rc1", "tag": "v1.0.0-rc1",
+    if release != {"version": "1.0.0-rc2", "tag": "v1.0.0-rc2",
                     "canonicalSource": "https://github.com/dvarahq/dvara-agentworks"}:
         problems.append("GA policy release identity differs from the frozen RC")
     if policy.get("requiredPrerequisiteIssues") != [6, 13]:
@@ -135,7 +135,7 @@ def policy_problems(root: Path = ROOT) -> list[str]:
     if policy.get("allowedVerdicts") != ["PASS", "PASS_WITH_NON_BLOCKING_FOLLOW_UPS", "FAIL"]:
         problems.append("GA verdict vocabulary differs from ADR-024")
     if policy.get("reportSigning") != {
-        "certificateIdentity": "https://github.com/dvarahq/dvara-agentworks/.github/workflows/release.yml@refs/tags/v1.0.0-rc1",
+        "certificateIdentity": "https://github.com/dvarahq/dvara-agentworks/.github/workflows/release.yml@refs/tags/v1.0.0-rc2",
         "certificateOidcIssuer": "https://token.actions.githubusercontent.com",
     }:
         problems.append("GA report signer is not the canonical protected release workflow")
@@ -247,9 +247,9 @@ def evidence_problems(evidence: dict[str, Any], root: Path = ROOT, *, evidence_b
     for field in ("manifestSha256", "checksumsSha256"):
         if not isinstance(artifacts.get(field), str) or not SHA256.fullmatch(artifacts[field]):
             problems.append(f"artifacts.{field} is not an exact SHA-256")
-    rc_evidence = resolve(base, artifacts.get("rc1EvidencePath"))
+    rc_evidence = resolve(base, artifacts.get("rcEvidencePath"))
     if rc_evidence is None or not rc_evidence.is_file():
-        problems.append("artifacts.rc1EvidencePath does not identify final public issue #6 evidence")
+        problems.append("artifacts.rcEvidencePath does not identify final public issue #6 evidence")
     else:
         try:
             rc_data = load(rc_evidence)
@@ -263,8 +263,8 @@ def evidence_problems(evidence: dict[str, Any], root: Path = ROOT, *, evidence_b
                     or rc_artifacts.get("checksumsSha256") != artifacts.get("checksumsSha256"):
                 problems.append("GA artifact digests differ from final public issue #6 evidence")
         if verify_external:
-            verify_command([sys.executable, str(root / "scripts/release/verify_rc1_readiness.py"),
-                            "--evidence", str(rc_evidence)], root, "RC1 evidence", problems)
+            verify_command([sys.executable, str(root / "scripts/release/verify_rc2_readiness.py"),
+                            "--evidence", str(rc_evidence)], root, "RC2 evidence", problems)
 
     invariant_results = evidence.get("invariants", {})
     expected_ids = [entry["id"] for entry in policy["invariants"]]

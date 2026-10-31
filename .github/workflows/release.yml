@@ -92,7 +92,7 @@ jobs:
       - name: Build deterministic release archive
         run: >-
           tar --sort=name --mtime="@$(git show -s --format=%ct)" --owner=0 --group=0 --numeric-owner
-          -C target -czf "agentworks-${{ inputs.tag }}.tar.gz" oss-release-candidate
+          -czf "target/agentworks-${{ inputs.tag }}.tar.gz" -C target oss-release-candidate
       - name: Publish only after protected-environment approval
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
