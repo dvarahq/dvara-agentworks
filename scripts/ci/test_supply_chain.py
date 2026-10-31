@@ -110,6 +110,22 @@ reject("missing_release_archive", "release archive output does not match publish
        lambda root: replace(root, ".github/workflows/release.yml",
                             '-czf "target/agentworks-${{ inputs.tag }}.tar.gz" -C target',
                             '-C target -czf "agentworks-${{ inputs.tag }}.tar.gz"') or [])
+reject("missing_cli_mode_restore", "release workflow is missing chmod 0755",
+       lambda root: replace(root, ".github/workflows/release.yml",
+                            "chmod 0755 target/oss-release-candidate/artifacts/cli/agentworks",
+                            "true # CLI mode not restored") or [])
+reject("release_not_marked_prerelease", "release workflow is missing prerelease:",
+       lambda root: replace(root, ".github/workflows/release.yml",
+                            "prerelease: ${{ contains(inputs.tag, '-') }}",
+                            "prerelease: false") or [])
+reject("wrong_release_ref_allowed", "release workflow is missing github.ref == format",
+       lambda root: replace(root, ".github/workflows/release.yml",
+                            "github.ref == format('refs/tags/{0}', inputs.tag)",
+                            "github.ref == 'refs/heads/main'") or [])
+reject("archive_cli_mode_unchecked", "release workflow is missing test -x",
+       lambda root: replace(root, ".github/workflows/release.yml",
+                            'test -x "$archive_check/oss-release-candidate/artifacts/cli/agentworks"',
+                            'test -f "$archive_check/oss-release-candidate/artifacts/cli/agentworks"') or [])
 reject("unknown_or_incompatible_license", "incompatible license", lambda root: sbom(root))
 reject("private_dependency", "private dependency", lambda root: sbom(
     root, "Apache-2.0", "pkg:maven/com.dvarahq.agentworks.enterprise/private-runtime@1"))
@@ -183,6 +199,21 @@ with tempfile.TemporaryDirectory() as directory:
         path = artifacts / kind / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(f"{kind}-fixture".encode())
+        if kind == "cli":
+            path.chmod(0o755)
+    source_cli = artifacts / "cli/agentworks"
+    source_cli.chmod(0o644)
+    non_executable_create = subprocess.run(
+        ["python3", str(ROOT / "scripts/release/create_release_evidence.py"),
+         "--artifacts", str(artifacts), "--output", str(scratch / "bad-candidate"),
+         "--commit", "a" * 40, "--tag", "v1.0.0", "--source-date-epoch", "1700000000",
+         "--github-actor", "grabdoc"],
+        cwd=ROOT, capture_output=True, text=True)
+    if non_executable_create.returncode == 0 or "CLI artifact must have mode 0755" not in \
+            non_executable_create.stderr + non_executable_create.stdout:
+        raise SystemExit("supply-chain-fixtures=FAIL: non-executable source CLI was accepted")
+    source_cli.chmod(0o755)
+    print("non_executable_source_cli=REJECTED")
     candidate = scratch / "candidate"
     create = ["python3", str(ROOT / "scripts/release/create_release_evidence.py"),
               "--artifacts", str(artifacts), "--output", str(candidate),
@@ -200,6 +231,13 @@ with tempfile.TemporaryDirectory() as directory:
     verify = ["python3", str(ROOT / "scripts/release/verify_release_candidate.py"), str(candidate),
               "--phase", "build", "--expected-commit", "a" * 40]
     subprocess.run(verify, cwd=ROOT, check=True)
+    packaged_cli = candidate / "artifacts/cli/agentworks"
+    packaged_cli.chmod(0o644)
+    result = subprocess.run(verify, cwd=ROOT, capture_output=True, text=True)
+    if result.returncode == 0 or "packaged CLI mode differs from signed 0755 contract" not in result.stderr + result.stdout:
+        raise SystemExit("supply-chain-fixtures=FAIL: non-executable packaged CLI was accepted")
+    packaged_cli.chmod(0o755)
+    print("non_executable_packaged_cli=REJECTED")
     fake_bin = scratch / "bin"
     fake_bin.mkdir()
     cosign_log = scratch / "cosign.args"
@@ -222,4 +260,4 @@ with tempfile.TemporaryDirectory() as directory:
     if result.returncode == 0 or "checksum mismatch" not in result.stderr + result.stdout:
         raise SystemExit("supply-chain-fixtures=FAIL: tampered release artifact was accepted")
 print("release_artifact_tampered=REJECTED")
-print("supply-chain-fixtures=PASS fixtures=16")
+print("supply-chain-fixtures=PASS fixtures=22")

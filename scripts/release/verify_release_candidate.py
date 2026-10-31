@@ -8,6 +8,7 @@ import hashlib
 import json
 import re
 import shutil
+import stat
 import subprocess
 from pathlib import Path
 
@@ -79,6 +80,7 @@ def main() -> None:
             problems.append(str(error))
     kinds: set[str] = set()
     recorded_artifacts: set[str] = set()
+    cli_artifacts = 0
     for artifact in manifest.get("artifacts", []):
         kinds.add(artifact.get("kind"))
         recorded_artifacts.add(artifact.get("path", ""))
@@ -87,6 +89,12 @@ def main() -> None:
             sha256 = digest(path)
             if sha256 != artifact.get("sha256"):
                 problems.append(f"manifest digest mismatch: {artifact.get('path')}")
+            if artifact.get("kind") == "cli":
+                cli_artifacts += 1
+                if artifact.get("mode") != "0755":
+                    problems.append("CLI artifact manifest must require mode 0755")
+                if stat.S_IMODE(path.stat().st_mode) != 0o755:
+                    problems.append("packaged CLI mode differs from signed 0755 contract")
             sbom = json.loads(safe(root, artifact["sbom"]).read_text(encoding="utf-8"))
             provenance = json.loads(safe(root, artifact["provenance"]).read_text(encoding="utf-8"))
             if sbom["packages"][0]["checksums"][0]["checksumValue"] != sha256:
@@ -101,6 +109,8 @@ def main() -> None:
             problems.append(f"invalid artifact evidence: {error}")
     if kinds != KINDS:
         problems.append(f"artifact kinds differ: {sorted(kinds)}")
+    if cli_artifacts != 1:
+        problems.append(f"release candidate must contain exactly one CLI artifact, found {cli_artifacts}")
     actual_artifacts = {path.relative_to(root).as_posix() for path in (root / "artifacts").rglob("*") if path.is_file()}
     if recorded_artifacts != actual_artifacts:
         problems.append("manifest does not record exactly every artifact")

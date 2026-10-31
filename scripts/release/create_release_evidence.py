@@ -8,6 +8,7 @@ import hashlib
 import json
 import re
 import shutil
+import stat
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -64,6 +65,9 @@ def main() -> None:
         target = args.output / "artifacts" / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
+        mode = stat.S_IMODE(target.stat().st_mode)
+        if kind == "cli" and mode != 0o755:
+            raise SystemExit(f"release-evidence=FAIL: CLI artifact must have mode 0755: {relative}")
         sha256 = digest(target)
         artifact_name = target.relative_to(args.output).as_posix()
         sbom_name = f"evidence/sbom/{artifact_name.replace('/', '__')}.spdx.json"
@@ -92,8 +96,11 @@ def main() -> None:
                                "metadata": {"invocationId": "qualification" if args.qualification else args.tag}},
             },
         })
-        artifacts.append({"kind": kind, "path": artifact_name, "sha256": sha256,
-                          "sbom": sbom_name, "provenance": provenance_name})
+        artifact_record = {"kind": kind, "path": artifact_name, "sha256": sha256,
+                           "sbom": sbom_name, "provenance": provenance_name}
+        if kind == "cli":
+            artifact_record["mode"] = f"{mode:04o}"
+        artifacts.append(artifact_record)
     missing = KINDS - seen_kinds
     if missing:
         raise SystemExit(f"release-evidence=FAIL: missing artifact kinds: {', '.join(sorted(missing))}")

@@ -202,7 +202,7 @@ class AuthenticationApiTest {
         assertThat(active.get("/api/v1/agents").status()).isEqualTo(401);
         assertThat(jdbc.queryForObject("select count(*) from auth_session where user_id = ? and revoked_at is null "
                 + "and expires_at > ?", Integer.class, viewer.userId(),
-                java.sql.Timestamp.from(clock.instant()))).isZero();
+                java.time.OffsetDateTime.ofInstant(clock.instant(), java.time.ZoneOffset.UTC))).isZero();
     }
 
     @Test

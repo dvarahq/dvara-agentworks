@@ -30,7 +30,7 @@ You do not need to understand the internals before using AgentWorks. Pick what y
 | Monitor and diagnose the service | [Observability](operations/observability.md) |
 | Upgrade or roll back | [Upgrade guide](operations/upgrade-and-rollback.md) |
 | Check supported versions | [Compatibility](operations/compatibility.md) |
-| Qualify an RC3 release | [RC3 release runbook](operations/rc3.md) · [Go/no-go contract](release/rc3-go-no-go.md) |
+| Qualify an RC4 release | [RC4 release runbook](operations/rc4.md) · [Go/no-go contract](release/rc4-go-no-go.md) |
 | Secure the installation | [Security operations](security/operations.md) · [Threat model](security/threat-model.md) |
 | Fix a problem | [Troubleshooting](troubleshooting.md) |
 | Understand current limits | [Known limitations](limitations.md) |

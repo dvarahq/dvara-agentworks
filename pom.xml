@@ -9,7 +9,7 @@
   </parent>
   <groupId>com.dvarahq</groupId>
   <artifactId>agentworks-parent</artifactId>
-  <version>1.0.0-rc3</version>
+  <version>1.0.0-rc4</version>
   <packaging>pom</packaging>
   <name>Dvara AgentWorks Reactor</name>
   <description>Dvara AgentWorks open-source reactor</description>

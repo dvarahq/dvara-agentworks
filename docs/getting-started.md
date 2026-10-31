@@ -93,7 +93,7 @@ The build should finish with `BUILD SUCCESS`.
 Open a second terminal and start AgentWorks there. Leave this terminal running so you can see the server log:
 
 ```bash
-java -jar agentworks-server/target/agentworks-server-1.0.0-rc3.jar \
+java -jar agentworks-server/target/agentworks-server-1.0.0-rc4.jar \
   --spring.profiles.active=local \
   --server.port=8080 \
   --spring.datasource.url=jdbc:postgresql://127.0.0.1:55432/agentworks \

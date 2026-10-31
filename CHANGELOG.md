@@ -3,14 +3,32 @@
 All notable changes to Dvara AgentWorks Core are recorded here. The project follows Semantic Versioning; release
 candidate entries remain `Unreleased` until an immutable public tag and its release-qualified artifacts exist.
 
-## [1.0.0-rc3] - Unreleased
+## [1.0.0-rc4] - Unreleased
+
+### Fixed
+
+- The signed release manifest now binds the command-line client to mode `0755`, and release verification rejects
+  missing or changed executable permissions.
+- Protected publication restores the signed mode after GitHub artifact transfer, runs the verified command-line
+  client, and extracts the final release archive to prove it remains executable.
+- Release workflows dispatched from any ref other than the exact candidate tag skip the costly isolated build.
+- GitHub releases for prerelease tags are marked as prereleases automatically.
+
+### Changed
+
+- The Maven reactor, Helm chart, Compose distribution, and qualification policy are version-frozen at
+  `1.0.0-rc4`.
+- RC4 replaces RC3 after independent RC3 verification found that the hosted artifact handoff removed the executable
+  bit before the final release archive was created.
+
+## [1.0.0-rc3] - 2026-10-31
 
 ### Fixed
 
 - Public traceability and security checks now validate only evidence that is intentionally present in the public
   source tree, while the private source keeps its additional internal checks.
 - The observability guide and executable contract use the same metric and diagnostic names.
-- Release evidence preserves executable permissions on the command-line client.
+- Release evidence preserves executable permissions on the command-line client before hosted artifact transfer.
 - RC qualification, final audit, and GA publication policies route evidence through active public issues.
 
 ### Changed
@@ -18,6 +36,13 @@ candidate entries remain `Unreleased` until an immutable public tag and its rele
 - The Maven reactor, Helm chart, Compose distribution, and qualification policy are version-frozen at
   `1.0.0-rc3`.
 - RC3 replaces RC2 after independent RC2 qualification found release-blocking verification-contract defects.
+
+### Known limitations
+
+- RC3 was published for evaluation, but independent archive extraction recorded `NO-GO`: the packaged command-line
+  client was mode `0644` and could not run directly.
+- The RC3 tag and published evidence remain immutable; RC4 supersedes that candidate with a mode-bound release
+  contract and a complete qualification rerun.
 
 ## [1.0.0-rc2] - 2026-10-31
 
