@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "release": {
-    "version": "1.0.0-rc4",
-    "tag": "v1.0.0-rc4",
+    "version": "1.0.0-rc5",
+    "tag": "v1.0.0-rc5",
     "canonicalRepository": "dvarahq/dvara-agentworks",
     "canonicalSource": "https://github.com/dvarahq/dvara-agentworks"
   },
@@ -39,8 +39,8 @@
   "minimumSoakHours": 24,
   "minimumStabilizationHours": 168,
   "evidence": {
-    "template": "config/release/rc4-evidence-template.json",
-    "runbook": "docs/operations/rc4.md",
-    "goNoGoReport": "docs/release/rc4-go-no-go.md"
+    "template": "config/release/rc5-evidence-template.json",
+    "runbook": "docs/operations/rc5.md",
+    "goNoGoReport": "docs/release/rc5-go-no-go.md"
   }
 }

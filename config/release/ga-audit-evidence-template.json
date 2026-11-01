@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "release": {"version":"1.0.0-rc4","tag":"v1.0.0-rc4","repository":"https://github.com/dvarahq/dvara-agentworks","commit":null,"dirty":null},
+  "release": {"version":"1.0.0-rc5","tag":"v1.0.0-rc5","repository":"https://github.com/dvarahq/dvara-agentworks","commit":null,"dirty":null},
   "artifacts": {"rcEvidencePath":null,"manifestSha256":null,"checksumsSha256":null},
-  "prerequisites": [{"issue":33,"status":null,"commit":null,"evidence":null,"evidenceSha256":null}],
+  "prerequisites": [{"issue":35,"status":null,"commit":null,"evidence":null,"evidenceSha256":null}],
   "invariants": {},
   "audits": {},
   "findings": [],

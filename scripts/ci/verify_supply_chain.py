@@ -64,7 +64,7 @@ def secret_problems(policy: dict) -> list[str]:
             # Policy/configuration and negative-test names may describe secrets; only key containers are always banned.
             if lowered.endswith((".pem", ".key", ".p12", ".pfx")):
                 problems.append(f"secret key container is tracked: {relative}")
-        if path.suffix.lower() not in TEXT_SUFFIXES or path.stat().st_size > 2_000_000:
+        if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES or path.stat().st_size > 2_000_000:
             continue
         try:
             text = path.read_text(encoding="utf-8")
@@ -193,6 +193,30 @@ def workflow_problems(policy: dict) -> list[str]:
     return problems
 
 
+def audit_report_workflow_problems(policy: dict) -> list[str]:
+    path = ROOT / ".github/workflows/audit-report.yml"
+    if not path.is_file():
+        return ["missing protected GA audit-report signing workflow"]
+    text = path.read_text(encoding="utf-8")
+    problems: list[str] = []
+    if re.search(r"^\s*pull_request(?:_target)?:", text, re.MULTILINE):
+        problems.append("audit-report workflow must never run for pull requests")
+    for required in (
+        "workflow_dispatch:", "github.ref == format('refs/tags/{0}', inputs.tag)",
+        f"environment: {policy['protectedEnvironment']}", "timeout-minutes: 5",
+        "contents: write", "id-token: write", "cosign-installer@",
+        "scripts/release/verify_release_candidate.py", "scripts/release/verify_ga_audit_report.py",
+        "gh release download", "cmp ", "cosign sign-blob",
+        "cosign verify-blob", "gh release upload", "ga-audit-report.sigstore.json",
+    ):
+        if required not in text:
+            problems.append(f"audit-report workflow is missing {required}")
+    for forbidden in ("build-release-candidate.sh", "./mvnw", "docker build", "--clobber"):
+        if forbidden in text:
+            problems.append(f"audit-report workflow must not contain {forbidden}")
+    return problems
+
+
 def license_problems(policy: dict, sbom: Path | None) -> list[str]:
     problems: list[str] = []
     for required in ("legal/oss/LICENSE", "legal/oss/NOTICE", "legal/oss/SOURCE-OFFER.md", "legal/oss/DCO"):
@@ -271,6 +295,7 @@ def problems(sbom: Path | None = None, vulnerability_report: Path | None = None)
     found += exception_problems(policy)
     found += action_pinning_problems()
     found += workflow_problems(policy)
+    found += audit_report_workflow_problems(policy)
     found += repository_problems(policy)
     found += secret_problems(policy)
     found += license_problems(policy, sbom)

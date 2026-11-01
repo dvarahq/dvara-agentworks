@@ -3,7 +3,23 @@
 All notable changes to Dvara AgentWorks Core are recorded here. The project follows Semantic Versioning; release
 candidate entries remain `Unreleased` until an immutable public tag and its release-qualified artifacts exist.
 
-## [1.0.0-rc4] - Unreleased
+## [1.0.0-rc5] - Unreleased
+
+### Fixed
+
+- A protected, tag-bound, OIDC-backed workflow can now verify and sign the final post-soak GA audit report without
+  rebuilding release artifacts or permitting a signature bundle to be replaced.
+- Final audit reports are accepted only when their version, tag, repository, commit, verdict, manifest digest, and
+  checksum digest exactly match the published candidate.
+
+### Changed
+
+- The Maven reactor, Helm chart, Compose distribution, and qualification policy are version-frozen at
+  `1.0.0-rc5`.
+- RC5 replaces RC4 because the immutable RC4 workflow could sign the pre-publication checksum manifest but had no
+  protected path for signing its required post-soak GA audit report.
+
+## [1.0.0-rc4] - 2026-10-31
 
 ### Fixed
 
@@ -20,6 +36,11 @@ candidate entries remain `Unreleased` until an immutable public tag and its rele
   `1.0.0-rc4`.
 - RC4 replaces RC3 after independent RC3 verification found that the hosted artifact handoff removed the executable
   bit before the final release archive was created.
+
+### Known limitations
+
+- RC4 artifacts and executable CLI packaging independently verified, but the candidate cannot complete the final GA
+  audit because its immutable protected workflow has no post-soak audit-report signing path. RC5 supersedes it.
 
 ## [1.0.0-rc3] - 2026-10-31
 
