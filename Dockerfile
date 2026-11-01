@@ -2,7 +2,7 @@
 FROM registry.k8s.io/kubectl:v1.37.1@sha256:b7cab618e281b1ee7484e7b706a96e2135fbb6e072c2a573a7dab4e87d7f2385 AS kubectl
 FROM gcr.io/distroless/java25-debian13:nonroot@sha256:1faed3fc8dc16d47748e62167a7783d73299a277a4b695b90e8f530ea6a2c36f
 
-ARG VERSION=1.0.0-rc4
+ARG VERSION=1.0.0-rc5
 ARG JAR_FILE=agentworks-server/target/agentworks-server-${VERSION}.jar
 ARG REVISION=unknown
 ARG SOURCE_DATE_EPOCH=315532800

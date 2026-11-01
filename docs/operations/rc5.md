@@ -1,36 +1,36 @@
-# Qualify the RC4 release
+# Qualify the RC5 release
 
-RC4 is ready only when one exact public commit, its immutable tag, its signed artifacts, and all qualification
+RC5 is ready only when one exact public commit, its immutable tag, its signed artifacts, and all qualification
 evidence agree. A successful local build by itself is not a release.
 
-The machine-readable policy is [`config/release/rc4.json`](../../config/release/rc4.json). Start from its
-[`rc4-evidence-template.json`](../../config/release/rc4-evidence-template.json), and use the public
-[go/no-go contract](../release/rc4-go-no-go.md) when recording the final decision.
+The machine-readable policy is [`config/release/rc5.json`](../../config/release/rc5.json). Start from its
+[`rc5-evidence-template.json`](../../config/release/rc5-evidence-template.json), and use the public
+[go/no-go contract](../release/rc5-go-no-go.md) when recording the final decision.
 
 ## What must stay identical
 
-- Version: `1.0.0-rc4`
-- Tag: `v1.0.0-rc4`
+- Version: `1.0.0-rc5`
+- Tag: `v1.0.0-rc5`
 - Source: `https://github.com/dvarahq/dvara-agentworks`
 - Artifacts: Maven, CLI, multi-platform OCI, and Helm
 - Minimum soak: 24 continuous hours on the exact release commit
 - Minimum stabilization: seven complete days without changing that commit
 
-Changing source after the tag invalidates the candidate. Never move or replace a release tag. If RC4 needs a source
-fix after publication, prepare RC5 from a new reviewed commit.
+Changing source after the tag invalidates the candidate. Never move or replace a release tag. If RC5 needs a source
+fix after publication, prepare RC6 from a new reviewed commit.
 
 ## 1. Finish local qualification
 
 Run the inexpensive policy checks first, then the full build and journeys:
 
 ```bash
-python3 scripts/release/verify_rc4_readiness.py --policy-only
+python3 scripts/release/verify_rc5_readiness.py --policy-only
 python3 scripts/ci/verify_repository_policy.py
 python3 scripts/ci/test_policy_gates.py
 python3 scripts/ci/test_supply_chain.py
 ./mvnw -B -ntp clean verify
 ./mvnw -B -ntp -Pjourney -pl agentworks-journey -am verify
-scripts/release/build-release-candidate.sh qualification v1.0.0-rc4 target/oss-release-candidate
+scripts/release/build-release-candidate.sh qualification v1.0.0-rc5 target/oss-release-candidate
 python3 scripts/release/verify_release_candidate.py \
   target/oss-release-candidate --phase build --allow-qualification
 ```
@@ -48,7 +48,7 @@ Before creating the tag:
 3. Confirm there is no unresolved BLOCKER or HIGH finding.
 4. Configure `main`, the release tag, and the `oss-release` environment so only reviewed work and an approved
    `grabdoc` release can publish.
-5. Create the immutable `v1.0.0-rc4` tag at the reviewed public commit.
+5. Create the immutable `v1.0.0-rc5` tag at the reviewed public commit.
 
 Any accepted source change restarts qualification and stabilization on a new commit.
 
@@ -78,11 +78,11 @@ Copy the evidence template to an evidence directory outside the repository, fill
 verify it:
 
 ```bash
-python3 scripts/release/verify_rc4_readiness.py --evidence /path/to/rc4-evidence.json
+python3 scripts/release/verify_rc5_readiness.py --evidence /path/to/rc5-evidence.json
 ```
 
-Only `rc4-readiness=GO` authorizes the final go/no-go record. Attach the evidence and exact digests to
-[public issue #33](https://github.com/dvarahq/dvara-agentworks/issues/33) and the immutable GitHub release. Until then,
+Only `rc5-readiness=GO` authorizes the final go/no-go record. Attach the evidence and exact digests to
+[public issue #35](https://github.com/dvarahq/dvara-agentworks/issues/35) and the immutable GitHub release. Until then,
 the verdict is `PENDING`.
 
 ## Stop conditions

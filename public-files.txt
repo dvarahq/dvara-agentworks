@@ -2,6 +2,7 @@
 .gitattributes
 .github/CODEOWNERS
 .github/dependabot.yml
+.github/workflows/audit-report.yml
 .github/workflows/core-ci.yml
 .github/workflows/release.yml
 .gitignore
@@ -1273,8 +1274,8 @@ config/release/ga-audit-evidence-template.json
 config/release/ga-audit.json
 config/release/ga-publication-evidence-template.json
 config/release/ga-publication.json
-config/release/rc4-evidence-template.json
-config/release/rc4.json
+config/release/rc5-evidence-template.json
+config/release/rc5.json
 config/supply-chain/policy.json
 config/supply-chain/vulnerability-exceptions.json
 config/traceability/requirements.json
@@ -1309,11 +1310,11 @@ docs/operations/observability.md
 docs/operations/packaging.md
 docs/operations/postgresql-production.md
 docs/operations/production.md
-docs/operations/rc4.md
+docs/operations/rc5.md
 docs/operations/upgrade-and-rollback.md
 docs/reference/api.md
 docs/reference/configuration.md
-docs/release/rc4-go-no-go.md
+docs/release/rc5-go-no-go.md
 docs/security/operations.md
 docs/security/threat-model.md
 docs/spring-boot-integration.md
@@ -1373,9 +1374,10 @@ scripts/release/create_release_evidence.py
 scripts/release/normalize_cyclonedx.py
 scripts/release/package_chart.py
 scripts/release/verify_ga_audit.py
+scripts/release/verify_ga_audit_report.py
 scripts/release/verify_ga_publication.py
 scripts/release/verify_oci_reproducibility.py
-scripts/release/verify_rc4_readiness.py
+scripts/release/verify_rc5_readiness.py
 scripts/release/verify_release_candidate.py
 scripts/test/fast.sh
 scripts/test/integration.sh
@@ -1389,5 +1391,6 @@ src/test/python/test_console_timeline.py
 src/test/python/test_documentation.py
 src/test/python/test_fake_external_runner.py
 src/test/python/test_ga_audit.py
+src/test/python/test_ga_audit_report.py
 src/test/python/test_ga_publication.py
-src/test/python/test_rc4_readiness.py
+src/test/python/test_rc5_readiness.py

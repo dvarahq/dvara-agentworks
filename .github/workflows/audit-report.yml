@@ -1,0 +1,76 @@
+name: Sign GA audit report
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing immutable RC tag whose final audit report is already attached
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify-sign-and-attach:
+    if: >-
+      github.repository == 'dvarahq/dvara-agentworks' &&
+      github.ref == format('refs/tags/{0}', inputs.tag)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: oss-release
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          fetch-depth: 0
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Download the immutable candidate and final report
+        run: |
+          mkdir -p target/ga-audit/download target/ga-audit/extracted
+          gh release download "$RELEASE_TAG" --dir target/ga-audit/download \
+            --pattern "agentworks-${RELEASE_TAG}.tar.gz" \
+            --pattern SHA256SUMS \
+            --pattern ga-audit-report.json
+          tar -xzf "target/ga-audit/download/agentworks-${RELEASE_TAG}.tar.gz" \
+            -C target/ga-audit/extracted
+      - name: Bind the report to the exact public release
+        run: |
+          commit="$(git rev-parse HEAD)"
+          python3 scripts/release/verify_release_candidate.py \
+            target/ga-audit/extracted/oss-release-candidate \
+            --phase release --expected-commit "$commit"
+          cmp \
+            target/ga-audit/download/SHA256SUMS \
+            target/ga-audit/extracted/oss-release-candidate/SHA256SUMS
+          manifest_sha256="$(sha256sum target/ga-audit/extracted/oss-release-candidate/MANIFEST.json | cut -d ' ' -f 1)"
+          checksums_sha256="$(sha256sum target/ga-audit/download/SHA256SUMS | cut -d ' ' -f 1)"
+          version="${RELEASE_TAG#v}"
+          python3 scripts/release/verify_ga_audit_report.py \
+            target/ga-audit/download/ga-audit-report.json \
+            --expected-version "$version" \
+            --expected-tag "$RELEASE_TAG" \
+            --expected-repository https://github.com/dvarahq/dvara-agentworks \
+            --expected-commit "$commit" \
+            --expected-manifest-sha256 "$manifest_sha256" \
+            --expected-checksums-sha256 "$checksums_sha256"
+      - name: Sign and independently verify the exact report
+        run: |
+          cosign sign-blob --yes \
+            --bundle target/ga-audit/ga-audit-report.sigstore.json \
+            target/ga-audit/download/ga-audit-report.json
+          cosign verify-blob \
+            --bundle target/ga-audit/ga-audit-report.sigstore.json \
+            --certificate-oidc-issuer https://token.actions.githubusercontent.com \
+            --certificate-identity "https://github.com/dvarahq/dvara-agentworks/.github/workflows/audit-report.yml@refs/tags/${RELEASE_TAG}" \
+            target/ga-audit/download/ga-audit-report.json
+      - name: Attach the non-replaceable signature bundle
+        run: >-
+          gh release upload "$RELEASE_TAG"
+          target/ga-audit/ga-audit-report.sigstore.json

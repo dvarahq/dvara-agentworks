@@ -181,8 +181,8 @@ def policy_problems(root: Path = ROOT) -> list[str]:
         problems.append("GA publication release identity is not canonical")
     if policy.get("allowedGitHubActors") != [ALLOWED_ACTOR]:
         problems.append("GitHub publication authority must contain only grabdoc")
-    if policy.get("requiredPrerequisiteIssues") != [33, 7]:
-        problems.append("GA publication prerequisites must be public RC4 issue #33 then audit issue #7")
+    if policy.get("requiredPrerequisiteIssues") != [35, 7]:
+        problems.append("GA publication prerequisites must be public RC5 issue #35 then audit issue #7")
     families = policy.get("requiredArtifactFamilies", [])
     destinations = policy.get("destinations", {})
     if families != list(REQUIRED_FAMILIES):
@@ -208,7 +208,7 @@ def policy_problems(root: Path = ROOT) -> list[str]:
     prerequisites = template.get("prerequisites", [])
     if not isinstance(prerequisites, list) or len(prerequisites) != 2 \
             or not all(isinstance(item, dict) for item in prerequisites) \
-            or [item.get("issue") for item in prerequisites] != [33, 7]:
+            or [item.get("issue") for item in prerequisites] != [35, 7]:
         problems.append("GA publication template prerequisite inventory differs from policy")
     if template.get("artifacts") != [] or template.get("gates") != {}:
         problems.append("GA publication template cannot pre-attest artifacts or gates")
@@ -255,8 +255,8 @@ def evidence_problems(evidence: dict[str, Any], root: Path = ROOT, *, evidence_b
     prerequisites = evidence.get("prerequisites", [])
     if not isinstance(prerequisites, list) or len(prerequisites) != 2 \
             or not all(isinstance(item, dict) for item in prerequisites) \
-            or [item.get("issue") for item in prerequisites] != [33, 7]:
-        problems.append("GA publication prerequisite evidence differs from public issues #33 and #7")
+            or [item.get("issue") for item in prerequisites] != [35, 7]:
+        problems.append("GA publication prerequisite evidence differs from public issues #35 and #7")
     else:
         for item in prerequisites:
             number = item.get("issue")
@@ -281,7 +281,7 @@ def evidence_problems(evidence: dict[str, Any], root: Path = ROOT, *, evidence_b
                 nested_release = prerequisite.get("release", {})
                 nested_release = nested_release if isinstance(nested_release, dict) else {}
                 prerequisite_commit = prerequisite.get("commit", nested_release.get("commit"))
-                accepted = {33: {"GO"}, 7: {"PASS", "PASS_WITH_NON_BLOCKING_FOLLOW_UPS"}}
+                accepted = {35: {"GO"}, 7: {"PASS", "PASS_WITH_NON_BLOCKING_FOLLOW_UPS"}}
                 if prerequisite_commit != commit or prerequisite.get("verdict") not in accepted[number]:
                     problems.append(f"issue #{number} evidence does not authorize the exact GA commit")
 

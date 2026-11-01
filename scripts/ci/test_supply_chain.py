@@ -106,6 +106,21 @@ reject("pr_release_credentials", "release workflow must never run for pull reque
        lambda root: replace(root, ".github/workflows/release.yml", "  workflow_dispatch:", "  pull_request:\n  workflow_dispatch:") or [])
 reject("unprotected_signer", "release workflow is missing environment: oss-release",
        lambda root: replace(root, ".github/workflows/release.yml", "environment: oss-release", "environment: staging") or [])
+reject("unprotected_audit_report_signer", "audit-report workflow is missing environment: oss-release",
+       lambda root: replace(root, ".github/workflows/audit-report.yml",
+                            "environment: oss-release", "environment: staging") or [])
+reject("wrong_audit_report_ref_allowed", "audit-report workflow is missing github.ref == format",
+       lambda root: replace(root, ".github/workflows/audit-report.yml",
+                            "github.ref == format('refs/tags/{0}', inputs.tag)",
+                            "github.ref == 'refs/heads/main'") or [])
+reject("audit_report_rebuild", "audit-report workflow must not contain ./mvnw",
+       lambda root: replace(root, ".github/workflows/audit-report.yml",
+                            "mkdir -p target/ga-audit/download target/ga-audit/extracted",
+                            "./mvnw package\n          mkdir -p target/ga-audit/download target/ga-audit/extracted") or [])
+reject("replaceable_audit_signature", "audit-report workflow must not contain --clobber",
+       lambda root: replace(root, ".github/workflows/audit-report.yml",
+                            'gh release upload "$RELEASE_TAG"',
+                            'gh release upload --clobber "$RELEASE_TAG"') or [])
 reject("missing_release_archive", "release archive output does not match published asset path",
        lambda root: replace(root, ".github/workflows/release.yml",
                             '-czf "target/agentworks-${{ inputs.tag }}.tar.gz" -C target',
